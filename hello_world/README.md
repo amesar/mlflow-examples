@@ -1,5 +1,5 @@
 
-# mlflow-spark-summit-2019 - hello_world
+# mlflow-examples - hello_world
 
 Simple Hello World that demonstrates the different ways to run an MLflow experiment.
 
@@ -57,20 +57,20 @@ mlflow run . -Palpha=.01 -Prun_origin=LocalRun -Plog_artifact=True
 ```
 You can also specify an experiment ID:
 ```
-mlflow run . --experiment-id=2019 -Palpha=.01 -Prun_origin=LocalRun -Plog_artifact=True
+mlflow run . --experiment-name=hello_world -Palpha=.01 -Prun_origin=LocalRun -Plog_artifact=True
 ```
 
 #### mlflow run git
 ```
 mlflow run  https://github.com/amesar/mlflow-fun.git#examples/hello_world \
-  --experiment-id=2019 \
+  --experiment-name=hello_world \
   -Palpha=100 -Prun_origin=GitRun -Plog_artifact=True
 ```
 #### mlflow run Databricks remote
 Run against Databricks. See [Remote Execution on Databricks](https://mlflow.org/docs/latest/projects.html#run-an-mlflow-project-on-databricks) and [cluster.json](cluster.json).
 ```
 mlflow run  https://github.com/amesar/mlflow-fun.git#examples/hello_world \
-  --experiment-id=2019 \
+  --experiment-name=hello_world \
   -Palpha=100 -Prun_origin=RemoteRun -Plog_artifact=True \
   -m databricks --cluster-spec cluster.json
 ```
