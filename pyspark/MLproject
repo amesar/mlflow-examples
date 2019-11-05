@@ -1,0 +1,10 @@
+name: mlflow_examples_pyspark
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      max_depth: {type: int, default: 2 }
+      max_bins: {type: int, default: 32 }
+    command: "spark-submit --master local[2] train.py --max_depth {max_depth} --max_bins {max_bins}"
