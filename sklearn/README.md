@@ -1,34 +1,33 @@
 # mlflow-examples - sklearn 
 
 ## Overview
-* Wine Quality Elastic Net Example
+* Wine Quality Decision Tree Example
+* Is a well-formed Python project that generates a wheel
 * This example demonstrates all features of MLflow training and prediction.
 * Saves model in pickle format
 * Saves plot artifacts
-* Shows several ways to run training - _mlflow run_, run against Databricks cluster, call egg from notebook, etc.
-* Shows several ways to run prediction  - web server,  mlflow.load_model(), UDF, etc.
-* Data: data/wine-quality-white.csv and data/predict wine-quality-red.csv.
+* Shows several ways to run training:
+  * _mlflow run_ - several variants
+  * Run against Databricks cluster 
+  * Call wheel from notebook, etc.
+* Shows several ways to run prediction  
+  * web server
+  * mlflow.load_model()
+  *  UDF
+* Data: [../data/wine-quality-white.csv](../data/wine-quality-white.csv)
 
 ## Training
 
-Source: [main.py](main.py) and [train.py](wine_quality/train.py).
+Source: [main.py](main.py) and [wine_quality/train.py](wine_quality/train.py).
 
 ### Unmanaged without mlflow run
 
 #### Command-line python
 
-To run with standard main function:
+To run with standard main function
 ```
 python main.py --experiment_name sklearn \
-  --data_path ../data/wine-quality-white.csv \
   --max_depth 2 --max_leaf_nodes 32
-```
-
-#### Jupyter notebook
-See [Train_Wine_Quality.ipynb](Train_Wine_Quality.ipynb).
-```
-export MLFLOW_TRACKING_URI=http://localhost:5000
-jupyter notebook
 ```
 
 ### Using mlflow run
@@ -70,25 +69,25 @@ mlflow run https://github.com/amesar/mlflow-fun.git#examples/scikit-learn/wine-q
 
 ### Databricks Cluster Runs
 
-You can also package your code as an egg and run it with the standard Databricks REST API endpoints
+You can also package your code as an wheel and run it with the standard Databricks REST API endpoints
 [job/runs/submit](https://docs.databricks.com/api/latest/jobs.html#runs-submit) 
 or [jobs/run-now](https://docs.databricks.com/api/latest/jobs.html#run-now) 
 using the [spark_python_task](https://docs.databricks.com/api/latest/jobs.html#jobssparkpythontask). 
 
 #### Setup
 
-Build the egg.
+First build the wheel.
 ```
-python setup.py bdist_egg
+python setup.py bdist_wheel
 ```
 
-Upload the data file, main file and egg to your Databricks cluster.
+Upload the data file, main file and wheel to your Databricks file system.
 ```
 databricks fs cp main.py dbfs:/tmp/jobs/wine_quality/main.py
 databricks fs cp data/wine-quality-white.csv dbfs:/tmp/jobs/wine_quality/wine-quality-white.csv
 databricks fs cp \
-  dist/mlflow_wine_quality-0.0.1-py3.6.egg \
-  dbfs:/tmp/jobs/wine_quality/mlflow_wine_quality-0.0.1-py3.6.egg
+  dist/mlflow_fun-0.0.1-py3-none-any.whl \
+  dbfs:/tmp/jobs/wine_quality/mlflow_fun-0.0.1-py3-none-any.whl
 ```
 
 
@@ -99,23 +98,19 @@ databricks fs cp \
 Define your run in [run_submit_new_cluster.json](run_submit_new_cluster.json) and launch the run.
 
 ```
-curl -X POST -H "Authorization: Bearer MY_TOKEN" \
-  -d @run_submit_new_cluster.json  \
-  https://myshard.cloud.databricks.com/api/2.0/jobs/runs/submit
+databricks runs submit  --json-file run_submit_new_cluster.json
 ```
 
 ##### Run with existing cluster
 
-Every time you build a new egg, you need to upload (as described above) it to DBFS and restart the cluster.
+Every time you build a new wheel, you need to upload (as described above) it to DBFS and restart the cluster.
 ```
 databricks clusters restart --cluster-id 1222-015510-grams64
 ```
 
 Define your run in [run_submit_existing_cluster.json](run_submit_existing_cluster.json) and launch the run.
 ```
-curl -X POST -H "Authorization: Bearer MY_TOKEN" \
-  -d @run_submit_existing_cluster.json  \
-  https://myshard.cloud.databricks.com/api/2.0/jobs/runs/submit
+databricks runs submit  --json-file run_submit_existing_cluster.json
 ```
 
 #### Job Run Now
@@ -144,13 +139,13 @@ databricks jobs run-now --job-id $JOB_ID --python-params ' [ "WineQualityExperim
 ```
 
 
-#### Run egg from Databricks notebook
+#### Run wheel from Databricks notebook
 
 Create a notebook with the following cell. Attach it to the existing cluster described above.
 ```
 from wine_quality import Trainer
 data_path = "/dbfs/tmp/jobs/wine_quality/wine-quality-white.csv"
-trainer = Trainer("WineQualityExperiment", data_path, "from_notebook_with_egg")
+trainer = Trainer("WineQualityExperiment", data_path, "from_notebook_with_wheel")
 trainer.train(0.4, 0.4)
 ```
 

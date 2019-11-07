@@ -53,12 +53,15 @@ def train(data, maxDepth, maxBins, run_id):
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument("--experiment_name", dest="experiment_name", help="experiment_name", default="pyspark", required=False)
-    parser.add_argument("--data_path", dest="data_path", help="data_path", required=True)
+    parser.add_argument("--experiment_name", dest="experiment_name", help="experiment_name", default="pyspark")
+    parser.add_argument("--data_path", dest="data_path", help="data_path", default=default_data_path)
     parser.add_argument("--max_depth", dest="max_depth", help="max_depth", default=2, type=int)
     parser.add_argument("--max_bins", dest="max_bins", help="max_bins", default=32, type=int)
     parser.add_argument("--describe", dest="describe", help="Describe data", default=False, action='store_true')
     args = parser.parse_args()
+    print("Arguments:")
+    for arg in vars(args):
+        print("  {}: {}".format(arg,getattr(args, arg)))
 
     client = mlflow.tracking.MlflowClient()
     print("experiment_name:",args.experiment_name)

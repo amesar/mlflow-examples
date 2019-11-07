@@ -6,7 +6,7 @@ Simple Hello World that demonstrates the different ways to run an MLflow experim
 For details see [MLflow documentation - Running Projects](https://mlflow.org/docs/latest/projects.html#running-projects).
 
 Synopsis of [hello_world.py](hello_world.py):
-* Creates an experiment HelloWorld if it does not exist. 
+* Creates an experiment `hello_world` if it does not exist. 
 * Logs parameters, metrics and tags.
 * Batch loggging of parameters, metrics and tags.
 * No ML training.
@@ -62,14 +62,14 @@ mlflow run . --experiment-name=hello_world -Palpha=.01 -Prun_origin=LocalRun -Pl
 
 #### mlflow run git
 ```
-mlflow run  https://github.com/amesar/mlflow-fun.git#examples/hello_world \
+mlflow run  https://github.com/amesar/mlflow-examples.git#hello_world \
   --experiment-name=hello_world \
   -Palpha=100 -Prun_origin=GitRun -Plog_artifact=True
 ```
 #### mlflow run Databricks remote
 Run against Databricks. See [Remote Execution on Databricks](https://mlflow.org/docs/latest/projects.html#run-an-mlflow-project-on-databricks) and [cluster.json](cluster.json).
 ```
-mlflow run  https://github.com/amesar/mlflow-fun.git#examples/hello_world \
+mlflow run  https://github.com/amesar/mlflow-examples.git#hello_world \
   --experiment-name=hello_world \
   -Palpha=100 -Prun_origin=RemoteRun -Plog_artifact=True \
   -m databricks --cluster-spec cluster.json

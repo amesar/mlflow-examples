@@ -4,6 +4,11 @@ Scala examples using the MLflow Java client:
 * Hello World - Simple MLflow example with no training.
 * Spark ML DecisionTree - Using wine quality dataset, saves and predicts SparkML and MLeap model formats.
 
+## Setup
+
+* You must install Python MLflow: `pip install mlflow==1.4.0`.
+* Install Spark on your machine
+
 ## Build
 ```
 mvn clean package

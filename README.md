@@ -4,7 +4,9 @@ Basic MLflow examples.
 
 ## Setup
 
-Do use Python 3.
+Basic.
+* Use Python 3
+* Install Spark on your machine
 
 Create a virtual environment.
 ```
@@ -33,13 +35,14 @@ mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri $PWD/mlruns --defau
 
 ## Examples
 ### Setup
-Before running an experiment:
+Before running an experiment
 ```
 export MLFLOW_TRACKING_URI=http://localhost:5000
 ```
 
 ### Examples
-* [hello_world](hello_world) - Hello World
-* [sklearn](sklearn) - Scikit learn model
-* [pyspark](pyspark) - PySpark model
-* [scala_spark](scala_spark) - Scala Spark ML model using the Java client
+* Python examples
+  * [hello_world](hello_world) - Hello World
+  * [sklearn](sklearn) - Scikit learn model
+  * [pyspark](pyspark) - PySpark model
+* [scala_spark](scala_spark) - Scala Spark ML model using the MLflow Java client

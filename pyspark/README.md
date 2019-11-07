@@ -1,10 +1,11 @@
-# mlflow-examples- pyspark
+# mlflow-examples - pyspark
 
 ## Overview
 
 * PySpark Decision Tree Classification example
 * Source: [train.py](train.py) and [predict.py](predict.py)
 * Experiment name: pypark
+* Data: [../data/wine-quality-white.csv](../data/wine-quality-white.csv)
 
 ## Train
 
@@ -12,7 +13,7 @@
 
 To run with standard main function
 ```
-spark-submit --master local[2] train.py --max_depth 16 --max_bins 32
+spark-submit --master local[2] train.py --max_depth 16 --max_bins 32 
 ```
 
 ### Using mlflow run
