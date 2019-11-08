@@ -74,5 +74,5 @@ Run against Databricks. See [Remote Execution on Databricks](https://mlflow.org/
 mlflow run  https://github.com/amesar/mlflow-examples.git#hello_world \
   --experiment-name=hello_world \
   -P alpha=100 -P run_origin=RemoteRun \
-  -m databricks --cluster-spec cluster.json
+  --backend databricks --backend-config cluster.json
 ```

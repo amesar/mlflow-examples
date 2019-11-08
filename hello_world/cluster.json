@@ -3,9 +3,6 @@
   "driver_node_type_id": "i3.xlarge",
   "node_type_id": "i3.xlarge",
   "num_workers": 1,
-  "spark_env_vars": {
-    "PYSPARK_PYTHON": "/databricks/python3/bin/python3"
-  },
   "libraries": [
     { "pypi": { "package": "mlflow" }}
   ]
