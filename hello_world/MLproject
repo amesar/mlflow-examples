@@ -7,8 +7,6 @@ entry_points:
     parameters:
       alpha: {type: string, default: "0.01" }
       run_origin: {type: string, default: "None" }
-      log_artifact: {type: string, default: "False" }
     command: "python hello_world.py
                 --alpha {alpha}
-                --run_origin {run_origin}
-                --log_artifact {log_artifact}"
+                --run_origin {run_origin}"
