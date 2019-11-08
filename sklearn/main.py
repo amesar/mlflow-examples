@@ -1,4 +1,3 @@
-from __future__ import print_function
 from wine_quality.train import Trainer
 from argparse import ArgumentParser
 

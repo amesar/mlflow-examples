@@ -34,18 +34,20 @@ python main.py --experiment_name sklearn \
 
 These runs use the [MLproject](MLproject) file. For more details see [MLflow documentation - Running Projects](https://mlflow.org/docs/latest/projects.html#running-projects).
 
-Note that mlflow run ignores the `set_experiment()` function so you must specify the experiment with the  `--experiment-id` argument.
+Note that mlflow run ignores the `set_experiment()` function so you must specify the experiment with the  `--experiment-sklearn` argument.
 
 **mlflow run local**
 ```
-mlflow run . -P max_depth=2 -P max_leaf_nodes=32 -P run_origin=LocalRun --experiment-id=2
+mlflow run . \
+  -P max_depth=2 -P max_leaf_nodes=32 -P run_origin=LocalRun \
+  --experiment-name=sklearn
 ```
 
 **mlflow run github**
 ```
 mlflow run https://github.com/amesar/mlflow-fun.git#examples/scikit-learn/wine-quality \
   -P max_depth=2 -P max_leaf_nodes=32 -P run_origin=GitRun \
-  --experiment-id=2
+  --experiment-name=sklearn
 ```
 
 **mlflow run Databricks remote** - Run against Databricks. 
@@ -63,7 +65,7 @@ Now run.
 mlflow run https://github.com/amesar/mlflow-fun.git#examples/scikit-learn/wine-quality \
   -P max_depth=2 -P max_leaf_nodes=32 -P run_origin=GitRun \
   -P data_path=/dbfs/tmp/data/wine-quality-white.csv \
-  --experiment-id=2019 \
+  --experiment-name=sklearn \
   --mode databricks --cluster-spec mlflow_run_cluster.json
 ```
 
@@ -98,7 +100,7 @@ databricks fs cp \
 Define your run in [run_submit_new_cluster.json](run_submit_new_cluster.json) and launch the run.
 
 ```
-databricks runs submit  --json-file run_submit_new_cluster.json
+databricks runs submit --json-file run_submit_new_cluster.json
 ```
 
 ##### Run with existing cluster
@@ -110,7 +112,7 @@ databricks clusters restart --cluster-id 1222-015510-grams64
 
 Define your run in [run_submit_existing_cluster.json](run_submit_existing_cluster.json) and launch the run.
 ```
-databricks runs submit  --json-file run_submit_existing_cluster.json
+databricks runs submit --json-file run_submit_existing_cluster.json
 ```
 
 #### Job Run Now
@@ -124,7 +126,8 @@ databricks jobs create --json-file create_job_new_cluster.json
 
 Then run the job with desired parameters.
 ```
-databricks jobs run-now --job-id $JOB_ID --python-params ' [ "WineQualityExperiment", 0.3, 0.3, "/dbfs/tmp/jobs/wine_quality/wine-quality-white.csv" ] '
+databricks jobs run-now --job-id $JOB_ID \
+  --python-params '[ "WineQualityExperiment", 0.3, 0.3, "/dbfs/tmp/jobs/wine_quality/wine-quality-white.csv" ]'
 ```
 
 ##### Run with existing cluster

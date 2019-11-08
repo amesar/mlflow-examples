@@ -24,7 +24,9 @@ Note that `mlflow run` ignores the `set_experiment()` function so you must speci
 
 **mlflow run local**
 ```
-mlflow run . -P max_depth=3 -P max_bins=24 --experiment-name=pyspark
+mlflow run . \
+  -P max_depth=3 -P max_bins=24 \
+  --experiment-name=pyspark
 ```
 
 **mlflow run github**

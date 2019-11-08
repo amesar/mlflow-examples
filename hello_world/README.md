@@ -53,24 +53,26 @@ jupyter notebook
 
 #### mlflow run local
 ```
-mlflow run . -Palpha=.01 -Prun_origin=LocalRun -Plog_artifact=True
+mlflow run . -P alpha=.01 -P run_origin=LocalRun 
 ```
 You can also specify an experiment ID:
 ```
-mlflow run . --experiment-name=hello_world -Palpha=.01 -Prun_origin=LocalRun -Plog_artifact=True
+mlflow run . \
+  --experiment-name=hello_world \
+  -P alpha=.01 -P run_origin=LocalRun
 ```
 
 #### mlflow run git
 ```
 mlflow run  https://github.com/amesar/mlflow-examples.git#hello_world \
   --experiment-name=hello_world \
-  -Palpha=100 -Prun_origin=GitRun -Plog_artifact=True
+  -P alpha=100 -P run_origin=GitRun
 ```
 #### mlflow run Databricks remote
 Run against Databricks. See [Remote Execution on Databricks](https://mlflow.org/docs/latest/projects.html#run-an-mlflow-project-on-databricks) and [cluster.json](cluster.json).
 ```
 mlflow run  https://github.com/amesar/mlflow-examples.git#hello_world \
   --experiment-name=hello_world \
-  -Palpha=100 -Prun_origin=RemoteRun -Plog_artifact=True \
+  -P alpha=100 -P run_origin=RemoteRun \
   -m databricks --cluster-spec cluster.json
 ```
