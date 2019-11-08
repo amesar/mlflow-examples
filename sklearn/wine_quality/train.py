@@ -2,7 +2,6 @@
 # P. Cortez, A. Cerdeira, F. Almeida, T. Matos and J. Reis.
 # Modeling wine preferences by data mining from physicochemical properties. In Decision Support Systems, Elsevier, 47(4):547-553, 2009.
 
-import platform
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
@@ -87,7 +86,7 @@ class Trainer(object):
             mlflow.set_tag("mlflow.runName",self.run_origin) # mlflow CLI picks this up
             mlflow.set_tag("data_path", self.data_path)
             mlflow.set_tag("run_origin", self.run_origin)
-            mlflow.set_tag("platform", platform.system())
+            mlflow.set_tag("mlflow_version", mlflow.version.VERSION)
 
             # MLflow log model
             mlflow.sklearn.log_model(dt, "sklearn-model")

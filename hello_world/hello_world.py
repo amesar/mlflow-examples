@@ -1,4 +1,5 @@
 import time
+import platform
 from argparse import ArgumentParser
 import mlflow
 from mlflow.entities import Param,Metric,RunTag
@@ -17,7 +18,7 @@ print("experiment_id:",experiment_id)
 now = round(time.time())
 
 def run(alpha, run_origin):
-    with mlflow.start_run(run_name=run_origin) as run:
+    with mlflow.start_run(run_name=run_origin) as run:  # NOTE: mlflow CLI ignores run_name
         print("runId:",run.info.run_uuid)
         print("artifact_uri:",mlflow.get_artifact_uri())
         print("alpha:",alpha)
@@ -25,6 +26,8 @@ def run(alpha, run_origin):
         mlflow.log_param("alpha", alpha)
         mlflow.log_metric("rmse", 0.789)
         mlflow.set_tag("run_origin", run_origin)
+        mlflow.set_tag("mlflow_version", mlflow.version.VERSION)
+        mlflow.set_tag("platform", platform.system())
         with open("info.txt", "w") as f:
             f.write("Hi artifact")
         mlflow.log_artifact("info.txt")
