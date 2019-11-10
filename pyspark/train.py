@@ -64,9 +64,7 @@ if __name__ == "__main__":
         print("  {}: {}".format(arg,getattr(args, arg)))
 
     client = mlflow.tracking.MlflowClient()
-    print("experiment_name:",args.experiment_name)
     mlflow.set_experiment(args.experiment_name)
-    print("experiment_id:",client.get_experiment_by_name(args.experiment_name).experiment_id)
 
     data_path = args.data_path or default_data_path
     data = read_data(spark, data_path)
@@ -78,5 +76,6 @@ if __name__ == "__main__":
         print("MLflow:")
         print("  run_id:",run.info.run_id)
         print("  experiment_id:",run.info.experiment_id)
+        print("  experiment_name:",client.get_experiment(run.info.experiment_id).name)
         mlflow.set_tag("mlflow_version", mlflow.version.VERSION)
         train(data, args.max_depth, args.max_bins, run.info.run_id)

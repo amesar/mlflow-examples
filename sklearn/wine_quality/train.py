@@ -13,6 +13,7 @@ from wine_quality import plot_utils
 
 print("MLflow Version:", mlflow.version.VERSION)
 print("MLflow Tracking URI:", mlflow.get_tracking_uri())
+client = mlflow.tracking.MlflowClient()
 
 colLabel = "quality"
 
@@ -22,11 +23,7 @@ class Trainer(object):
         self.data_path = data_path
         self.run_origin = run_origin
 
-        print("experiment_name:",self.experiment_name)
-        print("run_origin:",run_origin)
-
         # Read and prepare data
-        print("data_path:",data_path)
         data = pd.read_csv(data_path)
         train, test = train_test_split(data, test_size=0.30, random_state=2019)
     
@@ -39,12 +36,13 @@ class Trainer(object):
         self.X = data.drop([colLabel], axis=1).values
         self.y = data[[colLabel]].values.ravel()
 
-        # If using 'mlflow run' must use --experiment-id to set experiment since set_experiment() does not take effect
+        # If using 'mlflow run' must use --experiment-id/experiment-name to set experiment since set_experiment() has no take effect
         if self.experiment_name != "none":
             mlflow.set_experiment(experiment_name)
-            client = mlflow.tracking.MlflowClient()
             experiment_id = client.get_experiment_by_name(experiment_name).experiment_id
-            print("experiment_id:",experiment_id)
+            print("mlflow.set_experiment:")
+            print("  experiment_id:",experiment_id)
+            print("  experiment_name:",experiment_name)
 
 
     def train(self, max_depth, max_leaf_nodes):
@@ -54,6 +52,7 @@ class Trainer(object):
             print("MLflow:")
             print("  run_id:",run_id)
             print("  experiment_id:",experiment_id)
+            print("  experiment_name:",client.get_experiment(experiment_id).name)
 
             # Create model
             dt = DecisionTreeRegressor(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)

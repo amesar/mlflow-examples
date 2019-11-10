@@ -11,7 +11,8 @@ client = mlflow.tracking.MlflowClient()
 def run(alpha, run_origin):
     with mlflow.start_run(run_name=run_origin) as run:
         print("runId:",run.info.run_uuid)
-        print("experimentId:",run.info.experiment_id)
+        print("experiment_id:",run.info.experiment_id)
+        print("experiment_name:",client.get_experiment(run.info.experiment_id).name)
         print("artifact_uri:",mlflow.get_artifact_uri())
         print("alpha:",alpha)
         print("run_origin:",run_origin)
