@@ -28,7 +28,7 @@ pip install pyarrow
 You can either use the local file store or a database-backed store. 
 See MLflow [Storage](https://mlflow.org/docs/latest/tracking.html#storage) documentation.
 
-Note that apparently new MLflow 1.4.0 Model Registry functionality is only available in the database-backed store variant.
+Note that apparently new MLflow 1.4.0 Model Registry functionality is only available with the database-backed store.
 
 First activate the virtual environment.
 ```

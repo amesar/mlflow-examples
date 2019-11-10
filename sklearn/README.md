@@ -66,7 +66,7 @@ mlflow run https://github.com/amesar/mlflow-fun.git#examples/scikit-learn/wine-q
   -P max_depth=2 -P max_leaf_nodes=32 -P run_origin=GitRun \
   -P data_path=/dbfs/tmp/data/wine-quality-white.csv \
   --experiment-name=sklearn \
-  --mode databricks --cluster-spec mlflow_run_cluster.json
+  --backend databricks --backend-config mlflow_run_cluster.json
 ```
 
 ### Databricks Cluster Runs

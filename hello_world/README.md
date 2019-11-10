@@ -16,7 +16,7 @@ The different ways to run an experiment:
 * Unmanaged without mlflow
   * Command-line python
   * Jupyter notebook
-* Using mlflow run with [MLproject](MLproject)
+* Using `mlflow run` CLI using [MLproject](MLproject)
   * mlflow run local
   * mlflow run git
   * mlflow run remote
@@ -55,7 +55,7 @@ jupyter notebook
 ```
 mlflow run . -P alpha=.01 -P run_origin=LocalRun 
 ```
-You can also specify an experiment ID:
+You can also specify an experiment name (or ID):
 ```
 mlflow run . \
   --experiment-name=hello_world \
