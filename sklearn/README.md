@@ -301,11 +301,12 @@ predictions: [5.55109634 5.29772751 5.42757213 5.56288644 5.56288644]
 ```
 From [pyfunc_predict.py](pyfunc_predict.py):
 ```
-model_uri = mlflow.start_run("7e674524514846799310c41f10d6b99d").info.artifact_uri +  "/model"
+data_path = "../data/wine-quality-white.csv"
+data = util.read_prediction_data(data_path)
+model_uri = client.get_run(run_id).info.artifact_uri + "/sklearn-model"
 model = mlflow.pyfunc.load_pyfunc(model_uri)
-df = pd.read_csv("data/wine-quality-red.csv")
-predicted = model.predict(df)
-print("predicted:",predicted)
+predictions = model.predict(data)
+
 ```
 
 ### 4. Batch prediction with Spark UDF (user-defined function)
