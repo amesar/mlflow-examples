@@ -55,8 +55,8 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--experiment_name", dest="experiment_name", help="experiment_name", default="pyspark")
     parser.add_argument("--data_path", dest="data_path", help="data_path", default=default_data_path)
-    parser.add_argument("--max_depth", dest="max_depth", help="max_depth", default=2, type=int)
-    parser.add_argument("--max_bins", dest="max_bins", help="max_bins", default=32, type=int)
+    parser.add_argument("--max_depth", dest="max_depth", help="max_depth", default=5, type=int) # per doc
+    parser.add_argument("--max_bins", dest="max_bins", help="max_bins", default=32, type=int) # per doc
     parser.add_argument("--describe", dest="describe", help="Describe data", default=False, action='store_true')
     args = parser.parse_args()
     print("Arguments:")
