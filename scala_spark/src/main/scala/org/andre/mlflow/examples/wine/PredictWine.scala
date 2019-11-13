@@ -3,6 +3,7 @@ package org.andre.mlflow.examples.wine
 import com.beust.jcommander.{JCommander, Parameter}
 import org.apache.spark.sql.{SparkSession,DataFrame}
 import org.apache.spark.ml.{PipelineModel,Transformer}
+import org.apache.spark.sql.functions.desc
 import org.mlflow.tracking.MlflowClient
 import org.andre.mlflow.util.{MLflowUtils,MLeapUtils}
 
@@ -34,6 +35,7 @@ object PredictWine {
     val predictions = model.transform(data)
     val df = predictions.select(Utils.colFeatures,Utils.colLabel,Utils.colPrediction).sort(Utils.colFeatures,Utils.colLabel,Utils.colPrediction)
     df.show(10)
+    predictions.groupBy("prediction").count().sort(desc("count")).show
   }
 
   object opts {
