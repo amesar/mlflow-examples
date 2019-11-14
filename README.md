@@ -4,9 +4,20 @@ Basic MLflow examples.
 
 ## Setup
 
-Basic.
-* Use Python 3
-* Install Spark on your machine
+* For Python environment use either:
+  * Miniconda with ([conda.yaml](conda.yaml)).
+  * Virtual environment with PyPi.
+* Install Spark 2.3.0 on your machine.
+
+### Miniconda
+
+* Install miniconda3: ``https://conda.io/miniconda.html``
+* Create the environment: ``conda env create --file conda.yaml``
+* Source the environment: `` source activate mlflow-fun``
+
+### Virtual Environment
+
+Use Python 3.7.5
 
 Create a virtual environment.
 ```
@@ -60,6 +71,11 @@ mlflow server --host 0.0.0.0 --port 5000 \
 ```
 
 ## Examples
+
+All the examples except `hello_world` use a DecisionTreeRegressor mode with the  wine quality data set.
+
+As such, the `pyspark` and `scala_spark` models are isomorphic as they are simply language variants of the same Spark ML model.
+
 ### Setup
 Before running an experiment
 ```
@@ -71,4 +87,6 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
   * [hello_world](hello_world) - Hello World
   * [sklearn](sklearn) - Scikit learn model
   * [pyspark](pyspark) - PySpark model
-* [scala_spark](scala_spark) - Scala Spark ML model using the MLflow Java client
+* Scala examples - Scala Spark ML models using the MLflow Java client
+  * [hello_world](scala_spark/README.md#hello_world) - 
+  * [scala_spark](scala_spark/) - 

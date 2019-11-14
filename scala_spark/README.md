@@ -2,7 +2,7 @@
 
 Scala examples using the MLflow Java client:
 * Hello World - Simple MLflow example with no training.
-* Spark ML DecisionTree - Using wine quality dataset, saves and predicts SparkML and MLeap model formats.
+* Spark ML DecisionTreeRegressor - Uses wine quality dataset, saves and predicts SparkML and MLeap model formats.
 
 ## Setup
 
@@ -53,10 +53,10 @@ mlflowClient.logMetric(runId, "m1",0.123F)
 mlflowClient.setTerminated(runId, RunStatus.FINISHED, System.currentTimeMillis())
 ```
 
-## Spark ML Wine Quality DecisionTree Sample
+## Spark ML Wine Quality DecisionTreeRegressor Sample
 
 Sample demonstrating:
-*  Trains a model
+*  Trains a model with DecisionTreeRegressor algorithm
 *  Saves the model in Spark ML and MLeap formats
 *  Predicts from Spark ML and MLeap formats
 
@@ -67,7 +67,7 @@ Saves model as Spark ML and MLeap artifact in MLflow.
 
 #### Source
 
-Source snippet from [TrainWine.scala](src/main/scala/org/andre/mlflow/examples/TrainWine.scala).
+Source snippet from [TrainWine.scala](src/main/scala/org/andre/mlflow/examples/wine/TrainWine.scala).
 ```
 import org.mlflow.tracking.MlflowClient
 import org.mlflow.api.proto.Service.RunStatus
@@ -136,7 +136,7 @@ spark-submit --master local[2] \
   --modelPath model_sample --maxDepth 5 --maxBins 5
 ```
 
-### Run in Databricks Cluster
+### Run against Databricks Cluster with Databricks REST API
 
 You can also run your jar in a Databricks cluster with the standard Databricks REST API run endpoints.
 See [runs submit](https://docs.databricks.com/api/latest/jobs.html#runs-submit), [run now](https://docs.databricks.com/api/latest/jobs.html#run-now) and [spark_jar_task](https://docs.databricks.com/api/latest/jobs.html#jobssparkjartask).
@@ -232,7 +232,7 @@ spark-submit --master local[2] \
 
 #### Source
 
-Source snippet from [PredictWine.scala](src/main/scala/org/andre/mlflow/examples/PredictWine.scala).
+Source snippet from [PredictWine.scala](src/main/scala/org/andre/mlflow/examples/wine/PredictWine.scala).
 ```
 val data = spark.read.format("csv").option("header", "true").option("inferSchema", "true").load(dataPath)
 val model = PipelineModel.load(opts.modelPath)
