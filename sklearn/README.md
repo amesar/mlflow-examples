@@ -186,15 +186,17 @@ See MLflow documentation:
 * [Tutorial - Serving the Model](https://www.mlflow.org/docs/latest/tutorial.html#serving-the-model)
 * [Quickstart - Saving and Serving Models](https://www.mlflow.org/docs/latest/quickstart.html#saving-and-serving-models)
 
-In one window run the server.
+In one window run the server - (web server, docker container or sagemaker container).
 
 In another window, submit a prediction.
 ```
 curl -X POST -H "Content-Type:application/json" \
   -d @../data/predict-wine-quality.json \
   http://localhost:5001/invocations
+```
+```
 [
-    5.915754923413567
+  [5.915754923413567, 5.3696, 5.3696]
 ]
 ```
 
@@ -216,15 +218,16 @@ See sample [predict-wine-quality.json](../data/predict-wine-quality.json).
     "volatile acidity"
   ],
   "data": [ 
-     [ 12.8, 0.029, 0.48, 0.98, 6.2, 29, 3.33, 1.2, 0.39, 75, 0.66 ],
-     [ 14.8, 0.011, 0.48, 0.98, 6.2, 29, 3.33, 1.2, 0.39, 75, 0.33 ]
+    [ 12.8, 0.029, 0.48, 0.98, 6.2, 29, 3.33, 1.2, 0.39, 75, 0.66 ],
+    [ 7.4, 0.7, 0, 1.9, 0.076, 11, 34, 0.9978, 3.51, 0.56, 9.4 ],
+    [ 7.8, 0.88, 0, 2.6, 0.098, 25, 67, 0.9968, 3.2, 0.68, 9.8 ]
    ]
 }
 ```
 
-#### 1.i Serving Models from MLflow Web Server
+#### 1.i MLflow scoring web server
 
-Launch the server.
+Launch the web server.
 ```
 mlflow pyfunc serve -port 5001 \
   -model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model 
@@ -243,9 +246,9 @@ mlflow models build-docker \
   --name dk-sklearn-wine-server
 ```
 
-Then launch the server as a  docker container.
+Then launch the server as a docker container.
 ```
-docker run --p 5001:8000 dk-sklearn-wine-server
+docker run --p 5001:8080 dk-sklearn-wine-server
 ```
 Make predictions with curl as described above.
 
@@ -260,7 +263,7 @@ First build the docker image.
 mlflow sagemaker build-and-push-container --build --no-push --container sm-sklearn-wine-server
 ```
 
-Then launch the server as a  docker container.
+To test locally, launch the server as a docker container.
 ```
 mlflow sagemaker run-local \
   --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model \
