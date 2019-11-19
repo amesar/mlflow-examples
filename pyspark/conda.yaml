@@ -5,3 +5,4 @@ dependencies:
 - python=3.7.5
 - pip:
     - mlflow==1.4.0
+    - mleap==0.8.1

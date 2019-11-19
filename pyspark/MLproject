@@ -7,4 +7,7 @@ entry_points:
     parameters:
       max_depth: {type: int, default: 2 }
       max_bins: {type: int, default: 32 }
-    command: "spark-submit --master local[2] train.py --max_depth {max_depth} --max_bins {max_bins}"
+    command: "spark-submit --master local[2] 
+      --packages com.databricks:spark-avro_2.11:3.0.1,ml.combust.mleap:mleap-spark_2.11:0.12.0
+      train.py 
+      --max_depth {max_depth} --max_bins {max_bins}"

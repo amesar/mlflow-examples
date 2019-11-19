@@ -28,3 +28,11 @@ if __name__ == "__main__":
     df = predictions.select(colPrediction, colLabel, colFeatures)
     print("Spark ML predictions")
     df.show(5,False)
+
+    # Predict with MLeap 
+    model_uri = f"runs:/{args.run_id}/mleap-model"
+    print("model_uri:",model_uri)
+    predictions = model.transform(data)
+    df = predictions.select(colPrediction, colLabel, colFeatures)
+    print("MLeap ML predictions")
+    df.show(5,False)

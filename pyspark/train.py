@@ -14,6 +14,7 @@ from common import *
 spark = SparkSession.builder.appName("App").getOrCreate()
 
 print("MLflow Version:", mlflow.version.VERSION)
+print("Spark Version:", spark.version)
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 
 metrics = ["rmse","r2", "mae"]
@@ -48,6 +49,7 @@ def train(data, maxDepth, maxBins, run_id):
 
     # MLflow - log model
     mlflow.spark.log_model(model, "spark-model")
+    mlflow.mleap.log_model(spark_model=model, sample_input=testData, artifact_path="mleap-model")
 
 
 if __name__ == "__main__":
@@ -78,4 +80,5 @@ if __name__ == "__main__":
         print("  experiment_id:",run.info.experiment_id)
         print("  experiment_name:",client.get_experiment(run.info.experiment_id).name)
         mlflow.set_tag("mlflow_version", mlflow.version.VERSION)
+        mlflow.set_tag("spark_version", spark.version)
         train(data, args.max_depth, args.max_bins, run.info.run_id)
