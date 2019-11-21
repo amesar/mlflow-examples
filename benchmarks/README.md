@@ -30,7 +30,7 @@ Here's a breakdown of flavor support for the server variants.
 Launch the scoring server on port 5001.
 For examples, see sklearn [Scoring server](../sklearn/README.md#1-scoring-server).
 
-## Run benchmarks
+## Simple benchmark
 ```
 python -u benchmark.py --host localhost --port 5001
 ```
@@ -49,3 +49,17 @@ Results (seconds):
   records: 4198
 ```
 
+## Multi-threaded benchmark
+
+Launches a number of threads that concurrently call the scoring server.
+```
+python -u threaded_benchmark.py --host localhost --port 5001 --num_threads 10
+```
+```
+Summary
+  Mean  Max   Min
+  0.269 0.339 0.062
+  0.272 0.351 0.116
+  . . . 
+  0.278 0.338 0.230
+```
