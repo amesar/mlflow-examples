@@ -3,6 +3,7 @@ import time
 import json
 import requests
 from argparse import ArgumentParser
+import common
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -16,27 +17,12 @@ if __name__ == "__main__":
     for arg in vars(args):
         print(f"  {arg}: {getattr(args, arg)}")
 
-    with open(args.data_path, 'r') as f:
-        lines = f.readlines()
-    columns = lines[0].split(',')[:-1] # remove label column 'quality'
-    columns = [ c.replace('"','') for c in columns]
-    print("Columns:",columns)
-    lines = lines[1:]
-    if args.num_records is not None:
-        lines = lines[:args.num_records]
-    num_records = len(lines)
-    print("#Records:",num_records)
-
-    records = []
-    for line in lines:
-        toks = line.strip().split(',')[:-1]
-        r = [float(t) for t in toks ]
-        dct = { "columns" : columns, "data" : [r] }
-        records.append(dct)
+    records = common.read_data(args.data_path, args.num_records)
 
     headers = { 'Content-Type' : 'application/json' }
     uri = f"http://{args.host}:{args.port}/invocations"
     durations = []
+    num_records = len(records)
     print("Calls:")
     for j,r in enumerate(records):
         data = json.dumps(r)
@@ -44,7 +30,7 @@ if __name__ == "__main__":
         rsp = requests.post(uri, headers=headers, data=data)
         dur = time.time()-start
         if j % args.log_mod == 0:
-           print(f"  {j}/{num_records}: {round(dur,3)} - {rsp.text}")
+           print(f"  {j}/{num_records}: {round(dur,3)}")
         durations.append(dur)
 
     total = sum(durations)
