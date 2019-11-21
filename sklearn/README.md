@@ -180,7 +180,7 @@ You can make predictions in the following ways:
 
 See MLflow [Built-In Deployment Tools](https://mlflow.org/docs/latest/models.html#built-in-deployment-tools) page.
 
-### 1. Server scoring
+### 1. Scoring server
 
 See MLflow documentation:
 * [Tutorial - Serving the Model](https://www.mlflow.org/docs/latest/tutorial.html#serving-the-model)

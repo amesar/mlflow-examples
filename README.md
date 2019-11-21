@@ -87,6 +87,7 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
   * [hello_world](hello_world) - Hello World
   * [sklearn](sklearn) - Scikit learn model
   * [pyspark](pyspark) - PySpark model
+  * [benchmarks](benchmarks) - Simple performance benchmark
 * Scala examples - Scala Spark ML models using the MLflow Java client
   * [hello_world](scala_spark/README.md#hello_world) - 
   * [scala_spark](scala_spark/) - 
