@@ -38,21 +38,21 @@ These runs use the [MLproject](MLproject) file. For more details see [MLflow doc
 
 Note that mlflow run ignores the `set_experiment()` function so you must specify the experiment with the  `--experiment-sklearn` argument.
 
-**mlflow run local**
+#### mlflow run local
 ```
 mlflow run . \
   -P max_depth=2 -P max_leaf_nodes=32 -P run_origin=localRun \
   --experiment-name=sklearn_wine
 ```
 
-**mlflow run github**
+#### mlflow run github
 ```
 mlflow run https://github.com/amesar/mlflow-examples.git#sklearn \
   -P max_depth=2 -P max_leaf_nodes=32 -P run_origin=gitRun \
   --experiment-name=sklearn_wine
 ```
 
-**mlflow run Databricks remote** - 
+#### mlflow run Databricks remote
 
 Run against a Databricks cluster.
 You will need a cluster spec file such as [mlflow_run_cluster.json](mlflow_run_cluster.json).
