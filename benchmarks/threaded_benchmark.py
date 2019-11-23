@@ -75,7 +75,7 @@ if __name__ == "__main__":
         t = MyThread(args=(records,j,))
         threads.append(t)
         t.start()
-    print("Spawned {args.num_threads} threads")
+    print(f"Spawned {args.num_threads} threads")
     for t in threads:
         t.join()
 
