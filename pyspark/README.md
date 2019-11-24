@@ -39,7 +39,14 @@ mlflow run https://github.com/amesar/mlflow-fun.git#examples/pyspark \
   --experiment-name=pyspark
 ```
 
-## Predict
+## Predictions
+
+You can make predictions in two ways:
+* Batch predictions 
+* Real-time predictions - use MLflow's scoring server to score individual requests.
+
+
+### Batch Predictions
 
 See [predict.py](predict.py).
 
@@ -66,4 +73,131 @@ MLeap ML predictions
 +-----------------+-------+--------------------------------------------------------+
 . . . 
 ```
+
+### Real-time Predictions
+
+Use a server to score predictions over HTTP.
+
+There are several ways to launch the server:
+  1. MLflow scoring web server 
+  2. Plain docker container
+  3. SageMaker docker container
+  4. Azure docker container
+
+See MLflow documentation:
+* [Built-In Deployment Tools](https://mlflow.org/docs/latest/models.html#built-in-deployment-tools)
+* [Tutorial - Serving the Model](https://www.mlflow.org/docs/latest/tutorial.html#serving-the-model)
+* [Quickstart - Saving and Serving Models](https://www.mlflow.org/docs/latest/quickstart.html#saving-and-serving-models)
+
+In one window launch the server.
+
+In another window, score some data.
+```
+curl -X POST -H "Content-Type:application/json" \
+  -d @../data/predict-wine-quality.json \
+  http://localhost:5001/invocations
+```
+```
+[
+  [6.75, 4.2727272727272725, 4.2727272727272725]
+]
+```
+
+Data should be in `JSON-serialized Pandas DataFrames split orientation` format
+such as [predict-wine-quality.json](../data/predict-wine-quality.json).
+```
+{
+  "columns": [
+    "alcohol",
+    "chlorides",
+    "citric acid",
+    "density",
+    "fixed acidity",
+    "free sulfur dioxide",
+    "pH",
+    "residual sugar",
+    "sulphates",
+    "total sulfur dioxide",
+    "volatile acidity"
+  ],
+  "data": [ 
+    [ 12.8, 0.029, 0.48, 0.98, 6.2, 29, 3.33, 1.2, 0.39, 75, 0.66 ],
+    [ 7.4, 0.7, 0, 1.9, 0.076, 11, 34, 0.9978, 3.51, 0.56, 9.4 ],
+    [ 7.8, 0.88, 0, 2.6, 0.098, 25, 67, 0.9968, 3.2, 0.68, 9.8 ]
+   ]
+}
+```
+
+#### 1. MLflow scoring web server
+
+Launch the web server.
+```
+mlflow pyfunc serve -port 5001 \
+  -model-uri runs:/7e674524514846799310c41f10d6b99d/spark-model 
+```
+
+Make predictions with curl as described above.
+
+#### 2. Plain Docker Container
+
+See [build-docker](https://mlflow.org/docs/latest/cli.html#mlflow-models-build-docker) documentation.
+
+First build the docker image.
+```
+mlflow models build-docker \
+  --model-uri runs:/7e674524514846799310c41f10d6b99d/spark-model \
+  --name dk-wine-pyspark
+```
+
+Then launch the server as a docker container.
+```
+docker run --p 5001:8080 dk-wine-pyspark
+```
+Make predictions with curl as described above.
+
+#### 3. SageMaker Docker Container
+
+See documentation:
+* [Deploy a python_function model on Amazon SageMaker](https://mlflow.org/docs/latest/models.html#deploy-a-python-function-model-on-amazon-sagemaker)
+* [mlflow.sagemaker](https://mlflow.org/docs/latest/python_api/mlflow.sagemaker.html)
+
+Notes:
+  * You can test your SageMaker container on your local machine before pushing to SageMaker.
+  * You can build a container either with the Spark or MLeap model. 
+
+
+##### Score with Spark ML model
+
+First build the docker image.
+```
+mlflow sagemaker build-and-push-container --build --no-push --container sm-wine-pyspark-spark
+```
+
+To test locally, launch the server as a docker container.
+```
+mlflow sagemaker run-local \
+  --model-uri runs:/7e674524514846799310c41f10d6b99d/spark-model \
+  --port 5001 --image sm-wine-pyspark-spark
+```
+##### Score with MLeap model
+
+First build the docker image.
+```
+mlflow sagemaker build-and-push-container --build --no-push --container sm-wine-pyspark-mleap
+```
+
+To test locally, launch the server as a docker container.
+```
+mlflow sagemaker run-local \
+  --model-uri runs:/7e674524514846799310c41f10d6b99d/mleap-model \
+  --port 5001 --image sm-wine-pyspark-mleap
+```
+
+Make predictions with curl as described above.
+
+#### 4. Azure docker container
+
+See [Deploy a python_function model on Microsoft Azure ML](https://mlflow.org/docs/latest/models.html#deploy-a-python-function-model-on-microsoft-azure-ml) documentation.
+
+TODO.
 
