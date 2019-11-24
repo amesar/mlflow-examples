@@ -32,7 +32,7 @@ Run the standard main function from the command-line.
 python main.py --experiment_name sklearn --max_depth 2 --max_leaf_nodes 32
 ```
 
-### 2. MLflow CLI run
+### 2. MLflow CLI - `mlflow run`
 
 These runs use the [MLproject](MLproject) file. For more details see [MLflow documentation - Running Projects](https://mlflow.org/docs/latest/projects.html#running-projects).
 
@@ -154,7 +154,6 @@ Then run the job with desired parameters.
 databricks jobs run-now --job-id $JOB_ID --python-params ' [ "WineQualityExperiment", 0.3, 0.3, "/dbfs/tmp/jobs/sklearn_wine/wine-quality-white.csv" ] '
 ```
 
-
 #### Run wheel from Databricks notebook
 
 Create a notebook with the following cell. Attach it to the existing cluster described above.
@@ -167,28 +166,99 @@ trainer.train(0.4, 0.4)
 
 ## Predictions
 
-You can make predictions in the following ways:
-1. Use a server to score predictions over HTTP
+You can make predictions in two ways:
+* Batch predictions - direct calls to retrieve the model and score large files.
+  * mlflow.sklearn.load_model()
+  * mlflow.pyfunc.load_pyfunc()
+  * Spark UDF
+* Real-time predictions - use MLflow's scoring server to score individual requests.
+
+
+### Batch Predictions
+
+#### 1. Predict with mlflow.sklearn.load_model()
+
+```
+python sklearn_predict.py 7e674524514846799310c41f10d6b99d
+
+predictions: [5.55109634 5.29772751 5.42757213 5.56288644 5.56288644]
+```
+From [sklearn_predict.py](sklearn_predict.py):
+```
+model = mlflow.sklearn.load_model("model",run_id="7e674524514846799310c41f10d6b99d")
+df = pd.read_csv("../data/wine-quality-white.csv")
+predictions = model.predict(df)
+```
+
+#### 2. Predict with mlflow.pyfunc.load_pyfunc()
+
+```
+python pyfunc_predict.py 7e674524514846799310c41f10d6b99d
+```
+
+```
+predictions: [5.55109634 5.29772751 5.42757213 5.56288644 5.56288644]
+```
+From [pyfunc_predict.py](pyfunc_predict.py):
+```
+data_path = "../data/wine-quality-white.csv"
+data = util.read_prediction_data(data_path)
+model_uri = client.get_run(run_id).info.artifact_uri + "/sklearn-model"
+model = mlflow.pyfunc.load_pyfunc(model_uri)
+predictions = model.predict(data)
+
+```
+
+#### 3. Predict with Spark UDF (user-defined function)
+
+See [Export a python_function model as an Apache Spark UDF]((https://mlflow.org/docs/latest/models.html#export-a-python-function-model-as-an-apache-spark-udf) documentation.
+
+Scroll right to see prediction column.
+
+```
+pip install pyarrow
+
+spark-submit --master local[2] spark_udf_predict.py 7e674524514846799310c41f10d6b99d
+```
+
+```
++-------+---------+-----------+-------+-------------+-------------------+----+--------------+---------+--------------------+----------------+------------------+
+|alcohol|chlorides|citric acid|density|fixed acidity|free sulfur dioxide|  pH|residual sugar|sulphates|total sulfur dioxide|volatile acidity|        prediction|
++-------+---------+-----------+-------+-------------+-------------------+----+--------------+---------+--------------------+----------------+------------------+
+|    8.8|    0.045|       0.36|  1.001|          7.0|               45.0| 3.0|          20.7|     0.45|               170.0|            0.27| 5.551096337521979|
+|    9.5|    0.049|       0.34|  0.994|          6.3|               14.0| 3.3|           1.6|     0.49|               132.0|             0.3| 5.297727513113797|
+4   10.1|     0.05|        0.4| 0.9951|          8.1|               30.0|3.26|           6.9|     0.44|                97.0|            0.28| 5.427572126267637|
+|    9.9|    0.058|       0.32| 0.9956|          7.2|               47.0|3.19|           8.5|      0.4|               186.0|            0.23| 5.562886443251915|
+```
+From [spark_udf_predict.py](spark_udf_predict.py):
+```
+spark = SparkSession.builder.appName("ServePredictions").getOrCreate()
+data = spark.read.option("inferSchema",True).option("header", True).csv("../data/wine-quality-white.csv")
+data = data.drop("quality")
+model_uri = f"runs:/{run_id}/sklearn-model"
+udf = mlflow.pyfunc.spark_udf(spark, model_uri)
+predictions = data.withColumn("prediction", udf(*df.columns))
+predictions.show(10)
+```
+
+### Real-time Predictions
+
+Use a server to score predictions over HTTP.
+
+There are several ways to launch the server:
   1. MLflow scoring web server 
   2. Plain docker container
   3. SageMaker docker container
   4. Azure docker container
-2. Call mlflow.sklearn.load_model() from your own serving code and then make predictions
-4. Call mlflow.pyfunc.load_pyfunc() from your own serving code and then make predictions
-5. Batch prediction with Spark UDF (user-defined function)
-5. Score with Spark UDF (user-defined function) for batch cases
-
-See MLflow [Built-In Deployment Tools](https://mlflow.org/docs/latest/models.html#built-in-deployment-tools) page.
-
-### 1. Scoring server
 
 See MLflow documentation:
+* [Built-In Deployment Tools](https://mlflow.org/docs/latest/models.html#built-in-deployment-tools)
 * [Tutorial - Serving the Model](https://www.mlflow.org/docs/latest/tutorial.html#serving-the-model)
 * [Quickstart - Saving and Serving Models](https://www.mlflow.org/docs/latest/quickstart.html#saving-and-serving-models)
 
-In one window run the server - (web server, docker container or sagemaker container).
+In one window launch the server.
 
-In another window, submit a prediction.
+In another window, score some data.
 ```
 curl -X POST -H "Content-Type:application/json" \
   -d @../data/predict-wine-quality.json \
@@ -196,12 +266,12 @@ curl -X POST -H "Content-Type:application/json" \
 ```
 ```
 [
-  [5.915754923413567, 5.3696, 5.3696]
+  [6.75, 4.2727272727272725, 4.2727272727272725]
 ]
 ```
 
-Data must be in `JSON-serialized Pandas DataFrames split orientation` format.
-See sample [predict-wine-quality.json](../data/predict-wine-quality.json).
+Data should be in `JSON-serialized Pandas DataFrames split orientation` format
+such as [predict-wine-quality.json](../data/predict-wine-quality.json).
 ```
 {
   "columns": [
@@ -225,7 +295,7 @@ See sample [predict-wine-quality.json](../data/predict-wine-quality.json).
 }
 ```
 
-#### 1.i MLflow scoring web server
+#### 1. MLflow scoring web server
 
 Launch the web server.
 ```
@@ -235,113 +305,48 @@ mlflow pyfunc serve -port 5001 \
 
 Make predictions with curl as described above.
 
-#### 1.ii Plain Docker Container
+#### 2. Plain Docker Container
 
-See [Deploy a python_function model on Amazon SageMaker](https://mlflow.org/docs/latest/models.html#deploy-a-python-function-model-on-amazon-sagemaker) documentation.
+See [build-docker](https://mlflow.org/docs/latest/cli.html#mlflow-models-build-docker) documentation.
 
 First build the docker image.
 ```
 mlflow models build-docker \
   --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model \
-  --name dk-sklearn-wine-server
+  --name dk-wine-sklearn
 ```
 
 Then launch the server as a docker container.
 ```
-docker run --p 5001:8080 dk-sklearn-wine-server
+docker run --p 5001:8080 dk-wine-sklearn
 ```
 Make predictions with curl as described above.
 
-#### 1.iii SageMaker Docker Container
+#### 3. SageMaker Docker Container
 
-See [Deploy a python_function model on Amazon SageMaker](https://mlflow.org/docs/latest/models.html#deploy-a-python-function-model-on-amazon-sagemaker) documentation.
+See documentation:
+* [Deploy a python_function model on Amazon SageMaker](https://mlflow.org/docs/latest/models.html#deploy-a-python-function-model-on-amazon-sagemaker)
+* [mlflow.sagemaker](https://mlflow.org/docs/latest/python_api/mlflow.sagemaker.html)
 
-You can actually test your SageMaker container on your local machine before pushing to SageMaker.
+You can test your SageMaker container on your local machine before pushing to SageMaker.
 
 First build the docker image.
 ```
-mlflow sagemaker build-and-push-container --build --no-push --container sm-sklearn-wine-server
+mlflow sagemaker build-and-push-container --build --no-push --container sm-wine-sklearn
 ```
 
 To test locally, launch the server as a docker container.
 ```
 mlflow sagemaker run-local \
   --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model \
-  --port 5001 --image sm-sklearn-wine-server
+  --port 5001 --image sm-wine-sklearn
 ```
 
 Make predictions with curl as described above.
 
-#### 1.iv Azure docker container
+#### 4. Azure docker container
 
 See [Deploy a python_function model on Microsoft Azure ML](https://mlflow.org/docs/latest/models.html#deploy-a-python-function-model-on-microsoft-azure-ml) documentation.
 
 TODO.
 
-### 2. Predict with mlflow.sklearn.load_model()
-
-```
-python sklearn_predict.py 7e674524514846799310c41f10d6b99d
-
-predictions: [5.55109634 5.29772751 5.42757213 5.56288644 5.56288644]
-```
-From [sklearn_predict.py](sklearn_predict.py):
-```
-model = mlflow.sklearn.load_model("model",run_id="7e674524514846799310c41f10d6b99d")
-df = pd.read_csv("data/wine-quality-red.csv")
-predicted = model.predict(df)
-print("predicted:",predicted)
-```
-
-### 3. Predict with mlflow.pyfunc.load_pyfunc()
-
-```
-python pyfunc_predict.py 7e674524514846799310c41f10d6b99d
-```
-
-```
-predictions: [5.55109634 5.29772751 5.42757213 5.56288644 5.56288644]
-```
-From [pyfunc_predict.py](pyfunc_predict.py):
-```
-data_path = "../data/wine-quality-white.csv"
-data = util.read_prediction_data(data_path)
-model_uri = client.get_run(run_id).info.artifact_uri + "/sklearn-model"
-model = mlflow.pyfunc.load_pyfunc(model_uri)
-predictions = model.predict(data)
-
-```
-
-### 4. Batch prediction with Spark UDF (user-defined function)
-
-See documentation:
-* [Export a python_function model as an Apache Spark UDF]((https://mlflow.org/docs/latest/models.html#export-a-python-function-model-as-an-apache-spark-udf) 
-* API method [mlflow.pyfunc.spark_udf()](https://www.mlflow.org/docs/latest/python_api/mlflow.pyfunc.html#mlflow.pyfunc.spark_udf)
-
-Scroll right to see prediction column.
-
-```
-pip install pyarrow
-
-spark-submit --master local[2] spark_udf_predict.py 7e674524514846799310c41f10d6b99d
-```
-
-```
-+-------+---------+-----------+-------+-------------+-------------------+----+--------------+---------+--------------------+----------------+------------------+
-|alcohol|chlorides|citric acid|density|fixed acidity|free sulfur dioxide|  pH|residual sugar|sulphates|total sulfur dioxide|volatile acidity|        prediction|
-+-------+---------+-----------+-------+-------------+-------------------+----+--------------+---------+--------------------+----------------+------------------+
-|    8.8|    0.045|       0.36|  1.001|          7.0|               45.0| 3.0|          20.7|     0.45|               170.0|            0.27| 5.551096337521979|
-|    9.5|    0.049|       0.34|  0.994|          6.3|               14.0| 3.3|           1.6|     0.49|               132.0|             0.3| 5.297727513113797|
-|   10.1|     0.05|        0.4| 0.9951|          8.1|               30.0|3.26|           6.9|     0.44|                97.0|            0.28| 5.427572126267637|
-|    9.9|    0.058|       0.32| 0.9956|          7.2|               47.0|3.19|           8.5|      0.4|               186.0|            0.23| 5.562886443251915|
-```
-From [spark_udf_predict.py](spark_udf_predict.py):
-```
-spark = SparkSession.builder.appName("ServePredictions").getOrCreate()
-data = spark.read.option("inferSchema",True).option("header", True).csv("data/wine-quality-red.csv")
-data = data.drop("quality")
-model_uri = f"runs:/{run_id}/sklearn-model"
-udf = mlflow.pyfunc.spark_udf(spark, model_uri)
-predictions = data.withColumn("prediction", udf(*df.columns))
-predictions.show(10)
-```
