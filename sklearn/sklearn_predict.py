@@ -7,18 +7,17 @@ import util
 
 if __name__ == "__main__":
     if len(sys.argv) < 1:
-        println("ERROR: Expecting RUN_ID PREDICTION_FILE")
+        println("ERROR: Expecting MODEL_URI PREDICTION_FILE")
         sys.exit(1)
     print("MLflow Version:", mlflow.version.VERSION)
-    run_id = sys.argv[1]
-    #data_path = sys.argv[2] if len(sys.argv) > 2 else "../data/predict-wine-quality.json"
+    model_uri = sys.argv[1]
     data_path = sys.argv[2] if len(sys.argv) > 2 else "../data/wine-quality-white.csv"
     print("data_path:",data_path)
-    print("run_id:",run_id)
+    print("model_uri:",model_uri)
 
-    model = mlflow.sklearn.load_model(f"runs:/{run_id}/sklearn-model")
+    model = mlflow.sklearn.load_model(model_uri)
     print("model:",model)
 
-    df = util.read_prediction_data(data_path)
-    predictions = model.predict(df)
+    data = util.read_prediction_data(data_path)
+    predictions = model.predict(data)
     print("predictions:",predictions)

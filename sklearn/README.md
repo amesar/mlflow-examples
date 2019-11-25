@@ -179,21 +179,26 @@ You can make predictions in two ways:
 #### 1. Predict with mlflow.sklearn.load_model()
 
 ```
-python sklearn_predict.py 7e674524514846799310c41f10d6b99d
+python sklearn_predict.py runs:/7e674524514846799310c41f10d6b99d/sklearn-model
 
 predictions: [5.55109634 5.29772751 5.42757213 5.56288644 5.56288644]
 ```
 From [sklearn_predict.py](sklearn_predict.py):
 ```
-model = mlflow.sklearn.load_model("model",run_id="7e674524514846799310c41f10d6b99d")
+model = mlflow.sklearn.load_model(model_uri)
 df = pd.read_csv("../data/wine-quality-white.csv")
 predictions = model.predict(df)
+```
+
+If you have a registered model, you can pass a `models` URI as in:
+```
+python sklearn_predict.py models:/wine-sklearn/production-model
 ```
 
 #### 2. Predict with mlflow.pyfunc.load_pyfunc()
 
 ```
-python pyfunc_predict.py 7e674524514846799310c41f10d6b99d
+python pyfunc_predict.py runs:/7e674524514846799310c41f10d6b99d/sklearn-model
 ```
 
 ```
@@ -218,7 +223,8 @@ Scroll right to see prediction column.
 ```
 pip install pyarrow
 
-spark-submit --master local[2] spark_udf_predict.py 7e674524514846799310c41f10d6b99d
+spark-submit --master local[2] spark_udf_predict.py \
+  runs:/7e674524514846799310c41f10d6b99d/sklearn-model
 ```
 
 ```
@@ -235,7 +241,6 @@ From [spark_udf_predict.py](spark_udf_predict.py):
 spark = SparkSession.builder.appName("ServePredictions").getOrCreate()
 data = spark.read.option("inferSchema",True).option("header", True).csv("../data/wine-quality-white.csv")
 data = data.drop("quality")
-model_uri = f"runs:/{run_id}/sklearn-model"
 udf = mlflow.pyfunc.spark_udf(spark, model_uri)
 predictions = data.withColumn("prediction", udf(*df.columns))
 predictions.show(10)
