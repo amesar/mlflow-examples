@@ -28,7 +28,7 @@ Here's a breakdown of flavor support for the server variants.
 ## Launch scoring server
 
 Launch the scoring server on port 5001.
-For examples, see sklearn [Scoring server](../sklearn/README.md#1-scoring-server).
+For examples, see PySpark [Real-time Predictions](../pyspark/README.md#real-time-predictions).
 
 ## Simple benchmark
 ```

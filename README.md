@@ -82,13 +82,28 @@ Before running an experiment
 export MLFLOW_TRACKING_URI=http://localhost:5000
 ```
 
-### Examples
+### Samples
 * Python examples
-  * [hello_world](hello_world) - Hello World
-  * [sklearn](sklearn) - Scikit learn model
-  * [pyspark](pyspark) - PySpark model
-  * [benchmarks](benchmarks) - Simple performance benchmark
-  * [model_registry](model_registry) - Jupyter notebook sampling the Model Registry API
-* Scala examples - Scala Spark ML models using the MLflow Java client
-  * [hello_world](scala_spark/README.md#hello_world)
-  * [scala_spark](scala_spark/)
+  * [hello_world](hello_world) - Hello World - no training or scoring.
+  * [sklearn](sklearn) - Scikit learn model - train and score.
+  * [pyspark](pyspark) - Python Spark ML model - train and score.
+  * [benchmarks](benchmarks) - Simple performance benchmark.
+  * [model_registry](model_registry) - Jupyter notebook sampling the Model Registry API.
+* Scala examples - Scala Spark ML models using the MLflow Java client.
+  * [hello_world](scala_spark/README.md#hello_world) - Hello World - no training or scoring..
+  * [scala_spark](scala_spark/) - Scala Spark ML train and score.
+
+## Data
+
+Data is in the [data](data) folder.
+
+[wine-quality-white.csv](data/wine-quality-white.csv) contains the training data.
+
+Prediction data:
+* The prediction files contain the first three records of wine-quality-white.csv. 
+* The format is standard MLflow JSON-serialized Pandas DataFrames split orientation format described [here](https://mlflow.org/docs/latest/models.html#deploy-mlflow-models).
+* Data in [predict-wine-quality.json](data/predict-wine-quality.json) is directly derived from wine-quality-white.csv.
+  * The values are a mix of integers and doubles.
+* Apparently if you score predict-wine-quality.json against an MLeap SageMaker container, you will get errors as the server is unable to handle integers (bug).
+* Hence [predict-wine-quality-float.json](data/predict-wine-quality-float.json) whose data is all doubles.
+

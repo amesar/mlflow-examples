@@ -19,6 +19,8 @@ if __name__ == "__main__":
     spark = SparkSession.builder.appName("Predict").getOrCreate()
     data_path = args.data_path or default_data_path
     data = read_data(spark, data_path)
+    print("Data Schema:")
+    data.printSchema()
 
     # Predict with Spark ML
     model_uri = f"runs:/{args.run_id}/spark-model"
