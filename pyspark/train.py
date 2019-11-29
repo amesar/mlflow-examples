@@ -21,6 +21,8 @@ metrics = ["rmse","r2", "mae"]
 
 def train(data, maxDepth, maxBins, run_id):
     (trainingData, testData) = data.randomSplit([0.7, 0.3], 2019)
+    print("testData.schema:")
+    testData.printSchema()
 
     # MLflow - log parameters
     print("Parameters:")
@@ -47,9 +49,18 @@ def train(data, maxDepth, maxBins, run_id):
         print("  {}: {}".format(metric_name,metric_value))
         mlflow.log_metric(metric_name,metric_value)
 
-    # MLflow - log model
+    # MLflow - log spark model
     mlflow.spark.log_model(model, "spark-model")
+
+    # MLflow - log mleap model
     mlflow.mleap.log_model(spark_model=model, sample_input=testData, artifact_path="mleap-model")
+
+    # Log mleap schema file for MLeap runtime deserialization
+    schema_path = "schema.json"
+    with open(schema_path, 'w') as f:
+        f.write(data.schema.json())
+    print("schema_path:",schema_path)
+    mlflow.log_artifact(schema_path, "mleap-model")
 
 
 if __name__ == "__main__":

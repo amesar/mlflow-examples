@@ -110,7 +110,7 @@ object TrainWine {
 
     // MLflow - Save model in Spark ML and MLeap formats
     logModelAsSparkML(client, runId, modelDir, model)
-    logModelAsMLeap(client, runId, modelDir, model, predictions)
+    logModelAsMLeap(client, runId, modelDir, model, data, predictions)
 
     // MLflow - close run
     client.setTerminated(runId, RunStatus.FINISHED, System.currentTimeMillis())
@@ -122,11 +122,18 @@ object TrainWine {
     client.logArtifacts(runId, new File(modelPath), "spark-model")
   }
   
-  def logModelAsMLeap(client: MlflowClient, runId: String, modelDir: String, model: PipelineModel, predictions: DataFrame) = {
+  def logModelAsMLeap(client: MlflowClient, runId: String, modelDir: String, model: PipelineModel, data: DataFrame, predictions: DataFrame) = {
+
+    // Log model as MLeap artifact
     val modelPath = new File(s"$modelDir/mleap-model")
     modelPath.mkdir
-    MLeapUtils.saveModelAsSparkBundle(s"file:${modelPath.getAbsolutePath}", model, predictions) 
-    client.logArtifacts(runId, modelPath, "mleap-model/mleap/model") // Make compatible with MLflow Python mlflow.mleap.log_model
+    MLeapUtils.saveModelAsSparkBundle(s"file:${modelPath.getAbsolutePath}", model, predictions) // NOTE: fails with with data
+    client.logArtifacts(runId, modelPath, "mleap-model/mleap/model") // Make compatible with MLflow Python mlflow.mleap.log_model path
+
+    // Log mleap schema file for MLeap runtime deserialization
+    val schemaPath = new File("schema.json")
+    new java.io.PrintWriter(schemaPath) { write(data.schema.json) ; close }
+    client.logArtifact(runId, schemaPath, "mleap-model")
   } 
 
   object opts {
