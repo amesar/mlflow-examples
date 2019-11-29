@@ -89,9 +89,10 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
   * [pyspark](pyspark) - Python Spark ML model - train and score.
   * [benchmarks](benchmarks) - Simple performance benchmark.
   * [model_registry](model_registry) - Jupyter notebook sampling the Model Registry API.
-* Scala examples - Scala Spark ML models using the MLflow Java client.
+* Scala examples - uses the MLflow Java client.
   * [hello_world](scala_spark/README.md#hello_world) - Hello World - no training or scoring..
   * [scala_spark](scala_spark/) - Scala Spark ML train and score.
+  * [mleap](mleap) - Score an MLeap model with MLeap runtime (no Spark dependencies).
 
 ## Data
 
