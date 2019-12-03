@@ -1,4 +1,4 @@
-package org.andre.mlflow.util
+package org.andre.mleap.util
 
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.ml.PipelineModel
@@ -6,9 +6,9 @@ import org.apache.spark.ml.bundle.SparkBundleContext
 import ml.combust.bundle.BundleFile
 import ml.combust.mleap.spark.SparkSupport._
 
-object MLeapUtils {
+object SparkBundleUtils {
 
-  def saveModelAsSparkBundle(bundlePath: String, model: PipelineModel, data: DataFrame) {
+  def saveModel(bundlePath: String, model: PipelineModel, data: DataFrame) {
     val bundle = BundleFile(bundlePath)
     try {
       val context = SparkBundleContext().withDataset(data)
@@ -18,7 +18,7 @@ object MLeapUtils {
     }
   }
 
-  def readModelAsSparkBundle(bundlePath: String) = {
+  def readModel(bundlePath: String) = {
     val bundle = BundleFile(bundlePath)
     try {
       bundle.loadSparkBundle().get.root

@@ -9,7 +9,8 @@ import org.apache.spark.ml.evaluation.RegressionEvaluator
 import org.apache.spark.ml.feature.VectorAssembler
 import org.mlflow.tracking.{MlflowClient,MlflowClientVersion}
 import org.mlflow.api.proto.Service.RunStatus
-import org.andre.mlflow.util.{MLflowUtils,MLeapUtils}
+import org.andre.mlflow.util.MLflowUtils
+import org.andre.mleap.util.SparkBundleUtils
 
 /**
  * MLflow DecisionTreeRegressor with wine quality data.
@@ -127,7 +128,7 @@ object TrainWine {
     // Log model as MLeap artifact
     val modelPath = new File(s"$modelDir/mleap-model")
     modelPath.mkdir
-    MLeapUtils.saveModelAsSparkBundle(s"file:${modelPath.getAbsolutePath}", model, predictions) // NOTE: fails with with data
+    SparkBundleUtils.saveModel(s"file:${modelPath.getAbsolutePath}", model, predictions) // NOTE: fails with with data
     client.logArtifacts(runId, modelPath, "mleap-model/mleap/model") // Make compatible with MLflow Python mlflow.mleap.log_model path
 
     // Log mleap schema file for MLeap runtime deserialization

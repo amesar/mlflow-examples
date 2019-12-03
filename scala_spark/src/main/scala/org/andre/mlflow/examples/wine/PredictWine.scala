@@ -5,7 +5,8 @@ import org.apache.spark.sql.{SparkSession,DataFrame}
 import org.apache.spark.ml.{PipelineModel,Transformer}
 import org.apache.spark.sql.functions.desc
 import org.mlflow.tracking.MlflowClient
-import org.andre.mlflow.util.{MLflowUtils,MLeapUtils}
+import org.andre.mlflow.util.MLflowUtils
+import org.andre.mleap.util.SparkBundleUtils
 
 object PredictWine {
   def main(args: Array[String]) {
@@ -27,7 +28,7 @@ object PredictWine {
 
     println("==== MLeap")
     val modelPath1 = "file:" + client.downloadArtifacts(opts.runId, "mleap-model/mleap/model").getAbsolutePath
-    val model1 = MLeapUtils.readModelAsSparkBundle(modelPath1)
+    val model1 = SparkBundleUtils.readModel(modelPath1)
     showPredictions(model1, data)
   }
 
