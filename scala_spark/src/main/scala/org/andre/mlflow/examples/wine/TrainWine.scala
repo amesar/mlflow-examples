@@ -123,12 +123,17 @@ object TrainWine {
     client.logArtifacts(runId, new File(modelPath), "spark-model")
   }
   
-  def logModelAsMLeap(client: MlflowClient, runId: String, modelDir: String, model: PipelineModel, data: DataFrame, predictions: DataFrame) = {
+  def logModelAsMLeap(client: MlflowClient, runId: String, modelDir: String, model: PipelineModel, data: DataFrame, predictions: DataFrame) {
+    // Print schemas
+    println("Data Schema: ")
+    data.printSchema
+    println("Predictions Schema: ")
+    predictions.printSchema
 
     // Log model as MLeap artifact
     val modelPath = new File(s"$modelDir/mleap-model")
     modelPath.mkdir
-    SparkBundleUtils.saveModel(s"file:${modelPath.getAbsolutePath}", model, predictions) // NOTE: fails with with data
+    SparkBundleUtils.saveModel(s"file:${modelPath.getAbsolutePath}", model, predictions)
     client.logArtifacts(runId, modelPath, "mleap-model/mleap/model") // Make compatible with MLflow Python mlflow.mleap.log_model path
 
     // Log mleap schema file for MLeap runtime deserialization

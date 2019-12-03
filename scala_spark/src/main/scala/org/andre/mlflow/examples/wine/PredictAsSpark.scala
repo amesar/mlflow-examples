@@ -8,7 +8,11 @@ import org.mlflow.tracking.MlflowClient
 import org.andre.mlflow.util.MLflowUtils
 import org.andre.mleap.util.SparkBundleUtils
 
-object PredictWine {
+/**
+Predicts from Spark ML and MLeap models. Reads from artifact `spark-model` and `mleap-model/mleap/model'.
+*/
+
+object PredictAsSpark {
   def main(args: Array[String]) {
     new JCommander(opts, args.toArray: _*)
     println("Options:")

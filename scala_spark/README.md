@@ -57,60 +57,18 @@ mlflowClient.setTerminated(runId, RunStatus.FINISHED, System.currentTimeMillis()
 
 Sample demonstrating:
 *  Trains a model with DecisionTreeRegressor algorithm
-*  Saves the model in Spark ML and MLeap formats
-*  Predicts from Spark ML and MLeap formats
+*  Logs the model in Spark ML and MLeap flavors (MLeap bundle)
+*  Predicts model with Spark ML flavor and MLeap flavor as SparkBundle
+*  Predicts model with MLeap flavor as MLeapBundle (no Spark dependencies)
 
 ### Train
 
-Saves model as Spark ML and MLeap artifact in MLflow.
+Saves model as Spark ML and MLeap artifacts in MLflow.
 
 
 #### Source
 
-Source snippet from [TrainWine.scala](src/main/scala/org/andre/mlflow/examples/wine/TrainWine.scala).
-```
-import org.mlflow.tracking.MlflowClient
-import org.mlflow.api.proto.Service.RunStatus
-
-// Create client
-val mlflowClient = new MlflowClient("http://localhost:5000")
-
-// MLflow - create or get existing experiment
-val expName = "scala/SimpleDecisionTree"
-val expId = MLflowUtils.getOrCreateExperimentId(mlflowClient, expName)
-
-// MLflow - create run
-val runInfo = mlflowClient.createRun(expId);
-val runId = runInfo.getRunUuid()
-
-// MLflow - Log parameters
-mlflowClient.logParameter(runId, "maxDepth",""+dt.getMaxDepth)
-mlflowClient.logParameter(runId, "maxBins",""+dt.getMaxBins)
-
-. . . 
-
-// MLflow - Log metric
-mlflowClient.logMetric(runId, "rmse",rmse.toFloat)
-
-// MLflow - save model as artifact
-//pipeline.save("tmp")
-clf.save("tmp")
-mlflowClient.logArtifacts(runId, new File("tmp"),"model")
-
-// MLflow - save model as Spark ML artifact
-val sparkModelDir = "out/spark_model"
-model.write.overwrite().save(sparkModelDir)
-mlflowClient.logArtifacts(runId, new File(sparkModelDir), "spark_model")
-
-// MLflow - save model as MLeap artifact
-val mleapModelDir = new File("out/mleap_model")
-mleapModelDir.mkdir
-MLeapUtils.save(model, predictions, "file:"+mleapModelDir.getAbsolutePath)
-mlflowClient.logArtifacts(runId, mleapModelDir, "mleap_model")
-
-// MLflow - close run
-mlflowClient.setTerminated(runId, RunStatus.FINISHED, System.currentTimeMillis())
-```
+Source: [TrainWine.scala](src/main/scala/org/andre/mlflow/examples/wine/TrainWine.scala).
 
 ### Run against local Spark and local MLflow tracking server
 
@@ -205,14 +163,17 @@ val runOrigin = "run_from_jar_Notebook"
 TrainWine.train(client, experimentId, modelPath, 5, 32, "my_run", dataPath)
 ```
 
-### Predict
+### Predict as Spark ML and MLeap SparkBundle
+
+Source: [PredictAsSpark.scala](src/main/scala/org/andre/mlflow/examples/wine/PredictAsSpark.scala).
 
 Predicts from Spark ML and MLeap models.
+Reads from artifacts `spark-model` and `mleap-model/mleap/model`.
 
 #### Run
 ```
 spark-submit --master local[2] \
-  --class org.andre.mlflow.examples.PredictWine \
+  --class org.andre.mlflow.examples.PredictAsSpark \
   target/mlflow-spark-examples-1.0-SNAPSHOT.jar \
   --trackingUri http://localhost:5000 \
   --dataPath ../data/wine-quality-white.csv \
@@ -230,13 +191,31 @@ spark-submit --master local[2] \
 +----------+-----+--------------------+
 ```
 
-#### Source
+### Predict as MLeapBundle with no Spark
 
-Source snippet from [PredictWine.scala](src/main/scala/org/andre/mlflow/examples/wine/PredictWine.scala).
+Source: [PredictAsMLeapBundle.scala](src/main/scala/org/andre/mlflow/examples/wine/PredictAsMLeapBundle.scala).
+
+No Spark dependencies involved.
+Reads from artifacts `mleap-model/schema.json` and `mleap-model/mleap/model`.
+
+#### Run
 ```
-val data = spark.read.format("csv").option("header", "true").option("inferSchema", "true").load(dataPath)
-val model = PipelineModel.load(opts.modelPath)
-val predictions = model.transform(data)
-println("Prediction:")
-predictions.select("prediction", "label", "features").show(10,false)
+spark-submit --master local[2] \
+  --class org.andre.mlflow.examples.PredictAsMLeapBundle \
+  target/mlflow-spark-examples-1.0-SNAPSHOT.jar \
+  --trackingUri http://localhost:5000 \
+  --dataPath ../data/wine-quality-white.csv \
+  --runId 3e422c4736a34046a74795384741ac33
 ```
+
+```
++----------+-----+--------------------+
+|prediction|label|            features|
++----------+-----+--------------------+
+|       0.0|  0.0|(692,[127,128,129...|
+|       1.0|  1.0|(692,[158,159,160...|
+|       1.0|  1.0|(692,[124,125,126...|
+|       1.0|  1.0|(692,[152,153,154...|
++----------+-----+--------------------+
+```
+
