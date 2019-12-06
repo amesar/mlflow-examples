@@ -178,22 +178,27 @@ You can make predictions in two ways:
 
 #### 1. Predict with mlflow.sklearn.load_model()
 
+You can use either a `runs` or `models` URI (if you have a registered model with a production stage).
 ```
 python sklearn_predict.py runs:/7e674524514846799310c41f10d6b99d/sklearn-model
+```
 
+```
+python sklearn_predict.py models:/sklearn_registry_test/production
+```
+
+```
 predictions: [5.55109634 5.29772751 5.42757213 5.56288644 5.56288644]
 ```
-From [sklearn_predict.py](sklearn_predict.py):
+
+
+Snippet from [sklearn_predict.py](sklearn_predict.py):
 ```
 model = mlflow.sklearn.load_model(model_uri)
 df = pd.read_csv("../data/wine-quality-white.csv")
-predictions = model.predict(df)
+predictions = model.predict(data)
 ```
 
-If you have a registered model, you can pass a `models` URI as in:
-```
-python sklearn_predict.py models:/wine-sklearn/production-model
-```
 
 #### 2. Predict with mlflow.pyfunc.load_pyfunc()
 
