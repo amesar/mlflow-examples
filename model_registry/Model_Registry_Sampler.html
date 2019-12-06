@@ -13074,19 +13074,6 @@ div#notebook {
   <div tabindex="-1" id="notebook" class="border-box-sizing">
     <div class="container" id="notebook-container">
 
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -13097,9 +13084,9 @@ Works as both a Databricks and Jupyter notebook.</p>
 <li>Starts clean: deletes all runs and the registered model.</li>
 <li>Trains a model 5 times with different hyperparameters.</li>
 <li>Gets the best model run and registers it as <code>production</code>.</li>
-<li>Gets the second two best model runs and registers them as <code>staging</code>.</li>
-<li>Loads the production model and runs predictions.</li>
-<li>Loads the staging model and runs predictions.</li>
+<li>Gets the three next best model runs and registers them as <code>staging</code>.</li>
+<li>Loads the production model and runs predictions - using new <code>models</code> URI</li>
+<li>Loads the staging model and runs predictions - - using new <code>models</code> URI.</li>
 </ul>
 <p><strong>Databricks Issues</strong></p>
 <ul>
@@ -13107,14 +13094,17 @@ Works as both a Databricks and Jupyter notebook.</p>
 <li>ERROR: INVALID_STATE: Model version andre_sklearn_registry_test version 1 has invalid status PENDING_REGISTRATION. Expected status is READY.</li>
 </ul>
 </li>
-<li>After creating versions, registered_model.latest_versions returns no versions</li>
-<li>These issues do not occur when running open source MLflow with Jupyter.</li>
+<li>This issue do not occur when running open source MLflow with Jupyter.</li>
+</ul>
+<p><strong>Github</strong></p>
+<ul>
+<li><a href="https://github.com/amesar/mlflow-examples/blob/master/model_registry/Model_Registry_Sampler.html">https://github.com/amesar/mlflow-examples/blob/master/model_registry/Model_Registry_Sampler.html</a></li>
 </ul>
 <p><strong>Setup</strong></p>
 <ul>
-<li>pip install mlflow==1.4.0</li>
+<li>Use DBR ML 6.2 which comes with MLflow 1.4.0 installed</li>
 </ul>
-<p>Last updated: 2019-11-23</p>
+<p>Last updated: 2019-12-06</p>
 
 </div>
 </div>
@@ -13128,22 +13118,54 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">mlflow</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MLflow Version:&quot;</span><span class="p">,</span><span class="n">mlflow</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">VERSION</span><span class="p">)</span>
+<span class="n">mlflow</span><span class="o">.</span><span class="n">tracking</span><span class="o">.</span><span class="n">get_tracking_uri</span><span class="p">()</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>MLflow Version: 1.4.0
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[1]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#39;file:///Users/ander/git/andre/mlflow-examples/model_registry/mlruns&#39;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
@@ -13155,40 +13177,80 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[2]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>False</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="n">is_databricks</span><span class="p">:</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">mlflow</span><span class="o">.</span><span class="n">tracking</span><span class="o">.</span><span class="n">MlflowClient</span><span class="p">()</span>
     <span class="n">dbutils</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="s2">&quot;Nap Time&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">)</span> 
     <span class="n">naptime</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dbutils</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Nap Time&quot;</span><span class="p">))</span>
-    <span class="n">data_path</span> <span class="o">=</span> <span class="s2">&quot;/dbfs/tmp/mlflow_wine-quality.csv&quot;</span>
-    <span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;andre_sklearn_registry_test&quot;</span>
+    <span class="n">data_path</span> <span class="o">=</span> <span class="s2">&quot;/dbfs/tmp/mlflow/wine-quality.csv&quot;</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;andre_sklearn_registry_sampler&quot;</span>
     <span class="n">experiment_name</span> <span class="o">=</span> <span class="n">dbutils</span><span class="o">.</span><span class="n">notebook</span><span class="o">.</span><span class="n">entry_point</span><span class="o">.</span><span class="n">getDbutils</span><span class="p">()</span><span class="o">.</span><span class="n">notebook</span><span class="p">()</span><span class="o">.</span><span class="n">getContext</span><span class="p">()</span><span class="o">.</span><span class="n">notebookPath</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;experiment_name:&quot;</span><span class="p">,</span><span class="n">experiment_name</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="c1"># run from https://github.com/amesar/mlflow-examples/tree/master/model_registry</span>
     <span class="n">data_path</span> <span class="o">=</span> <span class="s2">&quot;../data/wine-quality-white.csv&quot;</span>
     <span class="n">mlflow</span><span class="o">.</span><span class="n">set_tracking_uri</span><span class="p">(</span><span class="s2">&quot;http://localhost:5000&quot;</span><span class="p">)</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">mlflow</span><span class="o">.</span><span class="n">tracking</span><span class="o">.</span><span class="n">MlflowClient</span><span class="p">()</span>
     <span class="n">naptime</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;my_model&quot;</span>
-    <span class="n">experiment_name</span> <span class="o">=</span> <span class="s2">&quot;sklearn_registry_test&quot;</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;sklearn_registry_sampler&quot;</span>
+    <span class="n">experiment_name</span> <span class="o">=</span> <span class="s2">&quot;sklearn_registry_sampler&quot;</span>
     <span class="n">mlflow</span><span class="o">.</span><span class="n">set_experiment</span><span class="p">(</span><span class="n">experiment_name</span><span class="p">)</span>
 <span class="n">experiment_id</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_experiment_by_name</span><span class="p">(</span><span class="n">experiment_name</span><span class="p">)</span><span class="o">.</span><span class="n">experiment_id</span>
-<span class="n">experiment_id</span><span class="p">,</span><span class="n">experiment_name</span><span class="p">,</span> <span class="n">naptime</span>
+<span class="n">experiment_id</span><span class="p">,</span> <span class="n">experiment_name</span><span class="p">,</span> <span class="n">naptime</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[3]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(&#39;2&#39;, &#39;sklearn_registry_sampler&#39;, 0)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="n">is_databricks</span><span class="p">:</span>
@@ -13204,11 +13266,10 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="n">is_databricks</span><span class="p">:</span>
-    <span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;andre_sklearn_registry_test&quot;</span>
     <span class="n">uri</span> <span class="o">=</span> <span class="s2">&quot;https://</span><span class="si">{}</span><span class="s2">/#mlflow/models/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">host_name</span><span class="p">,</span><span class="n">model_name</span><span class="p">)</span>
     <span class="n">displayHTML</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;&lt;b&gt;Registered Model URI:&lt;/b&gt; &lt;a href=&quot;</span><span class="si">{}</span><span class="s2">&quot;&gt;</span><span class="si">{}</span><span class="s2">&lt;/a&gt;&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span><span class="n">uri</span><span class="p">))</span>
 </pre></div>
@@ -13220,7 +13281,7 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">runs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">list_run_infos</span><span class="p">(</span><span class="n">experiment_id</span><span class="p">)</span>
@@ -13230,6 +13291,24 @@ Works as both a Databricks and Jupyter notebook.</p>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>#runs: 5
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -13243,7 +13322,7 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -13262,7 +13341,7 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
@@ -13280,25 +13359,19 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">max_depth</span><span class="p">,</span> <span class="n">max_leaf_nodes</span><span class="p">):</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">max_depth</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">mlflow</span><span class="o">.</span><span class="n">start_run</span><span class="p">(</span><span class="n">run_name</span><span class="o">=</span><span class="s2">&quot;reg_test&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">run</span><span class="p">:</span>
         <span class="n">run_id</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">run_uuid</span>
-        <span class="n">experiment_id</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">experiment_id</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">DecisionTreeRegressor</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">,</span> <span class="n">max_leaf_nodes</span><span class="o">=</span><span class="n">max_leaf_nodes</span><span class="p">)</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">DecisionTreeRegressor</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">)</span>
         <span class="n">dt</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_x</span><span class="p">,</span> <span class="n">train_y</span><span class="p">)</span>
         <span class="n">predictions</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_x</span><span class="p">)</span>
         <span class="n">mlflow</span><span class="o">.</span><span class="n">log_param</span><span class="p">(</span><span class="s2">&quot;max_depth&quot;</span><span class="p">,</span> <span class="n">max_depth</span><span class="p">)</span>
-        <span class="n">mlflow</span><span class="o">.</span><span class="n">log_param</span><span class="p">(</span><span class="s2">&quot;max_leaf_nodes&quot;</span><span class="p">,</span> <span class="n">max_leaf_nodes</span><span class="p">)</span>
         <span class="n">rmse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">test_y</span><span class="p">,</span> <span class="n">predictions</span><span class="p">))</span>
-        <span class="n">mae</span> <span class="o">=</span> <span class="n">mean_absolute_error</span><span class="p">(</span><span class="n">test_y</span><span class="p">,</span> <span class="n">predictions</span><span class="p">)</span>
-        <span class="n">r2</span> <span class="o">=</span> <span class="n">r2_score</span><span class="p">(</span><span class="n">test_y</span><span class="p">,</span> <span class="n">predictions</span><span class="p">)</span>
         <span class="n">mlflow</span><span class="o">.</span><span class="n">log_metric</span><span class="p">(</span><span class="s2">&quot;rmse&quot;</span><span class="p">,</span> <span class="n">rmse</span><span class="p">)</span>
-        <span class="n">mlflow</span><span class="o">.</span><span class="n">log_metric</span><span class="p">(</span><span class="s2">&quot;r2&quot;</span><span class="p">,</span> <span class="n">r2</span><span class="p">)</span>
-        <span class="n">mlflow</span><span class="o">.</span><span class="n">log_metric</span><span class="p">(</span><span class="s2">&quot;mae&quot;</span><span class="p">,</span> <span class="n">mae</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{experiment_id}</span><span class="s2"> </span><span class="si">{run_id}</span><span class="s2"> {round(r2,3)}&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{experiment_id}</span><span class="s2"> </span><span class="si">{run_id}</span><span class="s2"> {round(rmse,3)}&quot;</span><span class="p">)</span>
         <span class="n">mlflow</span><span class="o">.</span><span class="n">sklearn</span><span class="o">.</span><span class="n">log_model</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="s2">&quot;sklearn-model&quot;</span><span class="p">)</span>
 </pre></div>
 
@@ -13316,32 +13389,37 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="p">(</span>
-<span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span>
-<span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span>
-<span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span>
-<span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span>
-<span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">max_depths</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">16</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">max_depths</span><span class="p">:</span>
+    <span class="n">train</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
-    <span class="n">train</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-</pre></div>
+<div class="output_wrapper">
+<div class="output">
 
-    </div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>2 31609993545b4ccfa714674671a450cb 0.814
+2 66d0de28bf65485db439d1ff5ab2d161 0.779
+2 cb714e90454e4ea689127cde4799bd46 0.753
+2 abdadacf27a64e3b82ff9c3c15679518 0.741
+2 7f65da46d2b84b40814823a657c1c733 0.808
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -13355,7 +13433,7 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">runs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search_runs</span><span class="p">(</span><span class="n">experiment_id</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">order_by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;metrics.rmse asc&quot;</span><span class="p">])</span>
@@ -13367,10 +13445,32 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>0.741 {&#39;max_depth&#39;: &#39;5&#39;}
+0.753 {&#39;max_depth&#39;: &#39;4&#39;}
+0.779 {&#39;max_depth&#39;: &#39;2&#39;}
+0.808 {&#39;max_depth&#39;: &#39;16&#39;}
+0.814 {&#39;max_depth&#39;: &#39;1&#39;}
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">prod_run</span> <span class="o">=</span> <span class="n">runs</span><span class="p">[:</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
@@ -13381,14 +13481,34 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[12]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>0.741</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">staging_runs</span> <span class="o">=</span> <span class="n">runs</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
-<span class="n">none_runs</span> <span class="o">=</span> <span class="n">runs</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">staging_runs</span> <span class="o">=</span> <span class="n">runs</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">none_runs</span> <span class="o">=</span> <span class="n">runs</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span>
 <span class="nb">len</span><span class="p">(</span><span class="n">staging_runs</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">none_runs</span><span class="p">)</span>
 </pre></div>
 
@@ -13396,10 +13516,30 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[13]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(3, 1)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">staging_runs</span><span class="p">:</span>
@@ -13410,10 +13550,30 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>0.753 {&#39;max_depth&#39;: &#39;4&#39;}
+0.779 {&#39;max_depth&#39;: &#39;2&#39;}
+0.808 {&#39;max_depth&#39;: &#39;16&#39;}
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">none_runs</span><span class="p">:</span>
@@ -13421,6 +13581,24 @@ Works as both a Databricks and Jupyter notebook.</p>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>0.814 {&#39;max_depth&#39;: &#39;1&#39;}
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -13434,7 +13612,7 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -13448,10 +13626,28 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Deleting model
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">mlflow.exceptions</span> <span class="k">import</span> <span class="n">MlflowException</span><span class="p">,</span> <span class="n">RestException</span>
@@ -13469,6 +13665,42 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Creating new model
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[17]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(mlflow.entities.model_registry.registered_model_detailed.RegisteredModelDetailed,
+ {&#39;_name&#39;: &#39;sklearn_registry_sampler&#39;,
+  &#39;_creation_time&#39;: 1575667807657,
+  &#39;_last_updated_timestamp&#39;: 1575667807657,
+  &#39;_description&#39;: &#39;&#39;,
+  &#39;_latest_version&#39;: []})</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
@@ -13479,7 +13711,7 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">prod_run</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">artifact_uri</span>
@@ -13489,10 +13721,30 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[18]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#39;/usr/local/opt/mlflow/mlruns/2/abdadacf27a64e3b82ff9c3c15679518/artifacts&#39;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">source</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{prod_run.info.artifact_uri}</span><span class="s2">/sklearn-model&quot;</span>
@@ -13507,34 +13759,77 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">get_latest_versions</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">versions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_latest_versions</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">versions</span><span class="p">),</span><span class="n">versions</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[20]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(0, [])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">registered_model</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_registered_model_details</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
-<span class="n">registered_model</span><span class="o">.</span><span class="n">latest_versions</span>
+<span class="n">versions</span> <span class="o">=</span> <span class="n">registered_model</span><span class="o">.</span><span class="n">latest_versions</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">versions</span><span class="p">),</span><span class="n">versions</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[21]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(1,
+ [&lt;ModelVersionDetailed: creation_timestamp=1575667807691, current_stage=&#39;None&#39;, description=&#39;&#39;, last_updated_timestamp=1575667807691, registered_model=&lt;RegisteredModel: name=&#39;sklearn_registry_sampler&#39;&gt;, run_id=&#39;abdadacf27a64e3b82ff9c3c15679518&#39;, source=&#39;/usr/local/opt/mlflow/mlruns/2/abdadacf27a64e3b82ff9c3c15679518/artifacts/sklearn-model&#39;, status=&#39;READY&#39;, status_message=&#39;&#39;, user_id=&#39;&#39;, version=1&gt;])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">versionDetails</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_model_version_details</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
@@ -13542,6 +13837,36 @@ Works as both a Databricks and Jupyter notebook.</p>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[22]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{&#39;_registered_model&#39;: &lt;RegisteredModel: name=&#39;sklearn_registry_sampler&#39;&gt;,
+ &#39;_version&#39;: 1,
+ &#39;_creation_time&#39;: 1575667807691,
+ &#39;_last_updated_timestamp&#39;: 1575667807691,
+ &#39;_description&#39;: &#39;&#39;,
+ &#39;_user_id&#39;: &#39;&#39;,
+ &#39;_current_stage&#39;: &#39;None&#39;,
+ &#39;_source&#39;: &#39;/usr/local/opt/mlflow/mlruns/2/abdadacf27a64e3b82ff9c3c15679518/artifacts/sklearn-model&#39;,
+ &#39;_run_id&#39;: &#39;abdadacf27a64e3b82ff9c3c15679518&#39;,
+ &#39;_status&#39;: &#39;READY&#39;,
+ &#39;_status_message&#39;: &#39;&#39;}</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -13557,7 +13882,7 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">update_model_version</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="s2">&quot;Production&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;My prod version&quot;</span><span class="p">)</span>
@@ -13570,7 +13895,7 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">get_model_version_stages</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
@@ -13580,10 +13905,30 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[24]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&#39;None&#39;, &#39;Staging&#39;, &#39;Production&#39;, &#39;Archived&#39;]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">get_latest_versions</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
@@ -13593,10 +13938,30 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[25]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;ModelVersionDetailed: creation_timestamp=1575667807691, current_stage=&#39;Production&#39;, description=&#39;My prod version&#39;, last_updated_timestamp=1575667807768, registered_model=&lt;RegisteredModel: name=&#39;sklearn_registry_sampler&#39;&gt;, run_id=&#39;abdadacf27a64e3b82ff9c3c15679518&#39;, source=&#39;/usr/local/opt/mlflow/mlruns/2/abdadacf27a64e3b82ff9c3c15679518/artifacts/sklearn-model&#39;, status=&#39;READY&#39;, status_message=&#39;&#39;, user_id=&#39;&#39;, version=1&gt;]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">versionDetails</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_model_version_details</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
@@ -13604,6 +13969,36 @@ Works as both a Databricks and Jupyter notebook.</p>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[26]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{&#39;_registered_model&#39;: &lt;RegisteredModel: name=&#39;sklearn_registry_sampler&#39;&gt;,
+ &#39;_version&#39;: 1,
+ &#39;_creation_time&#39;: 1575667807691,
+ &#39;_last_updated_timestamp&#39;: 1575667807768,
+ &#39;_description&#39;: &#39;My prod version&#39;,
+ &#39;_user_id&#39;: &#39;&#39;,
+ &#39;_current_stage&#39;: &#39;Production&#39;,
+ &#39;_source&#39;: &#39;/usr/local/opt/mlflow/mlruns/2/abdadacf27a64e3b82ff9c3c15679518/artifacts/sklearn-model&#39;,
+ &#39;_run_id&#39;: &#39;abdadacf27a64e3b82ff9c3c15679518&#39;,
+ &#39;_status&#39;: &#39;READY&#39;,
+ &#39;_status_message&#39;: &#39;&#39;}</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -13617,18 +14012,12 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">staging_runs</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;====&quot;</span><span class="p">)</span>
-    <span class="n">source</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{run.info.artifact_uri}</span><span class="s2">/sklearn-model&quot;</span>
-    <span class="n">version</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">create_model_version</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">run_id</span><span class="p">)</span>
-    <span class="c1">#print(version.__dict__)</span>
-    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">naptime</span><span class="p">)</span>
-    <span class="n">versionDetails</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_model_version_details</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span><span class="n">version</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">versionDetails</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">update_model_version</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">version</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="s2">&quot;Staging&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;My staging version&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">show_versions</span><span class="p">(</span><span class="n">versions</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">versions</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{v.run_id}</span><span class="s2"> </span><span class="si">{v.version}</span><span class="s2"> </span><span class="si">{v.current_stage}</span><span class="s2"> &#39;</span><span class="si">{v.description}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13636,16 +14025,275 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 
 </div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[28]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">run</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">staging_runs</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;==== </span><span class="si">{j}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{run.info.artifact_uri}</span><span class="s2">/sklearn-model&quot;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">create_model_version</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">run</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">run_id</span><span class="p">)</span>
+    <span class="c1">#print(version.__dict__)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">naptime</span><span class="p">)</span>
+    <span class="n">versionDetails</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_model_version_details</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span><span class="n">version</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">versionDetails</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">update_model_version</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">version</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="s2">&quot;Staging&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">f</span><span class="s2">&quot;My staging version </span><span class="si">{j}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>==== 0
+{&#39;_registered_model&#39;: &lt;RegisteredModel: name=&#39;sklearn_registry_sampler&#39;&gt;, &#39;_version&#39;: 2, &#39;_creation_time&#39;: 1575667807850, &#39;_last_updated_timestamp&#39;: 1575667807850, &#39;_description&#39;: &#39;&#39;, &#39;_user_id&#39;: &#39;&#39;, &#39;_current_stage&#39;: &#39;None&#39;, &#39;_source&#39;: &#39;/usr/local/opt/mlflow/mlruns/2/cb714e90454e4ea689127cde4799bd46/artifacts/sklearn-model&#39;, &#39;_run_id&#39;: &#39;cb714e90454e4ea689127cde4799bd46&#39;, &#39;_status&#39;: &#39;READY&#39;, &#39;_status_message&#39;: &#39;&#39;}
+==== 1
+{&#39;_registered_model&#39;: &lt;RegisteredModel: name=&#39;sklearn_registry_sampler&#39;&gt;, &#39;_version&#39;: 3, &#39;_creation_time&#39;: 1575667807888, &#39;_last_updated_timestamp&#39;: 1575667807888, &#39;_description&#39;: &#39;&#39;, &#39;_user_id&#39;: &#39;&#39;, &#39;_current_stage&#39;: &#39;None&#39;, &#39;_source&#39;: &#39;/usr/local/opt/mlflow/mlruns/2/66d0de28bf65485db439d1ff5ab2d161/artifacts/sklearn-model&#39;, &#39;_run_id&#39;: &#39;66d0de28bf65485db439d1ff5ab2d161&#39;, &#39;_status&#39;: &#39;READY&#39;, &#39;_status_message&#39;: &#39;&#39;}
+==== 2
+{&#39;_registered_model&#39;: &lt;RegisteredModel: name=&#39;sklearn_registry_sampler&#39;&gt;, &#39;_version&#39;: 4, &#39;_creation_time&#39;: 1575667807920, &#39;_last_updated_timestamp&#39;: 1575667807920, &#39;_description&#39;: &#39;&#39;, &#39;_user_id&#39;: &#39;&#39;, &#39;_current_stage&#39;: &#39;None&#39;, &#39;_source&#39;: &#39;/usr/local/opt/mlflow/mlruns/2/7f65da46d2b84b40814823a657c1c733/artifacts/sklearn-model&#39;, &#39;_run_id&#39;: &#39;7f65da46d2b84b40814823a657c1c733&#39;, &#39;_status&#39;: &#39;READY&#39;, &#39;_status_message&#39;: &#39;&#39;}
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Search">Search<a class="anchor-link" href="#Search">&#182;</a></h3>
+<h3 id="Manipulate-Versions">Manipulate Versions<a class="anchor-link" href="#Manipulate-Versions">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Update-Version">Update Version<a class="anchor-link" href="#Update-Version">&#182;</a></h4>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">show_versions</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">search_model_versions</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;name=&#39;</span><span class="si">{model_name}</span><span class="s2">&#39;&quot;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>abdadacf27a64e3b82ff9c3c15679518 1 Production &#39;My prod version&#39;
+cb714e90454e4ea689127cde4799bd46 2 Staging &#39;My staging version 0&#39;
+66d0de28bf65485db439d1ff5ab2d161 3 Staging &#39;My staging version 1&#39;
+7f65da46d2b84b40814823a657c1c733 4 Staging &#39;My staging version 2&#39;
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">update_model_version</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">show_versions</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">search_model_versions</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;name=&#39;</span><span class="si">{model_name}</span><span class="s2">&#39;&quot;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>abdadacf27a64e3b82ff9c3c15679518 1 Production &#39;My prod version&#39;
+cb714e90454e4ea689127cde4799bd46 2 Staging &#39;My staging version 0&#39;
+66d0de28bf65485db439d1ff5ab2d161 3 None &#39;My staging version 1&#39;
+7f65da46d2b84b40814823a657c1c733 4 Staging &#39;My staging version 2&#39;
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Delete-Version">Delete Version<a class="anchor-link" href="#Delete-Version">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">delete_model_version</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">show_versions</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">search_model_versions</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;name=&#39;</span><span class="si">{model_name}</span><span class="s2">&#39;&quot;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>abdadacf27a64e3b82ff9c3c15679518 1 Production &#39;My prod version&#39;
+cb714e90454e4ea689127cde4799bd46 2 Staging &#39;My staging version 0&#39;
+7f65da46d2b84b40814823a657c1c733 4 Staging &#39;My staging version 2&#39;
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Execute-version-methods">Execute version methods<a class="anchor-link" href="#Execute-version-methods">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[34]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">versions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search_model_versions</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;name=&#39;</span><span class="si">{model_name}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+<span class="n">show_versions</span><span class="p">(</span><span class="n">versions</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>abdadacf27a64e3b82ff9c3c15679518 1 Production &#39;My prod version&#39;
+cb714e90454e4ea689127cde4799bd46 2 Staging &#39;My staging version 0&#39;
+7f65da46d2b84b40814823a657c1c733 4 Staging &#39;My staging version 2&#39;
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">versions</span> <span class="o">=</span>  <span class="n">client</span><span class="o">.</span><span class="n">get_latest_versions</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+<span class="n">show_versions</span><span class="p">(</span><span class="n">versions</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>abdadacf27a64e3b82ff9c3c15679518 1 Production &#39;My prod version&#39;
+7f65da46d2b84b40814823a657c1c733 4 Staging &#39;My staging version 2&#39;
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[36]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">registered_model</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_registered_model_details</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
@@ -13656,150 +14304,124 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 </div>
 
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h6 id="BUG:-On-Databricks-returns-0,-on-OSS-returns-2-versions.">BUG: On Databricks returns 0, on OSS returns 2 versions.<a class="anchor-link" href="#BUG:-On-Databricks-returns-0,-on-OSS-returns-2-versions.">&#182;</a></h6>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">versions</span> <span class="o">=</span> <span class="n">registered_model</span><span class="o">.</span><span class="n">latest_versions</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">versions</span><span class="p">),</span><span class="n">versions</span>
-</pre></div>
+<div class="output_wrapper">
+<div class="output">
 
-    </div>
-</div>
-</div>
 
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h6 id="OK">OK<a class="anchor-link" href="#OK">&#182;</a></h6>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">versions</span> <span class="o">=</span>  <span class="n">client</span><span class="o">.</span><span class="n">get_latest_versions</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">versions</span><span class="p">),</span><span class="n">versions</span>
-</pre></div>
+<div class="output_area">
 
-    </div>
-</div>
+    <div class="prompt output_prompt">Out[36]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{&#39;_name&#39;: &#39;sklearn_registry_sampler&#39;,
+ &#39;_creation_time&#39;: 1575667807657,
+ &#39;_last_updated_timestamp&#39;: 1575667808000,
+ &#39;_description&#39;: &#39;&#39;,
+ &#39;_latest_version&#39;: [&lt;ModelVersionDetailed: creation_timestamp=1575667807691, current_stage=&#39;Production&#39;, description=&#39;My prod version&#39;, last_updated_timestamp=1575667807768, registered_model=&lt;RegisteredModel: name=&#39;sklearn_registry_sampler&#39;&gt;, run_id=&#39;abdadacf27a64e3b82ff9c3c15679518&#39;, source=&#39;/usr/local/opt/mlflow/mlruns/2/abdadacf27a64e3b82ff9c3c15679518/artifacts/sklearn-model&#39;, status=&#39;READY&#39;, status_message=&#39;&#39;, user_id=&#39;&#39;, version=1&gt;,
+  &lt;ModelVersionDetailed: creation_timestamp=1575667807920, current_stage=&#39;Staging&#39;, description=&#39;My staging version 2&#39;, last_updated_timestamp=1575667807936, registered_model=&lt;RegisteredModel: name=&#39;sklearn_registry_sampler&#39;&gt;, run_id=&#39;7f65da46d2b84b40814823a657c1c733&#39;, source=&#39;/usr/local/opt/mlflow/mlruns/2/7f65da46d2b84b40814823a657c1c733/artifacts/sklearn-model&#39;, status=&#39;READY&#39;, status_message=&#39;&#39;, user_id=&#39;&#39;, version=4&gt;]}</pre>
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h6 id="OK">OK<a class="anchor-link" href="#OK">&#182;</a></h6>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">versions</span> <span class="o">=</span>  <span class="n">client</span><span class="o">.</span><span class="n">get_latest_versions</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">versions</span><span class="p">),</span><span class="n">versions</span>
-</pre></div>
 
-    </div>
 </div>
 </div>
 
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[37]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">versions</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{x.run_id}</span><span class="s2"> </span><span class="si">{x.current_stage}</span><span class="s2"> &#39;</span><span class="si">{x.description}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">show_versions</span><span class="p">(</span><span class="n">registered_model</span><span class="o">.</span><span class="n">latest_versions</span><span class="p">)</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h6 id="OK">OK<a class="anchor-link" href="#OK">&#182;</a></h6>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">versions</span> <span class="o">=</span>  <span class="n">client</span><span class="o">.</span><span class="n">get_latest_versions</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">stages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Production&quot;</span><span class="p">])</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">versions</span><span class="p">),</span><span class="n">versions</span>
-</pre></div>
+<div class="output_wrapper">
+<div class="output">
 
-    </div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>abdadacf27a64e3b82ff9c3c15679518 1 Production &#39;My prod version&#39;
+7f65da46d2b84b40814823a657c1c733 4 Staging &#39;My staging version 2&#39;
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">versions</span> <span class="o">=</span>  <span class="n">client</span><span class="o">.</span><span class="n">get_latest_versions</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">stages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Staging&quot;</span><span class="p">])</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">versions</span><span class="p">),</span><span class="n">versions</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">versions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_latest_versions</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">stages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Production&quot;</span><span class="p">])</span>
+<span class="n">show_versions</span><span class="p">(</span><span class="n">versions</span><span class="p">)</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h6 id="BUG:-On-Databricks-returns-0,-on-OSS--returns-3-versions">BUG: On Databricks returns 0, on OSS  returns 3 versions<a class="anchor-link" href="#BUG:-On-Databricks-returns-0,-on-OSS--returns-3-versions">&#182;</a></h6>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">versions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search_model_versions</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;name=&#39;</span><span class="si">{model_name}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">versions</span><span class="p">),</span><span class="n">versions</span>
-</pre></div>
+<div class="output_wrapper">
+<div class="output">
 
-    </div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>abdadacf27a64e3b82ff9c3c15679518 1 Production &#39;My prod version&#39;
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[39]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">versions</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{x.run_id}</span><span class="s2"> </span><span class="si">{x.current_stage}</span><span class="s2"> &#39;</span><span class="si">{x.description}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">versions</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_latest_versions</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">stages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Staging&quot;</span><span class="p">])</span>
+<span class="n">show_versions</span><span class="p">(</span><span class="n">versions</span><span class="p">)</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>7f65da46d2b84b40814823a657c1c733 4 Staging &#39;My staging version 2&#39;
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -13820,7 +14442,7 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[40]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span> <span class="n">data_predict</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;quality&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -13833,7 +14455,7 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[41]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">model_uri</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;models:/</span><span class="si">{model_name}</span><span class="s2">/production&quot;</span>
@@ -13844,10 +14466,30 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[41]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#39;models:/sklearn_registry_sampler/production&#39;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[42]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">mlflow</span><span class="o">.</span><span class="n">sklearn</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">model_uri</span><span class="p">)</span>
@@ -13858,10 +14500,34 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[42]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>DecisionTreeRegressor(criterion=&#39;mse&#39;, max_depth=5, max_features=None,
+                      max_leaf_nodes=None, min_impurity_decrease=0.0,
+                      min_impurity_split=None, min_samples_leaf=1,
+                      min_samples_split=2, min_weight_fraction_leaf=0.0,
+                      presort=False, random_state=None, splitter=&#39;best&#39;)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[43]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data_predict</span><span class="p">)</span>
@@ -13872,18 +14538,82 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[43]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>5.384615</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>5.384615</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>5.785714</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>5.960674</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5.960674</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Staging-model">Staging model<a class="anchor-link" href="#Staging-model">&#182;</a></h4><p>NOTE: Since there are two staging models, it is not documented which one is returned.</p>
+<h4 id="Staging-model">Staging model<a class="anchor-link" href="#Staging-model">&#182;</a></h4><p>NOTE: Since there are two staging models, apparently the latest one is returned.
+This is not documented.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[44]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">mlflow</span><span class="o">.</span><span class="n">sklearn</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;models:/</span><span class="si">{model_name}</span><span class="s2">/staging&quot;</span><span class="p">)</span>
@@ -13894,10 +14624,34 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[44]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>DecisionTreeRegressor(criterion=&#39;mse&#39;, max_depth=16, max_features=None,
+                      max_leaf_nodes=None, min_impurity_decrease=0.0,
+                      min_impurity_split=None, min_samples_leaf=1,
+                      min_samples_split=2, min_weight_fraction_leaf=0.0,
+                      presort=False, random_state=None, splitter=&#39;best&#39;)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[45]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data_predict</span><span class="p">)</span>
@@ -13905,6 +14659,69 @@ Works as both a Databricks and Jupyter notebook.</p>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[45]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>6.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>6.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>6.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>6.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>6.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -13918,7 +14735,7 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[46]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">indent</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">):</span>
@@ -13941,7 +14758,7 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[47]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">list_registry</span><span class="p">():</span>
@@ -13960,13 +14777,62 @@ Works as both a Databricks and Jupyter notebook.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[48]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">list_registry</span><span class="p">()</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>#register_models: 1
+Registered Model
+   _name - sklearn_registry_sampler
+   _creation_time - 1575667807657
+   _last_updated_timestamp - 1575667808000
+   _description - 
+   _latest_version
+   ModelVersionDetailed:
+       _registered_model - &lt;RegisteredModel: name=&#39;sklearn_registry_sampler&#39;&gt;
+       _version - 1
+       _creation_time - 1575667807691
+       _last_updated_timestamp - 1575667807768
+       _description - My prod version
+       _user_id - 
+       _current_stage - Production
+       _source - /usr/local/opt/mlflow/mlruns/2/abdadacf27a64e3b82ff9c3c15679518/artifacts/sklearn-model
+       _run_id - abdadacf27a64e3b82ff9c3c15679518
+       _status - READY
+       _status_message - 
+   ModelVersionDetailed:
+       _registered_model - &lt;RegisteredModel: name=&#39;sklearn_registry_sampler&#39;&gt;
+       _version - 4
+       _creation_time - 1575667807920
+       _last_updated_timestamp - 1575667807936
+       _description - My staging version 2
+       _user_id - 
+       _current_stage - Staging
+       _source - /usr/local/opt/mlflow/mlruns/2/7f65da46d2b84b40814823a657c1c733/artifacts/sklearn-model
+       _run_id - 7f65da46d2b84b40814823a657c1c733
+       _status - READY
+       _status_message - 
+#register_models: 1
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
