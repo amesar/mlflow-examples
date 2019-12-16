@@ -7,3 +7,4 @@ dependencies:
     - mlflow==1.4.0
     - scikit-learn
     - matplotlib
+    - boto3
