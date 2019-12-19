@@ -22,19 +22,7 @@ class Trainer(object):
         self.experiment_name = experiment_name
         self.data_path = data_path
         self.run_origin = run_origin
-
-        # Read and prepare data
-        data = pd.read_csv(data_path)
-        train, test = train_test_split(data, test_size=0.30, random_state=2019)
-    
-        # The predicted column is "quality" which is a scalar from [3, 9]
-        self.train_x = train.drop([colLabel], axis=1)
-        self.test_x = test.drop([colLabel], axis=1)
-        self.train_y = train[[colLabel]]
-        self.test_y = test[[colLabel]]
-
-        self.X = data.drop([colLabel], axis=1).values
-        self.y = data[[colLabel]].values.ravel()
+        self.X_train, self.X_test, self.y_train, self.y_test = self.build_data(data_path)
 
         # If using 'mlflow run' must use --experiment-id/experiment-name to set experiment since set_experiment() has no take effect
         if self.experiment_name != "none":
@@ -44,6 +32,17 @@ class Trainer(object):
             print("  experiment_id:",experiment_id)
             print("  experiment_name:",experiment_name)
 
+    def build_data(self, data_path):
+        data = pd.read_csv(data_path)
+        train, test = train_test_split(data, test_size=0.30, random_state=2019)
+    
+        # The predicted column is "quality" which is a scalar from [3, 9]
+        X_train = train.drop([colLabel], axis=1)
+        X_test = test.drop([colLabel], axis=1)
+        y_train = train[[colLabel]]
+        y_test = test[[colLabel]]
+
+        return X_train, X_test, y_train, y_test 
 
     def train(self, max_depth, max_leaf_nodes):
         with mlflow.start_run(run_name=self.run_origin) as run:  # NOTE: mlflow CLI ignores run_name
@@ -59,8 +58,8 @@ class Trainer(object):
             print("Model:\n ",dt)
 
             # Fit and predict
-            dt.fit(self.train_x, self.train_y)
-            predictions = dt.predict(self.test_x)
+            dt.fit(self.X_train, self.y_train)
+            predictions = dt.predict(self.X_test)
 
             # MLflow params
             print("Parameters:")
@@ -70,9 +69,9 @@ class Trainer(object):
             mlflow.log_param("max_leaf_nodes", max_leaf_nodes)
 
             # MLflow metrics
-            rmse = np.sqrt(mean_squared_error(self.test_y, predictions))
-            mae = mean_absolute_error(self.test_y, predictions)
-            r2 = r2_score(self.test_y, predictions)
+            rmse = np.sqrt(mean_squared_error(self.y_test, predictions))
+            mae = mean_absolute_error(self.y_test, predictions)
+            r2 = r2_score(self.y_test, predictions)
             print("Metrics:")
             print("  rmse:",rmse)
             print("  mae:",mae)
@@ -92,7 +91,7 @@ class Trainer(object):
     
             # MLflow artifact - plot file
             plot_file = "plot.png"
-            plot_utils.create_plot_file(self.test_y, predictions, plot_file)
+            plot_utils.create_plot_file(self.y_test, predictions, plot_file)
             mlflow.log_artifact(plot_file)
 
         return (experiment_id,run_id)
