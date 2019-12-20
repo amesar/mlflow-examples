@@ -6,6 +6,6 @@ from mleap.pyspark.spark_support import SimpleSparkSerializer
 - So we have to manually construct the bundle URI and directly deserialize it with MLeap methods.
 """
 def load_model(run, artifact_path):
-    bundle_uri = f"file:{run.info.artifact_uri}/" + artifact_path
-    print("bundle_uri:",bundle_uri)
+    bundle_uri = f"file:{run.info.artifact_uri}/{artifact_path}"
+    print("bundle_uri:", bundle_uri)
     return PipelineModel.deserializeFromBundle(bundle_uri)

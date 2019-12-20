@@ -10,13 +10,13 @@ import mlflow.pyfunc
 if __name__ == "__main__":
     model_uri = sys.argv[1]
     path = sys.argv[2] if len(sys.argv) > 2 else "../data/wine-quality-white.csv"
-    print("path:",path)
-    print("model_uri=",model_uri)
+    print("path:", path)
+    print("model_uri:", model_uri)
     print("MLflow Version:", mlflow.version.VERSION)
 
     spark = SparkSession.builder.appName("ServePredictions").getOrCreate()
 
-    data = spark.read.option("inferSchema",True).option("header", True).csv(path) if path.endswith(".csv") \
+    data = spark.read.option("inferSchema",True).option("header",True).csv(path) if path.endswith(".csv") \
     else spark.read.option("multiLine",True).json(path)
 
     if "quality" in data.columns:

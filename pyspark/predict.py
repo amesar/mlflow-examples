@@ -15,7 +15,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):
-        print("  {}: {}".format(arg,getattr(args, arg)))
+        print(f"  {arg}: {getattr(args, arg)}")
 
     spark = SparkSession.builder.appName("Predict").getOrCreate()
     data_path = args.data_path or default_data_path
@@ -26,11 +26,11 @@ if __name__ == "__main__":
     # Predict with Spark ML
     print("Spark ML predictions")
     model_uri = f"runs:/{args.run_id}/spark-model"
-    print("model_uri:",model_uri)
+    print("model_uri:", model_uri)
     model = mlflow.spark.load_model(model_uri)
     predictions = model.transform(data)
     df = predictions.select(colPrediction, colLabel, colFeatures)
-    df.show(5,False)
+    df.show(5, False)
 
     # Predict with MLeap as SparkBundle
     print("MLeap ML predictions")
@@ -39,4 +39,4 @@ if __name__ == "__main__":
     model = mleap_utils.load_model(run, "mleap-model/mleap/model")
     predictions = model.transform(data)
     df = predictions.select(colPrediction, colLabel, colFeatures)
-    df.show(5,False)
+    df.show(5, False)

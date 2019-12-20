@@ -17,7 +17,7 @@ print("MLflow Version:", mlflow.version.VERSION)
 print("Spark Version:", spark.version)
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 
-metrics = ["rmse","r2", "mae"]
+metrics = ["rmse", "r2", "mae"]
 
 def train(data, maxDepth, maxBins, run_id):
     (trainingData, testData) = data.randomSplit([0.7, 0.3], 2019)
@@ -26,10 +26,10 @@ def train(data, maxDepth, maxBins, run_id):
 
     # MLflow - log parameters
     print("Parameters:")
-    print("  maxDepth:",maxDepth)
-    print("  maxBins:",maxBins)
-    mlflow.log_param("maxDepth",maxDepth)
-    mlflow.log_param("maxBins",maxBins)
+    print("  maxDepth:", maxDepth)
+    print("  maxBins:", maxBins)
+    mlflow.log_param("maxDepth", maxDepth)
+    mlflow.log_param("maxBins", maxBins)
 
     # Create pipeline
     dt = DecisionTreeRegressor(labelCol=colLabel, featuresCol=colFeatures, maxDepth=maxDepth, maxBins=maxBins)
@@ -46,7 +46,7 @@ def train(data, maxDepth, maxBins, run_id):
     for metric_name in metrics:
         evaluator = RegressionEvaluator(labelCol=colLabel, predictionCol=colPrediction, metricName=metric_name)
         metric_value = evaluator.evaluate(predictions)
-        print("  {}: {}".format(metric_name,metric_value))
+        print(f"  {metric_name}: {metric_value}")
         mlflow.log_metric(metric_name,metric_value)
 
     # MLflow - log spark model
@@ -59,7 +59,7 @@ def train(data, maxDepth, maxBins, run_id):
     schema_path = "schema.json"
     with open(schema_path, 'w') as f:
         f.write(data.schema.json())
-    print("schema_path:",schema_path)
+    print("schema_path:", schema_path)
     mlflow.log_artifact(schema_path, "mleap-model")
 
 
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):
-        print("  {}: {}".format(arg,getattr(args, arg)))
+        print(f"  {arg}: {getattr(args, arg)}")
 
     client = mlflow.tracking.MlflowClient()
     mlflow.set_experiment(args.experiment_name)
@@ -87,9 +87,9 @@ if __name__ == "__main__":
 
     with mlflow.start_run() as run:
         print("MLflow:")
-        print("  run_id:",run.info.run_id)
-        print("  experiment_id:",run.info.experiment_id)
-        print("  experiment_name:",client.get_experiment(run.info.experiment_id).name)
+        print("  run_id:", run.info.run_id)
+        print("  experiment_id:", run.info.experiment_id)
+        print("  experiment_name:", client.get_experiment(run.info.experiment_id).name)
         mlflow.set_tag("mlflow_version", mlflow.version.VERSION)
         mlflow.set_tag("spark_version", spark.version)
         train(data, args.max_depth, args.max_bins, run.info.run_id)

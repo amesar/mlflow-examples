@@ -1,5 +1,5 @@
-from wine_quality.train import Trainer
 from argparse import ArgumentParser
+from wine_quality.train import Trainer
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -12,5 +12,5 @@ if __name__ == "__main__":
     print("Arguments:")
     for arg in vars(args):
         print(f"  {arg}: {getattr(args, arg)}")
-    trainer = Trainer(args.experiment_name, args.data_path,args.run_origin)
-    trainer.train( args.max_depth, args.max_leaf_nodes)
+    trainer = Trainer(args.experiment_name, args.data_path, args.run_origin)
+    trainer.train(args.max_depth, args.max_leaf_nodes)
