@@ -6,7 +6,7 @@ Scala examples using the MLflow Java client:
 
 ## Setup
 
-* You must install Python MLflow: `pip install mlflow==1.4.0`.
+* You must install Python MLflow: `pip install mlflow==1.5.0`.
 * Install Spark on your machine
 
 ## Build

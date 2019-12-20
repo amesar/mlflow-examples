@@ -28,7 +28,7 @@ python -m venv mlflow-examples
 Install libraries.
 ```
 source $HOME/virtualenvs/mlflow-examples/bin/activate
-pip install mlflow==1.4.0
+pip install mlflow==1.5.0
 pip install sklearn
 pip install matplotlib
 pip install pyarrow

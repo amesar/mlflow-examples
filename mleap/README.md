@@ -4,7 +4,7 @@ Example shows how to download an MLeap model from MLflow and score it with MLeap
 
 ## Setup and Build
 
-* Install Python MLflow library: `pip install mlflow==1.4.0`
+* Install Python MLflow library: `pip install mlflow==1.5.0`
 * Build the jar: `mvn clean package`
 
 ## Assumptions
