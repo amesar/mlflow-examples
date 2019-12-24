@@ -17,7 +17,7 @@ client = mlflow.tracking.MlflowClient()
 
 colLabel = "quality"
 
-class Trainer(object):
+class Trainer():
     def __init__(self, experiment_name, data_path, run_origin="none"):
         self.experiment_name = experiment_name
         self.data_path = data_path
@@ -29,8 +29,8 @@ class Trainer(object):
             mlflow.set_experiment(experiment_name)
             experiment_id = client.get_experiment_by_name(experiment_name).experiment_id
             print("mlflow.set_experiment:")
-            print("  experiment_id:",experiment_id)
-            print("  experiment_name:",experiment_name)
+            print("  experiment_id:", experiment_id)
+            print("  experiment_name:", experiment_name)
 
     def build_data(self, data_path):
         data = pd.read_csv(data_path)
@@ -49,13 +49,13 @@ class Trainer(object):
             run_id = run.info.run_uuid
             experiment_id = run.info.experiment_id
             print("MLflow:")
-            print("  run_id:",run_id)
-            print("  experiment_id:",experiment_id)
-            print("  experiment_name:",client.get_experiment(experiment_id).name)
+            print("  run_id:", run_id)
+            print("  experiment_id:", experiment_id)
+            print("  experiment_name:", client.get_experiment(experiment_id).name)
 
             # Create model
             dt = DecisionTreeRegressor(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)
-            print("Model:\n ",dt)
+            print("Model:\n ", dt)
 
             # Fit and predict
             dt.fit(self.X_train, self.y_train)
@@ -63,8 +63,8 @@ class Trainer(object):
 
             # MLflow params
             print("Parameters:")
-            print("  max_depth:",max_depth)
-            print("  max_leaf_nodes:",max_leaf_nodes)
+            print("  max_depth:", max_depth)
+            print("  max_leaf_nodes:", max_leaf_nodes)
             mlflow.log_param("max_depth", max_depth)
             mlflow.log_param("max_leaf_nodes", max_leaf_nodes)
 
@@ -73,22 +73,22 @@ class Trainer(object):
             mae = mean_absolute_error(self.y_test, predictions)
             r2 = r2_score(self.y_test, predictions)
             print("Metrics:")
-            print("  rmse:",rmse)
-            print("  mae:",mae)
-            print("  r2:",r2)
+            print("  rmse:", rmse)
+            print("  mae:", mae)
+            print("  r2:", r2)
             mlflow.log_metric("rmse", rmse)
             mlflow.log_metric("r2", r2)
             mlflow.log_metric("mae", mae)
             
             # MLflow tags
-            mlflow.set_tag("mlflow.runName",self.run_origin) # mlflow CLI picks this up
+            mlflow.set_tag("mlflow.runName", self.run_origin) # mlflow CLI picks this up
             mlflow.set_tag("data_path", self.data_path)
             mlflow.set_tag("run_origin", self.run_origin)
             mlflow.set_tag("mlflow_version", mlflow.version.VERSION)
 
             # MLflow log model
             mlflow.sklearn.log_model(dt, "sklearn-model")
-    
+
             # MLflow artifact - plot file
             plot_file = "plot.png"
             plot_utils.create_plot_file(self.y_test, predictions, plot_file)
