@@ -8,6 +8,7 @@ dependencies:
     - scikit-learn==0.20.3
     - matplotlib
     - pyarrow
+    - xgboost==0.90
     - jupyter
     - mleap
     - boto3

@@ -4,10 +4,12 @@ Basic MLflow examples.
 
 ## Setup
 
+Use Python 3.7.5
+
 * For Python environment use either:
   * Miniconda with ([conda.yaml](conda.yaml)).
   * Virtual environment with PyPi.
-* Install Spark 2.3.0 on your machine.
+* Install Spark 2.4.2 on your machine.
 
 ### Miniconda
 
@@ -17,22 +19,13 @@ Basic MLflow examples.
 
 ### Virtual Environment
 
-Use Python 3.7.5
-
 Create a virtual environment.
 ```
-cd $HOME/virtualenvs
 python -m venv mlflow-examples
+source mlflow-examples/bin/activate
 ```
 
-Install libraries.
-```
-source $HOME/virtualenvs/mlflow-examples/bin/activate
-pip install mlflow==1.5.0
-pip install sklearn
-pip install matplotlib
-pip install pyarrow
-```
+pip install the libraries in conda.yaml.
 
 ## MLflow Server
 
@@ -86,11 +79,12 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
 * Python examples
   * [hello_world](hello_world) - Hello World - no training or scoring.
   * [sklearn](sklearn) - Scikit learn model - train and score.
+  * [xgboost](xgboost) - XGBoost (sklearn wrapper) model - train and score.
   * [pyspark](pyspark) - Python Spark ML model - train and score.
   * [benchmarks](benchmarks) - Simple performance benchmark.
   * [model_registry](model_registry) - Jupyter notebook sampling the Model Registry API.
 * Scala examples - uses the MLflow Java client.
-  * [hello_world](scala_spark/README.md#hello_world) - Hello World - no training or scoring..
+  * [hello_world](scala_spark/README.md#hello_world) - Hello World - no training or scoring.
   * [scala_spark](scala_spark/) - Scala Spark ML train and score.
   * [mleap](mleap) - Score an MLeap model with MLeap runtime (no Spark dependencies).
 
@@ -100,7 +94,7 @@ Data is in the [data](data) folder.
 
 [wine-quality-white.csv](data/wine-quality-white.csv) contains the training data.
 
-Prediction data:
+Real-time scoring prediction data
 * The prediction files contain the first three records of wine-quality-white.csv. 
 * The format is standard MLflow JSON-serialized Pandas DataFrames split orientation format described [here](https://mlflow.org/docs/latest/models.html#deploy-mlflow-models).
 * Data in [predict-wine-quality.json](data/predict-wine-quality.json) is directly derived from wine-quality-white.csv.
