@@ -4,7 +4,7 @@
 * Keras/TensorFlow train and predict.
 * Saves model as keras flavor.
 * MNIST dataset.
-* Setup: `pip install tensorflow==1.15.0`.
+* Setup: [conda.yaml](conda.yaml).
 
 ## Training
 
