@@ -23,9 +23,7 @@ def build_model():
     model.add(keras.layers.Dense(10, activation='softmax'))
     return model
 
-def train(epochs, batch_size):
-    mlflow.log_param("epochs", epochs)
-    mlflow.log_param("batch_size", batch_size)
+def train(epochs, batch_size, autolog):
 
     x_train, y_train, x_test, y_test = utils.build_data()
     model = build_model()
@@ -38,16 +36,29 @@ def train(epochs, batch_size):
     model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, verbose=0)
 
     test_loss, test_acc = model.evaluate(x_test, y_test)
-
     print("test_acc:", test_acc)
     print("test_loss:", test_loss)
-    mlflow.log_metric("acc", test_acc)
-    mlflow.log_metric("loss", test_loss)
-    mlflow.keras.log_model(model, "keras-model")
 
-    with open("model.yaml", "w") as f:
-        f.write(model.to_yaml())
-    mlflow.log_artifact("model.yaml")
+    if not autolog:
+        mlflow.log_param("epochs", epochs)
+        mlflow.log_param("batch_size", batch_size)
+
+        mlflow.log_metric("test_acc", test_acc)
+        mlflow.log_metric("test_loss", test_loss)
+        mlflow.keras.log_model(model, "keras-model")
+
+        # write model as yaml file
+        with open("model.yaml", "w") as f:
+            f.write(model.to_yaml())
+        mlflow.log_artifact("model.yaml")
+
+        # write model summary
+        summary = []
+        model.summary(print_fn=summary.append)
+        summary = '\n'.join(summary)
+        with open("model_summary.txt", "w") as f:
+            f.write(summary)
+        mlflow.log_artifact("model_summary.txt")
 
     predictions = model.predict_classes(x_test)
     print("predictions:", predictions)
@@ -59,10 +70,16 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", dest="epochs", help="epochs", default=5, type=int)
     parser.add_argument("--batch_size", dest="batch_size", help="batch_size", default=128, type=int)
     parser.add_argument("--repeats", dest="repeats", help="repeats", default=1, type=int)
+
+    parser.add_argument("--autolog", dest="autolog", help="Automatically log params and metrics", default=False, action='store_true')
+
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):
         print(f"  {arg}: {getattr(args, arg)}")
+
+    if args.autolog:
+        mlflow.keras.autolog()
 
     mlflow.set_experiment(args.experiment_name)
     for i in range(0,args.repeats):
@@ -74,4 +91,5 @@ if __name__ == "__main__":
             mlflow.set_tag("mlflow_version", mlflow.version.VERSION)
             mlflow.set_tag("keras_version", keras.__version__)
             mlflow.set_tag("tensorflow_version", tf.__version__)
-            train(args.epochs, args.batch_size)
+            mlflow.set_tag("autolog", args.autolog)
+            train(args.epochs, args.batch_size, args.autolog)
