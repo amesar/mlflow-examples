@@ -4,7 +4,7 @@
 * Keras/TensorFlow train and predict.
 * Saves model as keras flavor.
 * MNIST dataset.
-* Option to [autlog](https://mlflow.org/docs/latest/python_api/mlflow.keras.html#mlflow.keras.autolog) parameters and metrics.
+* Option to [autolog](https://mlflow.org/docs/latest/python_api/mlflow.keras.html#mlflow.keras.autolog) parameters and metrics.
 * Setup: [conda.yaml](conda.yaml).
 
 ## Training

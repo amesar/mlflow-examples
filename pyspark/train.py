@@ -36,7 +36,7 @@ def train(data, maxDepth, maxBins, run_id):
     assembler = VectorAssembler(inputCols=data.columns[:-1], outputCol=colFeatures)
     pipeline = Pipeline(stages=[assembler, dt])
     
-    # Fit model and predic
+    # Fit model and predict
     model = pipeline.fit(trainingData)
     predictions = model.transform(testData)
 

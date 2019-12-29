@@ -19,7 +19,7 @@ python predict.py runs:/7e674524514846799310c41f10d6b99d/xgboost-model
 ```
 
 ```
-python xgboost_predict.py models:/xgboost_wine/production
+python predict.py models:/xgboost_wine/production
 ```
 
 ```
