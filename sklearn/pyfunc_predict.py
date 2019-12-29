@@ -1,4 +1,4 @@
-# Serve predictions with mlflow.pyfunc.load_pyfunc()
+# Serve predictions with mlflow.pyfunc.load_model()
 
 import sys
 import mlflow
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     print("model_uri:", model_uri)
 
     client = mlflow.tracking.MlflowClient()
-    model = mlflow.pyfunc.load_pyfunc(model_uri)
+    model = mlflow.pyfunc.load_model(model_uri)
     print("model:", model)
 
     data = utils.read_prediction_data(data_path)

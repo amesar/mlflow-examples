@@ -169,7 +169,7 @@ trainer.train(0.4, 0.4)
 You can make predictions in two ways:
 * Batch predictions - direct calls to retrieve the model and score large files.
   * mlflow.sklearn.load_model()
-  * mlflow.pyfunc.load_pyfunc()
+  * mlflow.pyfunc.load_model()
   * Spark UDF
 * Real-time predictions - use MLflow's scoring server to score individual requests.
 
@@ -200,7 +200,7 @@ predictions = model.predict(data)
 ```
 
 
-#### 2. Predict with mlflow.pyfunc.load_pyfunc()
+#### 2. Predict with mlflow.pyfunc.load_model()
 
 ```
 python pyfunc_predict.py runs:/7e674524514846799310c41f10d6b99d/sklearn-model
@@ -214,7 +214,7 @@ From [pyfunc_predict.py](pyfunc_predict.py):
 data_path = "../data/wine-quality-white.csv"
 data = util.read_prediction_data(data_path)
 model_uri = client.get_run(run_id).info.artifact_uri + "/sklearn-model"
-model = mlflow.pyfunc.load_pyfunc(model_uri)
+model = mlflow.pyfunc.load_model(model_uri)
 predictions = model.predict(data)
 
 ```
