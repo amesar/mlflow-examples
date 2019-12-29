@@ -53,12 +53,13 @@ def train(data, maxDepth, maxBins, run_id):
     mlflow.spark.log_model(model, "spark-model")
 
     # MLflow - log mleap model
-    mlflow.mleap.log_model(spark_model=model, sample_input=testData, artifact_path="mleap-model")
+    mleapData = testData.drop("quality")
+    mlflow.mleap.log_model(spark_model=model, sample_input=mleapData, artifact_path="mleap-model")
 
     # Log mleap schema file for MLeap runtime deserialization
     schema_path = "schema.json"
     with open(schema_path, 'w') as f:
-        f.write(data.schema.json())
+        f.write(mleapData.schema.json())
     print("schema_path:", schema_path)
     mlflow.log_artifact(schema_path, "mleap-model")
 
