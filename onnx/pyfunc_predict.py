@@ -5,11 +5,12 @@ import mlflow
 import mlflow.pyfunc
 import utils
 
+print("MLflow Version:", mlflow.version.VERSION)
+
 if __name__ == "__main__":
     if len(sys.argv) < 1:
         print("ERROR: Expecting MODEL_URI PREDICTION_FILE")
         sys.exit(1)
-    print("MLflow Version:", mlflow.version.VERSION)
     model_uri = sys.argv[1]
     data_path = sys.argv[2] if len(sys.argv) > 2 else "../data/wine-quality-white.csv"
     print("data_path:", data_path)

@@ -6,10 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
 import mlflow
 import mlflow.sklearn
-import mlflow.onnx
-import onnx
-from skl2onnx import convert_sklearn
-from skl2onnx.common.data_types import FloatTensorType
+import onnx_utils
 
 print("MLflow Version:", mlflow.version.VERSION)
 print("MLflow Tracking URI:", mlflow.get_tracking_uri())
@@ -66,15 +63,12 @@ def train(data_path, max_depth, max_leaf_nodes):
         # MLflow tags
         mlflow.set_tag("data_path", data_path)
         mlflow.set_tag("mlflow_version", mlflow.version.VERSION)
-        mlflow.set_tag("onnx_version", onnx.__version__)
 
         # MLflow log skearn model
         mlflow.sklearn.log_model(dt, "sklearn-model")
 
         # Convert sklearn model to ONNX and log model
-        initial_type = [('float_input', FloatTensorType([None, X_test.shape[0]]))]
-        onnx_model = convert_sklearn(dt, initial_types=initial_type)
-        print("onnx_model.type:",type(onnx_model))
+        onnx_model = onnx_utils.convert_to_onnx(dt, X_test)
         mlflow.onnx.log_model(onnx_model, "onnx-model")
 
 
