@@ -2,6 +2,7 @@ import sys
 import time
 import json
 import requests
+import statistics
 from argparse import ArgumentParser
 import common
 
@@ -34,9 +35,15 @@ if __name__ == "__main__":
         durations.append(dur)
 
     total = sum(durations)
+    mean = statistics.mean(durations)
+    stdev = statistics.stdev(durations)
+    rsd = stdev / mean * 100 # relative stdev
+
     print("Results (seconds):")
-    print("  mean:   ", round(total/len(durations),3))
+    print("  mean:   ", round(mean,3))
     print("  max:    ", round(max(durations),3))
     print("  min:    ", round(min(durations),3))
-    print("  total:  ",round(total,3))
+    print("  std:    ", round(stdev,3))
+    print("  rsd:    ", round(rsd,2))
+    print("  total:  ", round(total,3))
     print("  records:",len(records))
