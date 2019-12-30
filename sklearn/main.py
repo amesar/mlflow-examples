@@ -8,9 +8,10 @@ if __name__ == "__main__":
     parser.add_argument("--max_depth", dest="max_depth", help="max_depth", default=None, type=int)
     parser.add_argument("--max_leaf_nodes", dest="max_leaf_nodes", help="max_leaf_nodes", default=None, type=int)
     parser.add_argument("--run_origin", dest="run_origin", help="run_origin", default="none")
+    parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX flavor", default=False, action='store_true')
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):
         print(f"  {arg}: {getattr(args, arg)}")
-    trainer = Trainer(args.experiment_name, args.data_path, args.run_origin)
+    trainer = Trainer(args.experiment_name, args.data_path, args.log_as_onnx, args.run_origin)
     trainer.train(args.max_depth, args.max_leaf_nodes)

@@ -18,10 +18,11 @@ client = mlflow.tracking.MlflowClient()
 colLabel = "quality"
 
 class Trainer():
-    def __init__(self, experiment_name, data_path, run_origin="none"):
+    def __init__(self, experiment_name, data_path, log_as_onnx, run_origin="none"):
         self.experiment_name = experiment_name
         self.data_path = data_path
         self.run_origin = run_origin
+        self.log_as_onnx = log_as_onnx
         self.X_train, self.X_test, self.y_train, self.y_test = self.build_data(data_path)
 
         # If using 'mlflow run' must use --experiment-id/experiment-name to set experiment since set_experiment() has no take effect
@@ -89,9 +90,16 @@ class Trainer():
             # MLflow log model
             mlflow.sklearn.log_model(dt, "sklearn-model")
 
+            # Convert sklearn model to ONNX and log model
+            if self.log_as_onnx:
+                from wine_quality import onnx_utils
+                onnx_model = onnx_utils.convert_to_onnx(dt, self.X_test)
+                mlflow.onnx.log_model(onnx_model, "onnx-model")
+
             # MLflow artifact - plot file
             plot_file = "plot.png"
             plot_utils.create_plot_file(self.y_test, predictions, plot_file)
             mlflow.log_artifact(plot_file)
+
 
         return (experiment_id,run_id)
