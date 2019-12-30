@@ -4,7 +4,7 @@
 
 * PySpark Spark ML Decision Tree Classification example
 * Saves model in SparkML and MLeap format
-* Source: [train.py](train.py) and [predict.py](predict.py)
+* Source: [train.py](train.py) and [spark_predict.py](spark_predict.py)
 * Experiment name: pypark
 * Data: [../data/wine-quality-white.csv](../data/wine-quality-white.csv)
 
@@ -48,11 +48,13 @@ You can make predictions in two ways:
 
 ### Batch Predictions
 
-See [predict.py](predict.py).
+#### Predict as Spark flavor
+
+See [spark_predict.py](spark_predict.py).
 
 ```
-run_id=7b951173284249f7a3b27746450ac7b0
-spark-submit --master local[2] predict.py $run_id
+spark-submit --master local[2] spark_predict.py \
+  runs:/7b951173284249f7a3b27746450ac7b0/spark-model
 ```
 
 ```
@@ -72,6 +74,22 @@ model_uri: runs:/ffd36a96dd204ac38a58a00c94390649/mleap-model
 MLeap ML predictions
 +-----------------+-------+--------------------------------------------------------+
 . . . 
+```
+
+#### Predict as Pyfunc flavor
+
+See [pyfunc_predict.py](pyfunc_predict.py).
+
+```
+spark-submit --master local[2] pyfunc_predict.py \
+  runs:/7b951173284249f7a3b27746450ac7b0/spark-model
+```
+
+```
+model: <mlflow.spark._PyFuncModelWrapper object at 0x115f30b70>
+data.shape: (4898, 12)
+predictions: [5.470588235294118, 5.470588235294118, 5.769607843137255, 5.877049180327869, 5.877049180327869]
+predictions.len: 4898
 ```
 
 ### Real-time Predictions
