@@ -1,0 +1,7 @@
+version: '3.0'
+services:
+  mlflow:
+    build:
+      dockerfile: Dockerfile-mlflow-local
+    volumes:
+     - ${MLFLOW_ARTIFACT_URI}:${MLFLOW_ARTIFACT_URI}

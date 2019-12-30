@@ -1,0 +1,12 @@
+FROM python:3.7
+  
+RUN apt-get update
+RUN pip install mlflow
+RUN pip install mysqlclient
+RUN pip install boto3
+
+RUN mkdir -p /home/mlflow
+COPY src/run_server.sh /home/mlflow
+WORKDIR /home/mlflow
+
+ENTRYPOINT cd /home/mlflow ; ./run_server.sh 

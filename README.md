@@ -76,19 +76,24 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
 ```
 
 ### Samples
-* Python examples
-  * [hello_world](hello_world) - Hello World - no training or scoring.
-  * [sklearn](sklearn) - Scikit-learn model - train and score.
-  * [pyspark](pyspark) - Python Spark ML model - train and score.
-  * [keras](keras) - Keras/Tensorflow - train and score.
-  * [xgboost](xgboost) - XGBoost (sklearn wrapper) model - train and score.
-  * [onnx](onnx) - Convert sklearn model to ONNX flavor - train and score.
-  * [model_registry](model_registry) - Jupyter notebook sampling the Model Registry API.
-  * [benchmarks](benchmarks) - Simple scoring server performance benchmark.
-* Scala examples - uses the MLflow Java client.
-  * [hello_world](scala_spark/README.md#hello_world) - Hello World - no training or scoring.
-  * [scala_spark](scala_spark/) - Scala Spark ML train and score.
-  * [mleap](mleap) - Score an MLeap model with MLeap runtime (no Spark dependencies).
+
+Python examples
+* [hello_world](hello_world) - Hello World - no training or scoring.
+* [sklearn](sklearn) - Scikit-learn model - train and score.
+* [pyspark](pyspark) - Python Spark ML model - train and score.
+* [keras](keras) - Keras/Tensorflow - train and score.
+* [xgboost](xgboost) - XGBoost (sklearn wrapper) model - train and score.
+* [onnx](onnx) - Convert sklearn model to ONNX flavor - train and score.
+* [model_registry](model_registry) - Jupyter notebook sampling the Model Registry API.
+* [benchmarks](benchmarks) - Simple scoring server performance benchmark.
+
+Scala examples - uses the MLflow Java client
+* [hello_world](scala_spark/README.md#hello_world) - Hello World - no training or scoring.
+* [scala_spark](scala_spark/) - Scala Spark ML train and score.
+* [mleap](mleap) - Score an MLeap model with MLeap runtime (no Spark dependencies).
+
+Other
+* [docker](docker) - MLflow tracking server and MySQL database containers.
 
 ## Data
 
