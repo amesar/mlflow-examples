@@ -19,4 +19,5 @@ if __name__ == "__main__":
     data = pd.DataFrame(ndarray)
     predictions = model.predict(data)
     print("predictions.type:", type(predictions))
+    print("predictions.shape:", predictions.shape)
     print("predictions:", predictions)
