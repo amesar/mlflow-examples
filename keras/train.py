@@ -1,7 +1,3 @@
-"""
-Adapted from: https://github.com/fchollet/deep-learning-with-python-notebooks/blob/master/2.1-a-first-look-at-a-neural-network.ipynb
-"""
-
 import numpy as np
 import tensorflow as tf
 import keras
@@ -23,8 +19,7 @@ def build_model():
     model.add(keras.layers.Dense(10, activation='softmax'))
     return model
 
-def train(epochs, batch_size, autolog):
-
+def train(epochs, batch_size, autolog, log_as_onnx):
     x_train, y_train, x_test, y_test = utils.build_data()
     model = build_model()
 
@@ -60,6 +55,11 @@ def train(epochs, batch_size, autolog):
             f.write(summary)
         mlflow.log_artifact("model_summary.txt")
 
+        # MLflow - log onnx model
+        if log_as_onnx:
+            import onnx_utils
+            onnx_utils.log_model(model, "onnx-model")
+
     predictions = model.predict_classes(x_test)
     print("predictions:", predictions)
 
@@ -70,8 +70,8 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", dest="epochs", help="epochs", default=5, type=int)
     parser.add_argument("--batch_size", dest="batch_size", help="batch_size", default=128, type=int)
     parser.add_argument("--repeats", dest="repeats", help="repeats", default=1, type=int)
-
     parser.add_argument("--autolog", dest="autolog", help="Automatically log params and metrics", default=False, action='store_true')
+    parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX flavor", default=False, action='store_true')
 
     args = parser.parse_args()
     print("Arguments:")
@@ -92,4 +92,4 @@ if __name__ == "__main__":
             mlflow.set_tag("keras_version", keras.__version__)
             mlflow.set_tag("tensorflow_version", tf.__version__)
             mlflow.set_tag("autolog", args.autolog)
-            train(args.epochs, args.batch_size, args.autolog)
+            train(args.epochs, args.batch_size, args.autolog, args.log_as_onnx)

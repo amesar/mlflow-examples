@@ -5,6 +5,7 @@
 * Saves model as keras flavor.
 * MNIST dataset.
 * Option to [autolog](https://mlflow.org/docs/latest/python_api/mlflow.keras.html#mlflow.keras.autolog) parameters and metrics.
+* Option to log and score model as ONNX.
 * Setup: [conda.yaml](conda.yaml).
 
 ## Training
@@ -17,7 +18,7 @@ python main.py --experiment_name keras_mnist --epochs 3 --batch_size 128
 ```
 
 ### Autologging
-To run with autologging an no user logging. 
+To run with autologging and no user logging. 
 ```
 python main.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --autolog
 ```
@@ -50,28 +51,34 @@ workers
 
 ```
 
-## Predictions
+## Scoring
 
-#### Predict as Keras flavor
+### Score as Keras flavor
 
 Source: [keras_predict.py](keras_predict.py).
 ```
-python keras_predict.py runs:/7e674524514846799310c41f10d6b99d/keras-model
+python keras_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/keras-model
 ```
 
 ```
+predictions.type: <class 'numpy.ndarray'>
+predictions.shape: (10000,)
 predictions: [7 2 1 ... 4 5 6]
 ```
 
-#### Predict as Pyfunc flavor
+### Score as Pyfunc flavor
 
 Source: [pyfunc_predict.py](pyfunc_predict.py).
+
+#### Score Keras model with Pyfunc 
+
 ```
-python pyfunc_predict.py runs:/7e674524514846799310c41f10d6b99d/pyfunc-model
+python pyfunc_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/keras-model
 ```
 
 ```
 predictions.type: <class 'pandas.core.frame.DataFrame'>
+predictions.shape: (10000, 10)
 
 predictions:                  0             1  ...             8             9
 0     7.356894e-07  2.184515e-09  ...  2.648242e-07  1.557131e-05
@@ -79,5 +86,38 @@ predictions:                  0             1  ...             8             9
 ...            ...           ...  ...           ...           ...
 9998  5.653655e-08  3.749759e-09  ...  1.073899e-04  1.215128e-09
 9999  2.790610e-08  2.516971e-11  ...  6.860461e-10  2.355604e-10
+```
 
+#### Score ONNX model with Pyfunc 
+
+```
+python pyfunc_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/onnx-model
+```
+```
+predictions.type: <class 'pandas.core.frame.DataFrame'>
+predictions.shape: (100000, 1)
+predictions:             dense_2
+0      7.529760e-07
+1      3.086328e-09
+...             ...
+99998  9.314070e-10
+99999  2.785560e-10
+```
+
+
+### Score as ONNX flavor
+
+Source: [onnx_predict.py](onnx_predict.py) and [onnx_utils.py](onnx_utils.py).
+```
+python onnx_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/onnx-model
+```
+```
+predictions.type: <class 'numpy.ndarray'>
+predictions.shape: (10000, 10)
+predictions: 
+[[7.5297595e-07 3.0863279e-09 2.5705955e-04 ... 9.9953580e-01 3.5329055e-07 1.3658248e-05]
+ [3.7254765e-08 8.8118195e-06 9.9951375e-01 ... 2.6982589e-12 9.4671401e-07 2.8832321e-12]
+ ...
+ [8.6566203e-08 6.8279524e-09 1.0189680e-08 ... 1.5083194e-09 2.0773137e-04 1.7879515e-09]
+ [3.8302844e-08 1.6128991e-11 1.1180904e-05 ... 4.9651490e-12 9.3140695e-10 2.7855604e-10]]
 ```
