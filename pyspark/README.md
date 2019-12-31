@@ -56,29 +56,29 @@ See [spark_predict.py](spark_predict.py).
 
 ```
 spark-submit --master local[2] spark_predict.py \
-  _id7b951173284249f7a3b27746450ac7b0
+  --run_id ffd36a96dd204ac38a58a00c94390649
 ```
 
 ```
+model_uri: runs:/ffd36a96dd204ac38a58a00c94390649/spark-model
 Spark ML predictions
 +-----------------+-------+--------------------------------------------------------+
 |prediction       |quality|features                                                |
 +-----------------+-------+--------------------------------------------------------+
 |5.470588235294118|6      |[7.0,0.27,0.36,20.7,0.045,45.0,170.0,1.001,3.0,0.45,8.8]|
 |5.470588235294118|6      |[6.3,0.3,0.34,1.6,0.049,14.0,132.0,0.994,3.3,0.49,9.5]  |
-|5.769607843137255|6      |[8.1,0.28,0.4,6.9,0.05,30.0,97.0,0.9951,3.26,0.44,10.1] |
-|5.877049180327869|6      |[7.2,0.23,0.32,8.5,0.058,47.0,186.0,0.9956,3.19,0.4,9.9]|
-|5.877049180327869|6      |[7.2,0.23,0.32,8.5,0.058,47.0,186.0,0.9956,3.19,0.4,9.9]|
+. . .
 +-----------------+-------+--------------------------------------------------------+
-only showing top 5 rows
 
 model_uri: runs:/ffd36a96dd204ac38a58a00c94390649/mleap-model
-MLeap ML predictions
+MLeap predictions
 +-----------------+-------+--------------------------------------------------------+
 |prediction       |quality|features                                                |
 +-----------------+-------+--------------------------------------------------------+
 |5.470588235294118|6      |[7.0,0.27,0.36,20.7,0.045,45.0,170.0,1.001,3.0,0.45,8.8]|
+|5.470588235294118|6      |[6.3,0.3,0.34,1.6,0.049,14.0,132.0,0.994,3.3,0.49,9.5]  |
 . . .
++-----------------+-------+--------------------------------------------------------+
 ```
 
 #### Predict as Pyfunc/Spark flavor
@@ -87,7 +87,7 @@ See [pyfunc_predict.py](pyfunc_predict.py).
 
 ```
 spark-submit --master local[2] pyfunc_predict.py \
-  runs:/7b951173284249f7a3b27746450ac7b0/spark-model
+  --model_uri runs:/ffd36a96dd204ac38a58a00c94390649/spark-model
 ```
 
 ```
@@ -101,7 +101,7 @@ predictions.len: 4898
 
 ```
 python pyfunc_predict.py \
-  runs:/7b951173284249f7a3b27746450ac7b0/onnx-model
+  --model_uri runs:/ffd36a96dd204ac38a58a00c94390649/onnx-model
 ```
 Fails. Apparently the ONNX pyfunc code doesn't support columns with spaces.
 ```
@@ -119,7 +119,7 @@ See [onnx_predict.py](onnx_predict.py).
 
 ```
 python onnx_predict.py \
-  --model_uri runs:/7b951173284249f7a3b27746450ac7b0/spark-model
+  --model_uri runs:/ffd36a96dd204ac38a58a00c94390649/spark-model
 ```
 ```
 model.type: <class 'onnx.onnx_ONNX_REL_1_4_ml_pb2.ModelProto'>

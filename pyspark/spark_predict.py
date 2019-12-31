@@ -10,7 +10,7 @@ print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--run_id", dest="run_id", help="run_id", required=True)
+    parser.add_argument("--run_id", dest="run_id", help="Run ID", required=True)
     parser.add_argument("--data_path", dest="data_path", help="data_path", required=False)
     args = parser.parse_args()
     print("Arguments:")
@@ -28,15 +28,19 @@ if __name__ == "__main__":
     model_uri = f"runs:/{args.run_id}/spark-model"
     print("model_uri:", model_uri)
     model = mlflow.spark.load_model(model_uri)
+    print("model.type:", type(model))
     predictions = model.transform(data)
+    print("predictions.type:", type(predictions))
     df = predictions.select(colPrediction, colLabel, colFeatures)
     df.show(5, False)
 
     # Predict with MLeap as SparkBundle
-    print("MLeap ML predictions")
+    print("MLeap predictions")
     client = mlflow.tracking.MlflowClient()
     run = client.get_run(args.run_id)
     model = mleap_utils.load_model(run, "mleap-model/mleap/model")
+    print("model.type:", type(model))
     predictions = model.transform(data)
+    print("predictions.type:", type(predictions))
     df = predictions.select(colPrediction, colLabel, colFeatures)
     df.show(5, False)
