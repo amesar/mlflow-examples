@@ -3,12 +3,14 @@
 ## Overview
 
 * PySpark Spark ML Decision Tree Classification example
-* Saves model in SparkML and MLeap format
-* Source: [train.py](train.py) and [spark_predict.py](spark_predict.py)
-* Experiment name: pypark
+* Saves model in SparkML and MLeap flavors - optionally also ONNX flavor.
+* Demonstrates both batch and real-time scoring.
 * Data: [../data/wine-quality-white.csv](../data/wine-quality-white.csv)
 
 ## Train
+
+Two model artifacts are created: `spark-model` and `mleap-model`. 
+To create an `onnx-model` pass the `--log_as_onnx` option.
 
 ### Unmanaged without mlflow run
 
@@ -48,13 +50,13 @@ You can make predictions in two ways:
 
 ### Batch Predictions
 
-#### Predict as Spark flavor
+#### Predict as Spark and MLeap flavors
 
 See [spark_predict.py](spark_predict.py).
 
 ```
 spark-submit --master local[2] spark_predict.py \
-  runs:/7b951173284249f7a3b27746450ac7b0/spark-model
+  _id7b951173284249f7a3b27746450ac7b0
 ```
 
 ```
@@ -73,10 +75,13 @@ only showing top 5 rows
 model_uri: runs:/ffd36a96dd204ac38a58a00c94390649/mleap-model
 MLeap ML predictions
 +-----------------+-------+--------------------------------------------------------+
-. . . 
+|prediction       |quality|features                                                |
++-----------------+-------+--------------------------------------------------------+
+|5.470588235294118|6      |[7.0,0.27,0.36,20.7,0.045,45.0,170.0,1.001,3.0,0.45,8.8]|
+. . .
 ```
 
-#### Predict as Pyfunc flavor
+#### Predict as Pyfunc/Spark flavor
 
 See [pyfunc_predict.py](pyfunc_predict.py).
 
@@ -90,6 +95,42 @@ model: <mlflow.spark._PyFuncModelWrapper object at 0x115f30b70>
 data.shape: (4898, 12)
 predictions: [5.470588235294118, 5.470588235294118, 5.769607843137255, 5.877049180327869, 5.877049180327869]
 predictions.len: 4898
+```
+
+#### Predict as Pyfunc/ONNX flavor
+
+```
+python pyfunc_predict.py \
+  runs:/7b951173284249f7a3b27746450ac7b0/onnx-model
+```
+Fails. Apparently the ONNX pyfunc code doesn't support columns with spaces.
+```
+KeyError: 'fixed_acidity'
+```
+If we change the spaces to underscores, we get another error.
+```
+RuntimeError: Method run failed due to: [ONNXRuntimeError] : 1 : GENERAL ERROR : /Users/vsts/agent/2.148.0/work/1/s/onnxruntime/core/providers/common.h:18 int64_t onnxruntime::HandleNegativeAxis(int64_t, int64_t) axis >= -tensor_rank && axis <= tensor_rank - 1 was false. axis 1 is not in valid range [-1,0]
+```
+
+#### Predict as ONNX flavor
+
+Scores directly with ONNX runtime - no Spark needed.
+See [onnx_predict.py](onnx_predict.py). 
+
+```
+python onnx_predict.py \
+  --model_uri runs:/7b951173284249f7a3b27746450ac7b0/spark-model
+```
+```
+model.type: <class 'onnx.onnx_ONNX_REL_1_4_ml_pb2.ModelProto'>
+predictions.type: <class 'numpy.ndarray'>
+predictions.shape: (4898, 1)
+predictions: [
+ [5.470588 ]
+ [5.470588 ]
+ ...
+ [6.75     ]
+ [6.25     ]]
 ```
 
 ### Real-time Predictions
