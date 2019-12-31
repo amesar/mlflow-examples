@@ -17,6 +17,11 @@ To run with user logging (no autologging).
 python main.py --experiment_name keras_mnist --epochs 3 --batch_size 128
 ```
 
+To log a model as ONNX flavor under the artifact path `onnx-model`.
+```
+python main.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --log_as_onnx
+```
+
 ### Autologging
 To run with autologging and no user logging. 
 ```
