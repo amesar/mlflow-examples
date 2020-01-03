@@ -15,11 +15,12 @@ if __name__ == "__main__":
     for arg in vars(args):
         print(f"  {arg}: {getattr(args, arg)}")
 
-    model = mlflow.pyfunc.load_pyfunc(args.model_uri)
+    model = mlflow.pyfunc.load_model(args.model_uri)
     print("model:", model)
 
     _,_,ndarray,_  = utils.build_data()
     data = pd.DataFrame(ndarray)
+    print("data.shape:", data.shape)
 
     predictions = model.predict(data)
     print("predictions.type:", type(predictions))

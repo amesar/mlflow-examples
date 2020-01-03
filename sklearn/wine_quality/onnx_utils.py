@@ -6,11 +6,12 @@ import onnxruntime as rt
 from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import FloatTensorType
 
-def convert_to_onnx(model, data):
+def log_model(model, artifact_path, data):
     initial_type = [('float_input', FloatTensorType([None, data.shape[0]]))]
     onnx_model = convert_sklearn(model, initial_types=initial_type)
     print("onnx_model.type:",type(onnx_model))
     mlflow.set_tag("onnx_version",onnx.__version__)
+    mlflow.onnx.log_model(onnx_model, artifact_path)
     return onnx_model
 
 def score(model, data_ndarray):

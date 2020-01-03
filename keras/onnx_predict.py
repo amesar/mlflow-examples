@@ -19,7 +19,7 @@ if __name__ == "__main__":
     model = mlflow.onnx.load_model(args.model_uri)
     print("model.type:", type(model))
 
-    predictions = onnx_utils.score(model, data)
+    predictions = onnx_utils.score_model(model, data)
     print("predictions.type:",type(predictions))
     print("predictions.shape:",predictions.shape)
     print("predictions:",predictions)
