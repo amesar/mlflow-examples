@@ -50,9 +50,10 @@ You can make predictions in two ways:
 
 ### Batch Predictions
 
-#### Predict as Spark and MLeap flavors
+#### Predict with Spark using SparkML and MLeap flavors
 
 See [spark_predict.py](spark_predict.py).
+Predict with Spark using the `spark-model` and `mleap-model` (using MLeap's SparkBundle).
 
 ```
 spark-submit --master local[2] spark_predict.py \
