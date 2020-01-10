@@ -49,6 +49,8 @@ def run(epochs, log_as_onnx):
         mlflow.pytorch.log_model(model, "pytorch-model")
         if args.log_as_onnx:
             import onnx_utils
+            import onnx
+            print("ONNX Version:", onnx.__version__)
             onnx_utils.log_model(model, "onnx-model", x_data)
 
 if __name__ == "__main__":

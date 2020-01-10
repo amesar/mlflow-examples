@@ -22,6 +22,7 @@ if __name__ == "__main__":
         print(f"  {arg}: {getattr(args, arg)}")
 
     data = torch.Tensor([[1.0], [2.0], [3.0]])
+    data_pd = pd.DataFrame(data.numpy())
     print("data.type:", type(data))
     print("data.shape:", data.shape)
 
@@ -42,8 +43,7 @@ if __name__ == "__main__":
     print("\n==== pyfunc.load_model - pytorch\n")
     model = mlflow.pyfunc.load_model(model_uri)
     print("model.type:", type(model))
-    data = pd.DataFrame(data.numpy())
-    outputs = model.predict(data)
+    outputs = model.predict(data_pd)
     print("outputs.type:", type(outputs))
     print("outputs:\n", outputs)
 
@@ -53,7 +53,7 @@ if __name__ == "__main__":
         print("\n==== onnx.load_model - onnx\n")
         model = mlflow.onnx.load_model(model_uri)
         print("model.type:", type(model))
-        outputs = onnx_utils.score_model(model, data.to_numpy())
+        outputs = onnx_utils.score_model(model, data_pd.to_numpy())
         print("outputs.type:", type(outputs))
         print("outputs:\n",  pd.DataFrame(outputs))
 
@@ -61,7 +61,7 @@ if __name__ == "__main__":
         print("model_uri:",model_uri)
         model = mlflow.pyfunc.load_model(model_uri)
         print("model.type:", type(model))
-        outputs = model.predict(data)
+        outputs = model.predict(data_pd)
         print("outputs.type:", type(outputs))
         print("outputs:\n", outputs)
 
