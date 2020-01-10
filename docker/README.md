@@ -9,7 +9,7 @@ Launches a full-fledged MLflow server enviroment consisting of two containers:
 
 Two types of mlflow_server containers can be built depending on where the artifact repository lives:
   * local - mounted shared volume between (laptop) host and container 
-  * S3 - artifacts are stored on S#
+  * S3 - artifacts are stored on S3
 
 See [MLflow Tracking Servers](https://mlflow.org/docs/latest/tracking.html#mlflow-tracking-servers) and
 [Referencing Artifacts](https://mlflow.org/docs/latest/concepts.html#referencing-artifacts).

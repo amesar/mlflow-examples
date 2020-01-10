@@ -10,6 +10,11 @@ Use Python 3.7.5
   * Miniconda with ([conda.yaml](conda.yaml)).
   * Virtual environment with PyPi.
 * Install Spark 2.4.2 on your machine.
+* For ONNX examples you need to install with PyPi:
+  * onnx==1.6.0
+  * onnxmltools==1.6.0
+  * skl2onnx==1.6.0
+  * onnxruntime==0.3.0
 
 ### Miniconda
 
