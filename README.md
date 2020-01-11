@@ -14,7 +14,7 @@ Use Python 3.7.5
   * onnx==1.6.0
   * onnxmltools==1.6.0
   * skl2onnx==1.6.0
-  * onnxruntime==0.3.0
+  * onnxruntime==1.1.0
 
 ### Miniconda
 

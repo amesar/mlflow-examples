@@ -23,11 +23,18 @@ if __name__ == "__main__":
     print("Arguments:")
     for arg in vars(args):
         print(f"  {arg}: {getattr(args, arg)}")
+
+    X,y  = build_data(args.data_path)
+    X_xgb = xgb.DMatrix(X, label=y)
         
+    print("\n=== mlflow.xgboost.load_model")
     model = mlflow.xgboost.load_model(args.model_uri)
     print("model:", model)
-    
-    X,y  = build_data(args.data_path)
-    X = xgb.DMatrix(X, label=y)
+    predictions = model.predict(X_xgb)
+    print("predictions:", predictions)
+
+    print("\n=== mlflow.pyfunc.load_model")
+    model = mlflow.pyfunc.load_model(args.model_uri)
+    print("model:", model)
     predictions = model.predict(X)
     print("predictions:", predictions)
