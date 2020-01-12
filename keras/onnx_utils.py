@@ -12,7 +12,6 @@ def log_model(model, artifact_path):
 def score_model(model, data):
     import numpy as np
     import onnxruntime 
-    sess = onnxruntime.InferenceSession(model.SerializeToString())
-    input_name = sess.get_inputs()[0].name
-    input_names = [iname for iname in sess.get_inputs() ]
-    return sess.run(None, {input_name: data.astype(np.float32)})[0]
+    session = onnxruntime.InferenceSession(model.SerializeToString())
+    input_name = session.get_inputs()[0].name
+    return session.run(None, {input_name: data.astype(np.float32)})[0]

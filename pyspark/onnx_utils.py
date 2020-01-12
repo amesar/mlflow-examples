@@ -13,9 +13,10 @@ def log_model(spark, model, name, data_df):
 def score_model(model, data_ndarray):
     import numpy as np
     import onnxruntime
-    sess = onnxruntime.InferenceSession(model.SerializeToString())
-    input_feed = { col.name: data_ndarray.astype(np.float32) for col in sess.get_inputs() }
-    return sess.run(None, input_feed)[0]
+    session = onnxruntime.InferenceSession(model.SerializeToString())
+    input_feed = { col.name: data_ndarray[:,j].astype(np.float32) for j,col in enumerate(session.get_inputs()) }
+    return session.run(None, input_feed)[0]
+
 
 # NOTE: for ONNX bug/feature - columns with spaces
 def normalize_columns(columns):

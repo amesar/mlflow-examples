@@ -110,7 +110,7 @@ KeyError: 'fixed_acidity'
 ```
 If we change the spaces to underscores, we get another error.
 ```
-RuntimeError: Method run failed due to: [ONNXRuntimeError] : 1 : GENERAL ERROR : /Users/vsts/agent/2.148.0/work/1/s/onnxruntime/core/providers/common.h:18 int64_t onnxruntime::HandleNegativeAxis(int64_t, int64_t) axis >= -tensor_rank && axis <= tensor_rank - 1 was false. axis 1 is not in valid range [-1,0]
+ONNXRuntimeError: INVALID_ARGUMENT : Invalid rank for input: sulphates Got: 1 Expected: 2 Please fix either the inputs or the model.
 ```
 
 #### Predict as ONNX flavor
@@ -123,15 +123,7 @@ python onnx_predict.py \
   --model_uri runs:/ffd36a96dd204ac38a58a00c94390649/spark-model
 ```
 ```
-model.type: <class 'onnx.onnx_ONNX_REL_1_4_ml_pb2.ModelProto'>
-predictions.type: <class 'numpy.ndarray'>
-predictions.shape: (4898, 1)
-predictions: [
- [5.470588 ]
- [5.470588 ]
- ...
- [6.75     ]
- [6.25     ]]
+ONNXRuntimeError: INVALID_ARGUMENT : Invalid rank for input: sulphates Got: 1 Expected: 2 Please fix either the inputs or the model.
 ```
 
 ### Real-time Predictions
