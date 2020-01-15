@@ -1,5 +1,5 @@
 
-# MLflow Docker - Tracking server and MySQL 
+# MLflow Docker - MLflow Tracking Server and MySQL 
 
 ## Overview
 
@@ -18,7 +18,7 @@ See [MLflow Tracking Servers](https://mlflow.org/docs/latest/tracking.html#mlflo
 ## Run
 
 The required  environment variables are specified in the standard docker compose `.env` file.
-You copy one of the two `.env` template files to `.env` and the then run docker-compose.
+Copy one of the two `.env` template files to `.env`, make appropriate changes and then run docker-compose.
 
 To launch a local MLflow server:
 ```
@@ -40,7 +40,7 @@ CONTAINER ID  IMAGE                  COMMAND                  PORTS             
 3b4eb5a2026e  mlflow_mysql:5.6.38    "docker-entrypoint.s…"   0.0.0.0:33306->3306/tcp   mlflow_mysql
 ```
 If you don't see the `mlflow_server` container, just run the docker-compose command again. 
-It failed to start because `mlflow_mysql` wasn't up yet. Its a TODO to add a wait-until-alive feature.
+It failed to start because `mlflow_mysql` wasn't up yet. It's a TODO to add a wait-until-alive feature.
 
 ## Environment variables
 
