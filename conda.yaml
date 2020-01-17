@@ -6,9 +6,8 @@ dependencies:
 - pip:
     - mlflow==1.5.0
     - scikit-learn==0.20.3
-    - matplotlib
-    - pyarrow
+    - matplotlib==3.1.2
+    - pyarrow==0.15.1
     - xgboost==0.90
+    - mleap==0.15.0
     - jupyter
-    - mleap
-    - boto3
