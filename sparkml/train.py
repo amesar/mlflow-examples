@@ -71,7 +71,7 @@ def train(data, maxDepth, maxBins, run_id, log_as_onnx):
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment _name", default="pyspark")
+    parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment _name", default="sparkml")
     parser.add_argument("--data_path", dest="data_path", help="Data path", default=default_data_path)
     parser.add_argument("--max_depth", dest="max_depth", help="Max depth", default=5, type=int) # per doc
     parser.add_argument("--max_bins", dest="max_bins", help="Max bins", default=32, type=int) # per doc

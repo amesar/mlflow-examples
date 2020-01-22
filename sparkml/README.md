@@ -1,4 +1,4 @@
-# mlflow-examples - pyspark
+# mlflow-examples - sparkml
 
 ## Overview
 
@@ -31,14 +31,14 @@ Note that `mlflow run` ignores the `set_experiment()` function so you must speci
 ```
 mlflow run . \
   -P max_depth=3 -P max_bins=24 \
-  --experiment-name=pyspark
+  --experiment-name=sparkml
 ```
 
 **mlflow run github**
 ```
-mlflow run https://github.com/amesar/mlflow-fun.git#examples/pyspark \
+mlflow run https://github.com/amesar/mlflow-fun.git#examples/sparkml \
    -P max_depth=3 -P max_bins=24 \
-  --experiment-name=pyspark
+  --experiment-name=sparkml
 ```
 
 ## Predictions
@@ -198,12 +198,12 @@ First build the docker image.
 ```
 mlflow models build-docker \
   --model-uri runs:/7e674524514846799310c41f10d6b99d/spark-model \
-  --name dk-wine-pyspark
+  --name dk-wine-sparkml
 ```
 
 Then launch the server as a docker container.
 ```
-docker run --p 5001:8080 dk-wine-pyspark
+docker run --p 5001:8080 dk-wine-sparkml
 ```
 Make predictions with curl as described above.
 
@@ -222,27 +222,27 @@ Notes:
 
 First build the docker image.
 ```
-mlflow sagemaker build-and-push-container --build --no-push --container sm-wine-pyspark-spark
+mlflow sagemaker build-and-push-container --build --no-push --container sm-wine-sparkml-spark
 ```
 
 To test locally, launch the server as a docker container.
 ```
 mlflow sagemaker run-local \
   --model-uri runs:/7e674524514846799310c41f10d6b99d/spark-model \
-  --port 5001 --image sm-wine-pyspark-spark
+  --port 5001 --image sm-wine-sparkml-spark
 ```
 ##### Score with MLeap model
 
 First build the docker image.
 ```
-mlflow sagemaker build-and-push-container --build --no-push --container sm-wine-pyspark-mleap
+mlflow sagemaker build-and-push-container --build --no-push --container sm-wine-sparkml-mleap
 ```
 
 To test locally, launch the server as a docker container.
 ```
 mlflow sagemaker run-local \
   --model-uri runs:/7e674524514846799310c41f10d6b99d/mleap-model \
-  --port 5001 --image sm-wine-pyspark-mleap
+  --port 5001 --image sm-wine-sparkml-mleap
 ```
 
 Make predictions with curl as described above.

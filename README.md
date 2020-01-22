@@ -80,7 +80,7 @@ mlflow server --host 0.0.0.0 --port 5000 \
 
 Most of the examples use a DecisionTreeRegressor model with the wine quality data set.
 
-As such, the `pyspark` and `scala_spark` models are isomorphic as they are simply language variants of the same Spark ML model.
+As such, the `sparkml` and `scala_spark` models are isomorphic as they are simply language variants of the same Spark ML model.
 
 ### Setup
 Before running an experiment
@@ -93,7 +93,7 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
 **Python examples**
 * [hello_world](hello_world) - Hello World - no training or scoring.
 * [sklearn](sklearn) - Scikit-learn model - train and score.
-* [pyspark](pyspark) - Python Spark ML model - train and score. 
+* [sparkml](sparkml) - Python Spark ML model - train and score. 
 * [keras](keras) - Keras/Tensorflow - train and score.
 * [xgboost](xgboost) - XGBoost (sklearn wrapper) model - train and score.
 * [pytorch](pytorch) - Pytorch  - train and score.
@@ -101,7 +101,7 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
 * [model_registry](model_registry) - Jupyter notebook sampling the Model Registry API.
 * [benchmarks](benchmarks) - Simple scoring server performance benchmark.
 
-The sklearn and pyspark examples also showcase:
+The sklearn and sparkml examples also showcase:
 * Different ways to run a project with the mlflow CLI 
 * Real-time server scoring with docker containers
 * Running a project against a Databricks cluster
