@@ -80,7 +80,7 @@ mlflow server --host 0.0.0.0 --port 5000 \
 
 Most of the examples use a DecisionTreeRegressor model with the wine quality data set.
 
-As such, the `sparkml` and `scala_spark` models are isomorphic as they are simply language variants of the same Spark ML model.
+As such, the `python/sparkml` and `scala/sparkml` are isomorphic as they are simply language variants of the same Spark ML algorithm.
 
 ### Setup
 Before running an experiment
@@ -107,8 +107,8 @@ The sklearn and sparkml examples also showcase:
 * Running a project against a Databricks cluster
 
 **Scala examples - uses the MLflow Java client**
-* [hello_world](scala/scala_spark/README.md#hello_world) - Hello World - no training or scoring.
-* [scala_spark](scala/scala_spark/) - Scala Spark ML train and score.
+* [hello_world](scala/sparkml/README.md#hello_world) - Hello World - no training or scoring.
+* [sparkml](scala/sparkml/) - Scala Spark ML train and score.
 * [mleap](scala/mleap) - Score an MLeap model with MLeap runtime (no Spark dependencies).
 
 **Other**

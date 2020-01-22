@@ -9,7 +9,7 @@ Example shows how to download an MLeap model from MLflow and score it with MLeap
 
 ## Assumptions
 
-The expected run artifacts hierarchy is shown below and is produced by the `sparkml` and `scala_spark` trainers.
+The expected run artifacts hierarchy is shown below and is produced by the `python/sparkml` and `scala/sparkml` trainers.
 `schema.json` is emitted byt the trainers and is used to create an input LeapFrame from the data.
 
 ```
