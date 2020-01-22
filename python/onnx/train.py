@@ -75,7 +75,7 @@ def train(data_path, max_depth, max_leaf_nodes):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--experiment_name", dest="experiment_name", help="experiment_name", required=True)
-    parser.add_argument("--data_path", dest="data_path", help="data_path", default="../data/wine-quality-white.csv")
+    parser.add_argument("--data_path", dest="data_path", help="data_path", default="../../data/wine-quality-white.csv")
     parser.add_argument("--max_depth", dest="max_depth", help="max_depth", default=None, type=int)
     parser.add_argument("--max_leaf_nodes", dest="max_leaf_nodes", help="max_leaf_nodes", default=None, type=int)
     args = parser.parse_args()

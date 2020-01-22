@@ -9,7 +9,7 @@ print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--model_uri", dest="model_uri", help="Model URI", required=True)
-    parser.add_argument("--data_path", dest="data_path", help="Data path", default="../data/wine-quality-white.csv")
+    parser.add_argument("--data_path", dest="data_path", help="Data path", default="../../data/wine-quality-white.csv")
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):

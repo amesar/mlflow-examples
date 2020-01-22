@@ -11,7 +11,7 @@ if __name__ == "__main__":
         sys.exit(1)
     print("MLflow Version:", mlflow.version.VERSION)
     model_uri = sys.argv[1]
-    data_path = sys.argv[2] if len(sys.argv) > 2 else "../data/wine-quality-white.csv"
+    data_path = sys.argv[2] if len(sys.argv) > 2 else "../../data/wine-quality-white.csv"
     print("data_path:", data_path)
     print("model_uri:", model_uri)
 

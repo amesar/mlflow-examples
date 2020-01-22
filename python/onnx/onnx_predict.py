@@ -13,7 +13,7 @@ if __name__ == "__main__":
         print("ERROR: Expecting MODEL_URI PREDICTION_FILE")
         sys.exit(1)
     model_uri = sys.argv[1]
-    data_path = sys.argv[2] if len(sys.argv) > 2 else "../data/wine-quality-white.csv"
+    data_path = sys.argv[2] if len(sys.argv) > 2 else "../../data/wine-quality-white.csv"
     print("data_path:", data_path)
     print("model_uri:", model_uri)
 

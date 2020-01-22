@@ -19,7 +19,7 @@ def load():
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--model_uri", dest="model_uri", help="model_uri", default="../data/wine-quality-white.csv")
+    parser.add_argument("--model_uri", dest="model_uri", help="model_uri", default="../../data/wine-quality-white.csv")
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):
