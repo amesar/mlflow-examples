@@ -7,7 +7,7 @@ import utils
 
 if __name__ == "__main__":
     if len(sys.argv) < 1:
-        print("ERROR: Expecting MODEL_URI PREDICTION_FILE")
+        print("ERROR: Expecting MODEL_URI DATA_PATH")
         sys.exit(1)
     print("MLflow Version:", mlflow.version.VERSION)
     model_uri = sys.argv[1]
