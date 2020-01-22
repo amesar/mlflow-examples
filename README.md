@@ -7,7 +7,7 @@ MLflow examples - basic and advanced.
 Use Python 3.7.5
 
 * For Python environment use either:
-  * Miniconda with [conda.yaml](conda.yaml).
+  * Miniconda with [conda.yaml](python/conda.yaml).
   * Virtual environment with PyPi.
 * Install Spark 2.4.2 on your machine.
 * For ONNX examples also install:
@@ -91,15 +91,15 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
 ### Samples
 
 **Python examples**
-* [hello_world](hello_world) - Hello World - no training or scoring.
-* [sklearn](sklearn) - Scikit-learn model - train and score.
-* [sparkml](sparkml) - Python Spark ML model - train and score. 
-* [keras](keras) - Keras/Tensorflow - train and score.
-* [xgboost](xgboost) - XGBoost (sklearn wrapper) model - train and score.
-* [pytorch](pytorch) - Pytorch  - train and score.
-* [onnx](onnx) - Convert sklearn model to ONNX flavor - train and score.
-* [model_registry](model_registry) - Jupyter notebook sampling the Model Registry API.
-* [benchmarks](benchmarks) - Simple scoring server performance benchmark.
+* [hello_world](python/hello_world) - Hello World - no training or scoring.
+* [sklearn](python/sklearn) - Scikit-learn model - train and score.
+* [sparkml](python/sparkml) - Spark ML model - train and score. 
+* [keras](python/keras) - Keras/Tensorflow - train and score.
+* [xgboost](python/xgboost) - XGBoost (sklearn wrapper) model - train and score.
+* [pytorch](python/pytorch) - Pytorch  - train and score.
+* [onnx](python/onnx) - Convert sklearn model to ONNX flavor - train and score.
+* [model_registry](python/model_registry) - Jupyter notebook sampling the Model Registry API.
+* [benchmarks](python/benchmarks) - Simple scoring server performance benchmark.
 
 The sklearn and sparkml examples also showcase:
 * Different ways to run a project with the mlflow CLI 
@@ -107,9 +107,9 @@ The sklearn and sparkml examples also showcase:
 * Running a project against a Databricks cluster
 
 **Scala examples - uses the MLflow Java client**
-* [hello_world](scala_spark/README.md#hello_world) - Hello World - no training or scoring.
-* [scala_spark](scala_spark/) - Scala Spark ML train and score.
-* [mleap](mleap) - Score an MLeap model with MLeap runtime (no Spark dependencies).
+* [hello_world](scala/scala_spark/README.md#hello_world) - Hello World - no training or scoring.
+* [scala_spark](scala/scala_spark/) - Scala Spark ML train and score.
+* [mleap](scala/mleap) - Score an MLeap model with MLeap runtime (no Spark dependencies).
 
 **Other**
 * [docker](docker) - MLflow tracking server and MySQL database containers.
