@@ -14,7 +14,7 @@
   * web server
   * mlflow.load_model()
   *  UDF
-* Data: [../data/wine-quality-white.csv](../data/wine-quality-white.csv)
+* Data: [../../data/wine-quality-white.csv](../../data/wine-quality-white.csv)
 
 ## Training
 
