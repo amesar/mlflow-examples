@@ -105,7 +105,7 @@ object TrainWine {
 
     // MLflow - log tree model artifact
     val treeModel = model.stages.last.asInstanceOf[DecisionTreeRegressionModel]
-    val path="treeModel.txt"
+    val path = "treeModel.txt"
     new PrintWriter(path) { write(treeModel.toDebugString) ; close }
     client.logArtifact(runId, new File(path),"details")
 
@@ -120,7 +120,8 @@ object TrainWine {
   def logModelAsSparkML(client: MlflowClient, runId: String, modelDir: String, model: PipelineModel) = {
     val modelPath = s"$modelDir/spark-model"
     model.write.overwrite().save(modelPath)
-    client.logArtifacts(runId, new File(modelPath), "spark-model")
+    val artifactPath = "spark-model/sparkml" // NOTE: compatible with Python SparkML path convention
+    client.logArtifacts(runId, new File(modelPath), artifactPath)
   }
   
   def logModelAsMLeap(client: MlflowClient, runId: String, modelDir: String, model: PipelineModel, data: DataFrame, predictions: DataFrame) {

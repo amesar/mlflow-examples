@@ -20,20 +20,23 @@ object PredictAsSpark {
     println(s"  token: ${opts.token}")
     println(s"  dataPath: ${opts.dataPath}")
     println(s"  runId: ${opts.runId}")
+    println(s"  skipMLeapScoring: ${opts.skipMLeapScoring}")
 
     val client = MLflowUtils.createMlflowClient(opts.trackingUri, opts.token)
     val spark = SparkSession.builder.appName("Predict").getOrCreate()
     val data = Utils.readData(spark, opts.dataPath)
 
     println("==== Spark ML")
-    val modelPath0 = client.downloadArtifacts(opts.runId, "spark-model").getAbsolutePath
-    val model0 = PipelineModel.load(modelPath0)
-    showPredictions(model0, data)
+    val modelPath = client.downloadArtifacts(opts.runId, "spark-model/sparkml").getAbsolutePath
+    val model = PipelineModel.load(modelPath)
+    showPredictions(model, data)
 
-    println("==== MLeap")
-    val modelPath1 = "file:" + client.downloadArtifacts(opts.runId, "mleap-model/mleap/model").getAbsolutePath
-    val model1 = SparkBundleUtils.readModel(modelPath1)
-    showPredictions(model1, data)
+    if (!opts.skipMLeapScoring) {
+      println("==== MLeap")
+      val modelPath = "file:" + client.downloadArtifacts(opts.runId, "mleap-model/mleap/model").getAbsolutePath
+      val model = SparkBundleUtils.readModel(modelPath)
+      showPredictions(model, data)
+    }
   }
 
   def showPredictions(model: Transformer, data: DataFrame) {
@@ -50,10 +53,13 @@ object PredictAsSpark {
     @Parameter(names = Array("--trackingUri" ), description = "Tracking Server URI", required=false)
     var trackingUri: String = null
 
-    @Parameter(names = Array("--token" ), description = "REST API token", required=false)
+    @Parameter(names = Array("--token" ), description = "Databricks REST API token", required=false)
     var token: String = null
 
-    @Parameter(names = Array("--runId" ), description = "runId", required=true)
+    @Parameter(names = Array("--runId" ), description = "Run ID", required=true)
     var runId: String = null
+
+    @Parameter(names = Array("--skipMLeapScoring" ), description = "Score with MLeap also", required=false)
+    var skipMLeapScoring: Boolean = false
   }
 }
