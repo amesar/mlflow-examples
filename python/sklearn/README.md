@@ -36,7 +36,7 @@ python main.py --experiment_name sklearn --max_depth 2 --max_leaf_nodes 32
 
 These runs use the [MLproject](MLproject) file. For more details see [MLflow documentation - Running Projects](https://mlflow.org/docs/latest/projects.html#running-projects).
 
-Note that mlflow run ignores the `set_experiment()` function so you must specify the experiment with the  `--experiment-sklearn` argument.
+Note that `mlflow` CLI run ignores the `set_experiment()` so you must specify the experiment with the  `--experiment-sklearn` argument.
 
 #### mlflow run local
 ```
@@ -75,7 +75,7 @@ The token and tracking server URL will be picked up from your Databricks CLI ~/.
 
 Now run the model.
 ```
-mlflow run https://github.com/amesar/mlflow-examples.git#sklearn/wine-quality \
+mlflow run https://github.com/amesar/mlflow-examples.git#python/sklearn/wine-quality \
   -P max_depth=2 -P max_leaf_nodes=32 -P run_origin=gitRun \
   -P data_path=/dbfs/tmp/data/wine-quality-white.csv \
   --experiment-name=/Users/juan.doe@acme.com/sklearn_wine \
@@ -195,7 +195,7 @@ predictions: [5.55109634 5.29772751 5.42757213 5.56288644 5.56288644]
 Snippet from [sklearn_predict.py](sklearn_predict.py):
 ```
 model = mlflow.sklearn.load_model(model_uri)
-df = pd.read_csv("../data/wine-quality-white.csv")
+df = pd.read_csv("../../data/wine-quality-white.csv")
 predictions = model.predict(data)
 ```
 
@@ -211,7 +211,7 @@ predictions: [5.55109634 5.29772751 5.42757213 5.56288644 5.56288644]
 ```
 From [pyfunc_predict.py](pyfunc_predict.py):
 ```
-data_path = "../data/wine-quality-white.csv"
+data_path = "../../data/wine-quality-white.csv"
 data = util.read_prediction_data(data_path)
 model_uri = client.get_run(run_id).info.artifact_uri + "/sklearn-model"
 model = mlflow.pyfunc.load_model(model_uri)
@@ -243,7 +243,7 @@ spark-submit --master local[2] spark_udf_predict.py \
 ```
 From [spark_udf_predict.py](spark_udf_predict.py):
 ```
-spark = SparkSession.builder.appName("ServePredictions").getOrCreate()
+spark = SparkSession.builder.appName("App").getOrCreate()
 data = spark.read.option("inferSchema",True).option("header", True).csv("../data/wine-quality-white.csv")
 data = data.drop("quality")
 udf = mlflow.pyfunc.spark_udf(spark, model_uri)
@@ -271,7 +271,7 @@ In one window launch the server.
 In another window, score some data.
 ```
 curl -X POST -H "Content-Type:application/json" \
-  -d @../data/predict-wine-quality.json \
+  -d @../../data/predict-wine-quality.json \
   http://localhost:5001/invocations
 ```
 ```
@@ -281,7 +281,7 @@ curl -X POST -H "Content-Type:application/json" \
 ```
 
 Data should be in `JSON-serialized Pandas DataFrames split orientation` format
-such as [predict-wine-quality.json](../data/predict-wine-quality.json).
+such as [predict-wine-quality.json](../../data/predict-wine-quality.json).
 ```
 {
   "columns": [

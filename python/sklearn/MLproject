@@ -5,13 +5,11 @@ conda_env: conda.yaml
 entry_points:
   main:
     parameters:
-      experiment_name: {type: string, default: "none" }
-      data_path: {type: string, default: "../data/wine-quality-white.csv"}
+      data_path: {type: string, default: "../../data/wine-quality-white.csv"}
       max_depth: int
       max_leaf_nodes: {type: int, default: 32}
       run_origin: {type: string, default: "default" }
     command: "python main.py
-                --experiment_name {experiment_name}
                 --data_path {data_path}
                 --max_depth {max_depth}
                 --max_leaf_nodes {max_leaf_nodes}

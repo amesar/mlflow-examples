@@ -25,13 +25,8 @@ class Trainer():
         self.log_as_onnx = log_as_onnx
         self.X_train, self.X_test, self.y_train, self.y_test = self.build_data(data_path)
 
-        # If using 'mlflow run' must use --experiment-id/experiment-name to set experiment since set_experiment() has no take effect
-        if self.experiment_name != "none":
+        if self.experiment_name:
             mlflow.set_experiment(experiment_name)
-            experiment_id = client.get_experiment_by_name(experiment_name).experiment_id
-            print("mlflow.set_experiment:")
-            print("  experiment_id:", experiment_id)
-            print("  experiment_name:", experiment_name)
 
     def build_data(self, data_path):
         data = pd.read_csv(data_path)
