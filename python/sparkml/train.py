@@ -19,7 +19,7 @@ print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 
 metrics = ["rmse", "r2", "mae"]
 
-def train(data, maxDepth, maxBins, run_id, log_as_onnx):
+def train(data, maxDepth, maxBins, run_id, model_name, log_as_onnx):
     (trainingData, testData) = data.randomSplit([0.7, 0.3], 2019)
     print("testData.schema:")
     testData.printSchema()
@@ -50,7 +50,7 @@ def train(data, maxDepth, maxBins, run_id, log_as_onnx):
         mlflow.log_metric(metric_name,metric_value)
 
     # MLflow - log spark model
-    mlflow.spark.log_model(model, "spark-model")
+    mlflow.spark.log_model(model, "spark-model", registered_model_name=model_name)
 
     # MLflow - log mleap model
     mleapData = testData.drop("quality")
@@ -72,6 +72,7 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment _name", default="sparkml")
+    parser.add_argument("--model_name", dest="model_name", help="Registered model name", default=None)
     parser.add_argument("--data_path", dest="data_path", help="Data path", default=default_data_path)
     parser.add_argument("--max_depth", dest="max_depth", help="Max depth", default=5, type=int) # per doc
     parser.add_argument("--max_bins", dest="max_bins", help="Max bins", default=32, type=int) # per doc
@@ -98,4 +99,5 @@ if __name__ == "__main__":
         print("  experiment_name:", client.get_experiment(run.info.experiment_id).name)
         mlflow.set_tag("mlflow_version", mlflow.version.VERSION)
         mlflow.set_tag("spark_version", spark.version)
-        train(data, args.max_depth, args.max_bins, run.info.run_id, args.log_as_onnx)
+        model_name = None if args.model_name is None or args.model_name == "None" else args.model_name
+        train(data, args.max_depth, args.max_bins, run.info.run_id, model_name, args.log_as_onnx)

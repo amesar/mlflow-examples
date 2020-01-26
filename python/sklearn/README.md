@@ -25,6 +25,18 @@ There are several ways to train a model with MLflow.
   1. MLflow CLI `run` command
   1. Databricks REST API
 
+### Arguments
+
+|Name | Required | Default | Description| 
+|---|---|---|---|
+| experiment_name | no | none | Experiment name  |  
+| model_name | no | none | Registered model name (if set) |  
+| data_path | no | ../../data/wine-quality-white.csv | Path to data  |  
+| max_depth | no | none | Max depth  |  
+| max_leaf_nodes | no | none | Max leaf nodes  |  
+| run_origin | no | none | Run tag  |  
+| log_as_onnx | no | False | Also log the model in ONNX format |  
+
 ### 1. Unmanaged without MLflow CLI
 
 Run the standard main function from the command-line.
@@ -178,15 +190,21 @@ You can make predictions in two ways:
 
 #### 1. Predict with mlflow.sklearn.load_model()
 
-You can use either a `runs` or `models` URI (if you have a registered model with a production stage).
+You can use either a `runs` or `models` scheme.
+
+URI with `runs` scheme.
 ```
 python sklearn_predict.py runs:/7e674524514846799310c41f10d6b99d/sklearn-model
 ```
 
+URI with `models` scheme.
+Assume you have a registered model with a production stage or version 1.
 ```
-python sklearn_predict.py models:/sklearn_registry_test/production
+python sklearn_predict.py models:/sklearn_wine/production
+python sklearn_predict.py models:/sklearn_wine/1
 ```
 
+Result.
 ```
 predictions: [5.55109634 5.29772751 5.42757213 5.56288644 5.56288644]
 ```

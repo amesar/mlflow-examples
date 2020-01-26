@@ -12,6 +12,18 @@
 Two model artifacts are created: `spark-model` and `mleap-model`. 
 To create an `onnx-model` pass the `--log_as_onnx` option.
 
+### Arguments
+
+|Name | Required | Default | Description|   
+|---|---|---|---|
+| experiment_name | no | none | Experiment name  |   
+| model_name | no | none | Registered model name (if set) |
+| data_path | no | ../../data/wine-quality-white.csv | Path to data  |
+| max_depth | no | 5 | Max depth  |
+| max_bins | no | 32 | Max bins  |
+| run_origin | no | none | Run tag  |
+| log_as_onnx | no | False | Also log the model in ONNX format |
+
 ### Unmanaged without mlflow run
 
 To run with standard main function
