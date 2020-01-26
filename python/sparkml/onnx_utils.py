@@ -1,13 +1,14 @@
 import onnx
 
-def log_model(spark, model, name, data_df):
+def log_model(spark, model, name, model_name, data_df):
     import mlflow.onnx
     import onnxmltools
     from onnxmltools.convert.common.data_types import FloatTensorType
     from onnxmltools.convert.sparkml.utils import buildInitialTypesSimple
     initial_types = buildInitialTypesSimple(data_df)
     onnx_model = onnxmltools.convert_sparkml(model, name, initial_types, spark_session=spark)
-    mlflow.onnx.log_model(onnx_model, "onnx-model")
+    mlflow.onnx.log_model(onnx_model, "onnx-model", \
+        registered_model_name=None if not model_name else f"{model_name}_onnx")
     mlflow.set_tag("onnx_version", onnx.__version__)
 
 def score_model(model, data_ndarray):

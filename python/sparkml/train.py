@@ -50,11 +50,14 @@ def train(data, maxDepth, maxBins, run_id, model_name, log_as_onnx):
         mlflow.log_metric(metric_name,metric_value)
 
     # MLflow - log spark model
-    mlflow.spark.log_model(model, "spark-model", registered_model_name=model_name)
+    #mlflow.spark.log_model(model, "spark-model", registered_model_name=f"{model_name}_spark")
+    mlflow.spark.log_model(model, "spark-model", \
+        registered_model_name=None if not model_name else f"{model_name}_spark")
 
     # MLflow - log mleap model
     mleapData = testData.drop("quality")
-    mlflow.mleap.log_model(spark_model=model, sample_input=mleapData, artifact_path="mleap-model")
+    mlflow.mleap.log_model(spark_model=model, sample_input=mleapData, artifact_path="mleap-model", \
+        registered_model_name=None if not model_name else f"{model_name}_mleap")
 
     # Log mleap schema file for MLeap runtime deserialization
     schema_path = "schema.json"
@@ -66,7 +69,7 @@ def train(data, maxDepth, maxBins, run_id, model_name, log_as_onnx):
     # MLflow - log onnx model
     if log_as_onnx:
         import onnx_utils
-        onnx_utils.log_model(spark, model, "onnx-model", mleapData)
+        onnx_utils.log_model(spark, model, "onnx-model", model_name, mleapData)
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
