@@ -1,21 +1,11 @@
 from argparse import ArgumentParser
+import numpy as np
 import mlflow
 import mlflow.keras
 import utils
 
 print("MLflow Version:", mlflow.version.VERSION)
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
-
-import numpy as np
-
-def load():
-    from PIL import Image
-    path = "/Users/ander/data/mnist/mnist_png/testing/0/10.png"
-    img = Image.open(path).convert("L")
-    img = np.resize(img, (28,28,1))
-    im2arr = np.array(img)
-    im2arr = im2arr.reshape(1,28,28,1)
-    return im2arr 
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -29,11 +19,8 @@ if __name__ == "__main__":
     print("model:", type(model))
     
     _,_,data,_  = utils.build_data()
-    print(">> data.shape:", data.shape)
-
-    #data2 = load()
-    #print("data2.shape:", data2.shape)
-    #data = data2
+    print("data.type:", type(data))
+    print("data.shape:", data.shape)
 
     predictions = model.model.predict_classes(data)
     print("predictions.type:",type(predictions))
