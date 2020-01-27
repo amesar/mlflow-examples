@@ -1,4 +1,4 @@
-name: mlflow-examples-keras
+name: mlflow-examples
 channels:
 - conda-forge
 dependencies:
