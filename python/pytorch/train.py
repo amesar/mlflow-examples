@@ -38,10 +38,10 @@ def run(epochs, log_as_onnx):
          optimizer.step()
     
     print("Predictions:")
-    for hv in test_data:
-        hour_var = torch.Tensor([[hv]])
-        y_pred = model(hour_var)
-        print(f"  {hv}: {model(hour_var).data[0][0]}")
+    for v in test_data:
+        tv = torch.Tensor([[v]])
+        y_pred = model(tv)
+        print(f"  {v}: {model(tv).data[0][0]}")
 
     with mlflow.start_run() as run:
         print("run_id:",run.info.run_id)
