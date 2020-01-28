@@ -66,13 +66,12 @@ def train(epochs, batch_size, autolog, log_as_onnx):
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument("--experiment_name", dest="experiment_name", help="experiment_name", default="mnist_keras")
-    parser.add_argument("--epochs", dest="epochs", help="epochs", default=5, type=int)
-    parser.add_argument("--batch_size", dest="batch_size", help="batch_size", default=128, type=int)
-    parser.add_argument("--repeats", dest="repeats", help="repeats", default=1, type=int)
+    parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment name", required=False, type=str)
+    parser.add_argument("--epochs", dest="epochs", help="Epochs", default=5, type=int)
+    parser.add_argument("--batch_size", dest="batch_size", help="Batch size", default=128, type=int)
+    parser.add_argument("--repeats", dest="repeats", help="Repeats", default=1, type=int)
     parser.add_argument("--autolog", dest="autolog", help="Automatically log params and metrics", default=False, action='store_true')
     parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX flavor", default=False, action='store_true')
-
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):
@@ -81,7 +80,8 @@ if __name__ == "__main__":
     if args.autolog:
         mlflow.keras.autolog()
 
-    mlflow.set_experiment(args.experiment_name)
+    if args.experiment_name:
+        mlflow.set_experiment(args.experiment_name)
     for i in range(0,args.repeats):
         with mlflow.start_run() as run:
             print(f"******** {i}/{args.repeats}")

@@ -1,0 +1,12 @@
+name: mlflow-examples-keras
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      epochs: int
+      batch_size: {type: int, default: 128}
+    command: "python train.py
+                --epochs {epochs}
+                --batch_size {batch_size}"
