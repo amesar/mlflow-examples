@@ -74,7 +74,7 @@ def train(data, maxDepth, maxBins, run_id, model_name, log_as_onnx):
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment _name", default="sparkml")
+    parser.add_argument("--experiment_name", dest="experiment_name", help="experiment_name", required=False, type=str)
     parser.add_argument("--model_name", dest="model_name", help="Registered model name", default=None)
     parser.add_argument("--data_path", dest="data_path", help="Data path", default=default_data_path)
     parser.add_argument("--max_depth", dest="max_depth", help="Max depth", default=5, type=int) # per doc
@@ -87,7 +87,8 @@ if __name__ == "__main__":
         print(f"  {arg}: {getattr(args, arg)}")
 
     client = mlflow.tracking.MlflowClient()
-    mlflow.set_experiment(args.experiment_name)
+    if args.experiment_name:
+        mlflow.set_experiment(args.experiment_name)
 
     data_path = args.data_path or default_data_path
     data = read_data(spark, data_path)
