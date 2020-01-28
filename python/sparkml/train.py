@@ -19,20 +19,20 @@ print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 
 metrics = ["rmse", "r2", "mae"]
 
-def train(data, maxDepth, maxBins, run_id, model_name, log_as_onnx):
+def train(data, max_depth, max_bins, run_id, model_name, log_as_onnx):
     (trainingData, testData) = data.randomSplit([0.7, 0.3], 2019)
     print("testData.schema:")
     testData.printSchema()
 
     # MLflow - log parameters
     print("Parameters:")
-    print("  maxDepth:", maxDepth)
-    print("  maxBins:", maxBins)
-    mlflow.log_param("maxDepth", maxDepth)
-    mlflow.log_param("maxBins", maxBins)
+    print("  max_depth:", max_depth)
+    print("  max_bins:", max_bins)
+    mlflow.log_param("max_depth", max_depth)
+    mlflow.log_param("max_bins", max_bins)
 
     # Create pipeline
-    dt = DecisionTreeRegressor(labelCol=colLabel, featuresCol=colFeatures, maxDepth=maxDepth, maxBins=maxBins)
+    dt = DecisionTreeRegressor(labelCol=colLabel, featuresCol=colFeatures, maxDepth=max_depth, maxBins=max_bins)
     assembler = VectorAssembler(inputCols=data.columns[:-1], outputCol=colFeatures)
     pipeline = Pipeline(stages=[assembler, dt])
     
