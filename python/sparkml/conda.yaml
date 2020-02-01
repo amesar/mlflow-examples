@@ -4,5 +4,5 @@ channels:
 dependencies:
 - python=3.7.5
 - pip:
-    - mlflow==1.5.0
+    - mlflow==1.6.0
     - mleap==0.8.1
