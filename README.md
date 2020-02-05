@@ -92,11 +92,11 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
 
 **Python examples**
 * [hello_world](python/hello_world) - Hello World - no training or scoring.
-* [sklearn](python/sklearn) - Scikit-learn model - train and score.
-* [sparkml](python/sparkml) - Spark ML model - train and score. 
-* [keras](python/keras) - Keras/Tensorflow - train and score.
+* [sklearn](python/sklearn) - Scikit-learn model - train and score. ONNX too.
+* [sparkml](python/sparkml) - Spark ML model - train and score.  ONNX too.
+* [keras](python/keras) - Keras/Tensorflow - train and score. ONNX too.
 * [xgboost](python/xgboost) - XGBoost (sklearn wrapper) model - train and score.
-* [pytorch](python/pytorch) - Pytorch  - train and score.
+* [pytorch](python/pytorch) - Pytorch  - train and score. ONNX too.
 * [onnx](python/onnx) - Convert sklearn model to ONNX flavor - train and score.
 * [model_registry](python/model_registry) - Jupyter notebook sampling the Model Registry API.
 * [reproduce](python/reproduce) - Reproduce an existing run.
