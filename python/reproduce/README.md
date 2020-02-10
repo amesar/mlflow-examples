@@ -6,7 +6,7 @@ Tool to reproduce a run with the [mlflow.projects.run()](https://mlflow.org/docs
 MLflow allows you to associate the git repository URI and commit hash for a run's source.
 Using these two attributes we leverage MLflow's `project` feature (API `projects.run` or CLI `mlflow run`).
 
-[reproduce_run.py](reproduce_run.py) can reproduce any run in a generic fashion. Note that you should record any data files as a parameter.
+[reproduce_git_uri.py](reproduce_git_uri.py) can reproduce any run in a generic fashion. Note that you should record any data files as a parameter.
 
 Logic:
 * Specify the run_id of the reference run you wish to reproduce
@@ -24,7 +24,7 @@ Logic:
 
 ### Reproducible Run
 ```
-python reproduce_run.py \
+python reproduce_git_uri.py \
   --uri https://github.com/amesar/mlflow-examples.git#python/sklearn \
   --run_id d1b4b10969174863a2bad1342f6746ce 
 ```
@@ -43,7 +43,7 @@ Runs equal: True
 
 For example, a Keras run may not be 100% reproducible due to non-deterministic initialization of weights.
 ```
-python reproduce_run.py \
+python reproduce_git_uri.py \
   --uri https://github.com/amesar/mlflow-examples.git#python/keras \
   --run_id 5500ff3b12f76aeb500120edfa10d0082c87bad0
 ```
