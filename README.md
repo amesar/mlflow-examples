@@ -111,6 +111,7 @@ The sklearn and sparkml examples also showcase:
 * [hello_world](scala/sparkml/README.md#hello_world) - Hello World - no training or scoring.
 * [sparkml](scala/sparkml/) - Scala Spark ML train and score.
 * [mleap](scala/mleap) - Score an MLeap model with MLeap runtime (no Spark dependencies).
+* [onnx](scala/onnx) - Score an ONNX model (that was created in Scikit-learn) in Java.
 
 **Other**
 * [docker](docker) - MLflow tracking server and MySQL database containers.
