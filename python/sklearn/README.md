@@ -13,7 +13,7 @@
 * Shows several ways to run prediction  
   * web server
   * mlflow.load_model()
-  *  UDF
+  *  UDF - invoke with the DataFrame API or SQL
 * Data: [../../data/wine-quality-white.csv](../../data/wine-quality-white.csv)
 
 ## Training
@@ -182,7 +182,7 @@ You can make predictions in two ways:
 * Batch predictions - direct calls to retrieve the model and score large files.
   * mlflow.sklearn.load_model()
   * mlflow.pyfunc.load_model()
-  * Spark UDF
+  * Spark UDF - either the DataFrame API or SQL
 * Real-time predictions - use MLflow's scoring server to score individual requests.
 
 
@@ -241,6 +241,8 @@ predictions = model.predict(data)
 
 See [Export a python_function model as an Apache Spark UDF]((https://mlflow.org/docs/latest/models.html#export-a-python-function-model-as-an-apache-spark-udf) documentation.
 
+We show how to invoke a UDF with both the DataFrame API and SQL.
+
 Scroll right to see prediction column.
 
 ```
@@ -267,6 +269,10 @@ data = data.drop("quality")
 udf = mlflow.pyfunc.spark_udf(spark, model_uri)
 predictions = data.withColumn("prediction", udf(*df.columns))
 predictions.show(10)
+
+spark.udf.register("predictUDF", udf)
+data.createOrReplaceGlobalTempView("data")
+predictions = spark.sql("select *, predictUDF(*) as prediction from global_temp.data")
 ```
 
 ### Real-time Predictions
