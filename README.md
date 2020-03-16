@@ -99,6 +99,7 @@ export MLFLOW_TRACKING_URI=http://localhost:5000
 * [pytorch](python/pytorch) - Pytorch  - train and score. ONNX too.
 * [onnx](python/onnx) - Convert sklearn model to ONNX flavor - train and score.
 * [model_registry](python/model_registry) - Jupyter notebook sampling the Model Registry API.
+* [e2e-pipeline](python/e2e-pipeline) - End-to-end pipeline - training to real-time scoring.
 * [reproduce](python/reproduce) - Reproduce an existing run.
 * [benchmarks](python/benchmarks) - Simple scoring server performance benchmark.
 
