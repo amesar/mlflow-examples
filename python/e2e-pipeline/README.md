@@ -6,7 +6,7 @@ Basis of subsequent CI/CD pipeline.
 ## Overview
 * [train.py](train.py) - Run several training runs with different hyperparameters.
 * [register_model.py](register_model.py) - Find the best run and register it as model version `models:/test-e2e-pipeline/production`.
-* [deploy_server.py](deploy_server.py) - Launch a scoring server with best model - either local web server or local SageMaker container.
+* [deploy_server.py](deploy_server.py) - Launch a scoring server with the best model - either local web server or local SageMaker container - and submit scoring payload to `http://localhost:5001/invocations` endpoint.
 * [test.py](test.py) - Test to run the above train, register and deploy steps in sequence.
 
 ## Setup

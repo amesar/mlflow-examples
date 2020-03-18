@@ -17,7 +17,6 @@ def train(X_train, X_test, y_train, y_test, max_depth):
         predictions = dt.predict(X_test)
         rmse = np.sqrt(mean_squared_error(y_test, predictions))
         mlflow.log_metric("rmse", rmse)
-        #print(f"{rmse:5.3f} {max_depth:2d} {run.info.run_id} {run.info.experiment_id}")
         print(f"{rmse:5.3f} {max_depth:2d} {run.info.run_id} {run.info.experiment_id}")
         mlflow.sklearn.log_model(dt, "sklearn-model")
 

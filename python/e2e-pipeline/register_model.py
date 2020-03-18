@@ -48,6 +48,8 @@ def wait_until_version_ready(model_name, model_version, sleep_time=1, iterations
 
 def run(experiment_name, data_path, model_name):
     print(f"==== {__file__} ====")
+
+    # Get best run
     exp = client.get_experiment_by_name(experiment_name)
     runs = client.search_runs(exp.experiment_id, order_by=["metrics.rmse ASC"], max_results=1)
     best_run = runs[0]
@@ -56,19 +58,25 @@ def run(experiment_name, data_path, model_name):
     init(model_name)
     registered_model = client.get_registered_model(model_name)
 
+    # Create new model version
     source = f"{best_run.info.artifact_uri}/sklearn-model"
     version = client.create_model_version(model_name, source, best_run.info.run_id)
 
+    # Wait unti version is in READY status
     wait_until_version_ready(model_name, version, sleep_time=2)
     version = client.get_model_version(model_name,version.version)
     version_id = version.version
     show_version(version)
 
+    # Promote version to production stage
     client.update_model_version(model_name, version_id, stage="Production", description="My prod version")
-    version = client.get_model_version(model_name,version_id)
+    version = client.get_model_version(model_name, version_id)
     show_version(version)
 
+    # Get data to score
     _, X_test, _, _ = common.build_data(data_path)
+
+    # Fetch production model and score data
     model_uri = f"models:/{model_name}/production"
     model = mlflow.pyfunc.load_model(model_uri)
     predictions = model.predict(X_test)
