@@ -1,6 +1,6 @@
 import sys, time
 import psutil
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import Popen
 import mlflow
 import common
 import call_server
@@ -17,17 +17,19 @@ def kill(proc_pid):
     process.kill()
 
 def wait_until_ready(uri, data_path):
+    import requests
     data = common.to_json(data_path)
     start = time.time()
     for j in range(iterations): 
         rsp = None
         try:
             rsp = call_server.call(uri, data)
-        except Exception as e:
+        except requests.exceptions.ConnectionError as e:
             print(f"Calling scoring server: {j}/{iterations}")
-        time.sleep(sleep_time)
         if rsp is not None: 
+            print(f"Done waiting for {time.time()-start:5.2f} seconds")
             return rsp
+        time.sleep(sleep_time)
     raise Exception(f"ERROR: Timed out after {iterations} iterations waiting for server to launch")
 
 def run_local_webserver(model_uri, port):
