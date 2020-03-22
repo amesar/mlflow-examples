@@ -1,6 +1,7 @@
 import pytest
 import train
 import register_model
+import batch_score
 import deploy_server
 import common
 
@@ -17,5 +18,9 @@ def test_register_model():
     model_uri = register_model.run(common.experiment_name, common.data_path, common.model_name)
 
 @pytest.mark.run(order=3)
+def test_batch_score():
+    batch_score.score(model_uri, common.data_path)
+
+@pytest.mark.run(order=4)
 def test_deploy_server():
     deploy_server.run(model_uri, common.port, common.data_path, common.docker_image, launch_container)

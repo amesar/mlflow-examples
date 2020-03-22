@@ -1,13 +1,14 @@
 # mlflow-examples - e2e-pipeline
 
-End-to-end demonstation of training to real-time prediction with MLflow scoring server.
+End-to-end ML pipeline: training, model registry, deployment and prediction with MLflow scoring server.
 Basis of subsequent CI/CD pipeline.
-  
+
 ## Overview
-* [train.py](train.py) - Run several training runs with different hyperparameters.
-* [register_model.py](register_model.py) - Find the best run and register it as model version `models:/test-e2e-pipeline/production`.
-* [deploy_server.py](deploy_server.py) - Launch a scoring server with the best model - either local web server or local SageMaker container - and submit scoring payload to `http://localhost:5001/invocations` endpoint.
-* [test.py](test.py) - Test to run the above train, register and deploy steps in sequence.
+* [train.py](train.py) - Run several sklearn training runs with different hyperparameters.
+* [register_model.py](register_model.py) - Find the best run and register it as model version `models:/e2e-pipeline/production`.
+* [batch_score.py](batch_score.py) - Batch score with sklearn and pyfunc flavors.
+* [deploy_server.py](deploy_server.py) - Launch a scoring server and submit scoring payload to `http://localhost:5001/invocations` endpoint. The scoring server can be either local web server or local SageMaker container.
+* [test.py](test.py) - Test above steps - train, register, batch score and deploy.
 
 ## Setup
 ```
@@ -19,10 +20,11 @@ pip install pytest-ordering
 ## Run
 
 Default values - see [common.py](common.py):
-  * experiment name: `test-e2e-pipeline`
-  * model name: `test-e2e-pipeline`
-  * model URI:  `models:/test-e2e-pipeline/production`
-  * docker image name: `sm-test-e2e-pipeline`
+  * experiment name: `e2e-pipeline`
+  * model name: `e2e-pipeline`
+  * model URI:  `models:/e2e-pipeline/production`
+  * port: 5001
+  * docker image name: `sm-e2e-pipeline`
 
 ### Train
 ```
@@ -31,7 +33,7 @@ python train.py
 
 ```
 Arguments:
-  experiment_name: test-e2e-pipeline
+  experiment_name: e2e-pipeline
   data_path: ../../data/wine-quality-white.csv
 Experiment ID: 5
 Params: (1, 2, 4, 16)
@@ -48,12 +50,12 @@ python register_model.py
 ```
 ```
 Arguments:
-  experiment_name: test-e2e-pipeline
+  experiment_name: e2e-pipeline
   data_path: ../../data/wine-quality-white.csv
 Best run: 4c3da779aa8d48ff97f0c0ed9cafe47c 0.7592585886611769
-Found model test-e2e-pipeline
-Found 0 versions for model test-e2e-pipeline
-Reg Model: <class 'mlflow.entities.model_registry.registered_model.RegisteredModel'> {'_name': 'test-e2e-pipeline', '_creation_time': 1584292037095, '_last_updated_timestamp': 1584302072077, '_description': '', '_latest_version': [<ModelVersion: creation_timestamp=1584302072077, current_stage='None', description='', last_updated_timestamp=1584302072077, name='test-e2e-pipeline', run_id='4c3da779aa8d48ff97f0c0ed9cafe47c', source='file:///Users/ander/work/mlflow/server/local_mlrun/mlruns/5/4c3da779aa8d48ff97f0c0ed9cafe47c/artifacts/sklearn-model', status='READY', status_message='', user_id='', version='35'>]}
+Found model e2e-pipeline
+Found 0 versions for model e2e-pipeline
+Reg Model: <class 'mlflow.entities.model_registry.registered_model.RegisteredModel'> {'_name': 'e2e-pipeline', '_creation_time': 1584292037095, '_last_updated_timestamp': 1584302072077, '_description': '', '_latest_version': [<ModelVersion: creation_timestamp=1584302072077, current_stage='None', description='', last_updated_timestamp=1584302072077, name='e2e-pipeline', run_id='4c3da779aa8d48ff97f0c0ed9cafe47c', source='file:///Users/ander/work/mlflow/server/local_mlrun/mlruns/5/4c3da779aa8d48ff97f0c0ed9cafe47c/artifacts/sklearn-model', status='READY', status_message='', user_id='', version='35'>]}
 Version: id=36 status=READY state=None
 Waited 0.01 seconds
 Version: id=36 status=READY state=None
@@ -61,16 +63,31 @@ Version: id=36 status=READY state=Production
 predictions: [6.24342105 6.24342105 6.68112798 ... 6.68112798 5.94352941 5.35624284]
 ```
 
-### Deploy
+### Batch Score
 
-This script fetches the best model from the model registry and launches an MLflow socring server.
+Score the best model with sklearn and pyfunc flavors.
+
+```
+python batch_score.py
+```
+```
+sklearn score
+predictions: [6.24931129 6.74246575 6.74246575 ... 6.24931129 6.74246575 6.24931129]
+
+pyfunc score
+predictions: [6.24931129 6.74246575 6.74246575 ... 6.24931129 6.74246575 6.24931129]
+```
+
+### Deploy Scoring Server
+
+This script fetches the best model from the model registry and launches an MLflow scoring server.
 By default it launches a local web server - see [mlflow models serve](https://mlflow.org/docs/latest/cli.html#mlflow-models-serve). 
-If you specify the `launch_container` it will create a local SageMaker container - see [mlflow.sagemaker](https://mlflow.org/docs/latest/python_api/mlflow.sagemaker.html#mlflow-sagemaker).
+If you specify the `launch_container` option it will launch a local SageMaker container - see [mlflow.sagemaker](https://mlflow.org/docs/latest/python_api/mlflow.sagemaker.html#mlflow-sagemaker).
 
 #### Run local webserver
 
 Executes the following mlflow commands:
-  * `mlflow models serve --port 5001 --model-uri models:/test-e2e-pipeline/production`
+  * `mlflow models serve --port 5001 --model-uri models:/e2e-pipeline/production`
 
 ```
 python -u deploy_server.py 
@@ -78,16 +95,16 @@ python -u deploy_server.py
 ```
 Arguments:
   port: 5001
-  docker_image: sm-test-e2e-pipeline
-  model_uri: models:/test-e2e-pipeline/production
+  docker_image: sm-e2e-pipeline
+  model_uri: models:/e2e-pipeline/production
   launch_container: False
   data_path: ../../data/wine-quality-white.csv
 
-Command: mlflow models serve --port 5001 --model-uri models:/test-e2e-pipeline/production
+Command: mlflow models serve --port 5001 --model-uri models:/e2e-pipeline/production
 Process ID: 27572
-Trying again: 4/10000
+Calling scoring server: 4/10000
 . . . 
-Trying again: 8/10000
+Calling scoring server: 8/10000
 Ran pip subprocess with arguments:
 ['/Users/andre/miniconda/envs/mlflow-9373994feef365bde89b7072d1498bdbc226ba90/bin/python', '-m', 'pip', 'install', '-U', '-r', '/Users/ander/work/mlflow/server/local_mlrun/mlruns/2/868ce3ccb7c448fe9939c5b21c29ff0a/artifacts/sklearn-model/condaenv.kdzq1ifu.requirements.txt']
 Processing /Users/ander/Library/Caches/pip/wheels/6d/72/87/348958818bec20c3a64243396065e34600ada290199f96abfa/mlflow-1.7.0-py3-none-any.whl
@@ -95,6 +112,7 @@ Collecting cloudpickle==1.2.2
   Using cached cloudpickle-1.2.2-py2.py3-none-any.whl (25 kB)
 . . . 
 2020/03/15 22:44:36 INFO mlflow.models.cli: Selected backend for flavor 'python_function'
+Done waiting for 4.36 seconds
 Done waiting - OK - successful deploy - predictions: [5.335031847133758, 5.050955414012739, 5.726950354609929]
 Done waiting - killing process 27572
 ```
@@ -102,20 +120,26 @@ Done waiting - killing process 27572
 #### Run local SagemMaker container
 
 Executes the following mlflow commands:
-  * `mlflow sagemaker build-and-push-container --build --no-push --container sm-test-e2e-pipeline`
-  * `mlflow sagemaker run-local -m models:/test-e2e-pipeline/production -p 5001 --image sm-test-e2e-pipeline`
+  * `mlflow sagemaker build-and-push-container --build --no-push --container sm-e2e-pipeline`
+  * `mlflow sagemaker run-local -m models:/e2e-pipeline/production -p 5001 --image sm-e2e-pipeline`
 
 ```
 python -u deploy_server.py --launch_container
 ```
 ```
-Starting command: mlflow sagemaker build-and-push-container --build --no-push --container sm-test-e2e-pipeline
+Arguments:
+  port: 5001
+  docker_image: sm-e2e-pipeline
+  model_uri: models:/e2e-pipeline/production
+  launch_container: False
+  data_path: ../../data/wine-quality-white.csv
+Starting command: mlflow sagemaker build-and-push-container --build --no-push --container sm-e2e-pipeline
 . . .
 Successfully built a03004c4fa63
-Successfully tagged sm-test-e2e-pipeline:latest
-Done waiting for command: mlflow sagemaker build-and-push-container --build --no-push --container sm-test-e2e-pipeline
-Starting command: mlflow sagemaker run-local -m models:/test-e2e-pipeline/production -p 5001 --image sm-test-e2e-pipeline
-2020/03/15 22:48:34 INFO mlflow.models.docker_utils: Building docker image with name sm-test-e2e-pipeline
+Successfully tagged sm-e2e-pipeline:latest
+Done waiting for command: mlflow sagemaker build-and-push-container --build --no-push --container sm-e2e-pipeline
+Starting command: mlflow sagemaker run-local -m models:/e2e-pipeline/production -p 5001 --image sm-e2e-pipeline
+2020/03/15 22:48:34 INFO mlflow.models.docker_utils: Building docker image with name sm-e2e-pipeline
 /var/folders/_9/tbkxzw0116v2cp_zq4f1_1cm0000gp/T/tmp0q3cm6g9/
 /var/folders/_9/tbkxzw0116v2cp_zq4f1_1cm0000gp/T/tmp0q3cm6g9//Dockerfile
 Sending build context to Docker daemon  3.072kB
@@ -124,14 +148,14 @@ Calling scoring server: 0/10000
 . . .
 Calling scoring server: 23/10000
 . . .
+Done waiting for 65.36 seconds
 Done waiting - OK - Successful deploy - predictions: [5.335031847133758, 5.050955414012739, 5.726950354609929]
 Done waiting - killing process 27632
 ```
 
 ## Tests
 
-There are three tests run in sequential order - train, register and deploy.
-
+Run tests in sequential order.
 ```
 py.test -v test.py
 ```
@@ -139,6 +163,7 @@ py.test -v test.py
 ```
 test.py::test_train PASSED 
 test.py::test_register_model PASSED 
+test.py::test_batch_score PASSED 
 test.py::test_deploy_server PASSED 
-============================== 3 passed in 54.17s ===============================
+============================== 4 passed in 6.17s ===============================
 ```
