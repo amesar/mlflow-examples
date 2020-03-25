@@ -1,4 +1,4 @@
-# mlflow-examples - e2e-pipeline
+# mlflow-examples - e2e-ml-pipeline
 
 End-to-end ML pipeline: training, model registry, deployment and prediction with MLflow scoring server.
 Basis of subsequent CI/CD pipeline.
