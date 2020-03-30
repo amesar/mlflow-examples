@@ -10,6 +10,10 @@ Basis of subsequent CI/CD pipeline.
 * [deploy_server.py](deploy_server.py) - Launch a scoring server and submit scoring payload to `http://localhost:5001/invocations` endpoint. The scoring server can be either local web server or local SageMaker container.
 * [test.py](test.py) - Test above steps - train, register, batch score and deploy.
 
+## Diagram
+
+![e2e_ml_pipeline.png](e2e_ml_pipeline.png)
+
 ## Setup
 ```
 pip install psutil
