@@ -1,8 +1,8 @@
 # Databricks notebook source
-# MAGIC %md # Basic Sklearn MLflow train and predict
+# MAGIC %md # Sklearn MLflow train and predict for CICD
 # MAGIC * Trains and saves model as sklearn
 # MAGIC * Predicts using sklearn and pyfunc UDF flavors
-# MAGIC * https://demo.cloud.databricks.com/#mlflow/experiments/6230631
+# MAGIC * https://demo.cloud.databricks.com/#mlflow/experiments/ID6230897
 
 # COMMAND ----------
 
