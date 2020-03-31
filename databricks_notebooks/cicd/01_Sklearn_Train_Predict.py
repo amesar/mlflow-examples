@@ -2,7 +2,7 @@
 # MAGIC %md # Sklearn MLflow train and predict for CICD
 # MAGIC * Trains and saves model as sklearn
 # MAGIC * Predicts using sklearn and pyfunc UDF flavors
-# MAGIC * https://demo.cloud.databricks.com/#mlflow/experiments/ID6230897
+# MAGIC * https://demo.cloud.databricks.com/#mlflow/experiments/6231308
 
 # COMMAND ----------
 
@@ -32,14 +32,17 @@ experiment_name = dbutils.widgets.get("Experiment Name")
 max_depth = int(dbutils.widgets.get("Max Depth"))
 max_leaf_nodes = int(dbutils.widgets.get("Max Leaf Nodes"))
 run_name = dbutils.widgets.get("Run Name")
-experiment_name, run_name, max_depth, max_leaf_nodes
+
+print("experiment_name:",experiment_name)
+print("run_name:",run_name)
+print("max_depth:",max_depth)
 
 # COMMAND ----------
 
 client = mlflow.tracking.MlflowClient()
 mlflow.set_experiment(experiment_name)
 experiment = client.get_experiment_by_name(experiment_name)
-experiment.experiment_id, experiment_name
+print("experiment_id:",experiment.experiment_id)
 
 # COMMAND ----------
 
