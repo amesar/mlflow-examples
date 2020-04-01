@@ -22,27 +22,37 @@ print("sklearn version:",sklearn.__version__)
 
 # COMMAND ----------
 
-default_experiment_name = "/Users/andre.mesarovic@databricks.com/tmp/02a_Sklearn_Train_Predict"
-dbutils.widgets.text("Experiment Name", default_experiment_name) 
+#dbutils.widgets.remove("Experiment Name")
+
+# COMMAND ----------
+
+##default_experiment_name = get_experiment_name()
+
+dbutils.widgets.text("Experiment Name", "") 
 dbutils.widgets.text("Max Depth", "1") 
-dbutils.widgets.text("Max Leaf Nodes", "32")
 dbutils.widgets.text("Run Name", "Local")
+dbutils.widgets.text("Output", "dbfs:/tmp/mlflow_cicd_test.log")
 
 experiment_name = dbutils.widgets.get("Experiment Name")
 max_depth = int(dbutils.widgets.get("Max Depth"))
-max_leaf_nodes = int(dbutils.widgets.get("Max Leaf Nodes"))
 run_name = dbutils.widgets.get("Run Name")
+output_file = dbutils.widgets.get("Output")
 
 print("experiment_name:",experiment_name)
 print("run_name:",run_name)
+print("output_file:",output_file)
 print("max_depth:",max_depth)
 
 # COMMAND ----------
 
 client = mlflow.tracking.MlflowClient()
-mlflow.set_experiment(experiment_name)
+if experiment_name == "":
+    experiment_name = dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get()
+else:
+    mlflow.set_experiment(experiment_name)
 experiment = client.get_experiment_by_name(experiment_name)
 print("experiment_id:",experiment.experiment_id)
+print("experiment_name:",experiment.name)
 
 # COMMAND ----------
 
@@ -88,32 +98,36 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 # COMMAND ----------
 
 with mlflow.start_run(run_name=run_name) as run:
-    run_id = run.info.run_uuid
     print("MLflow:")
-    print("  run_id:",run_id)
+    print("  run_id:",run.info.run_id)
     print("  experiment_id:",run.info.experiment_id)
-    print("Parameters:")
     print("  max_depth:",max_depth)
-    print("  max_leaf_nodes:",max_leaf_nodes)
     mlflow.log_param("max_depth", max_depth)
-    mlflow.log_param("max_leaf_nodes", max_leaf_nodes)
+    mlflow.set_tag("run_name", run_name)
+    mlflow.set_tag("run_id", run.info.run_id)
+    mlflow.set_tag("experiment_id", experiment.experiment_id)
+    mlflow.set_tag("experiment_name", experiment_name)
 
-    model = DecisionTreeRegressor(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)
+    model = DecisionTreeRegressor(max_depth=max_depth)
     model.fit(train_x, train_y)
     mlflow.sklearn.log_model(model, "sklearn-model")
     
     predictions = model.predict(test_x)
     rmse = np.sqrt(mean_squared_error(test_y, predictions))
-    r2 = r2_score(test_y, predictions)
-    print("Metrics:")
     print("  rmse:",rmse)
-    print("  r2:",r2)
     mlflow.log_metric("rmse", rmse)
-    mlflow.log_metric("r2", r2) 
 
 # COMMAND ----------
 
-#display_run_uri(run.info.experiment_id, run_id)
+# MAGIC %md #### Write the run ID in DBFS log file
+
+# COMMAND ----------
+
+dbutils.fs.put(output_file, run.info.run_id, True)
+
+# COMMAND ----------
+
+#display_run_uri(run.info.experiment_id, run.info.run_id)
 # https://demo.cloud.databricks.com/#mlflow/experiments/6230591/runs/e5e4879ed7c447ffaa72dc7fec0833c6
 
 # COMMAND ----------
@@ -122,7 +136,7 @@ with mlflow.start_run(run_name=run_name) as run:
 
 # COMMAND ----------
 
-model_uri = "runs:/{}/sklearn-model".format(run_id)
+model_uri = "runs:/{}/sklearn-model".format(run.info.run_id)
 
 # COMMAND ----------
 
@@ -137,11 +151,8 @@ display(pd.DataFrame(predictions,columns=[colPrediction]))
 
 # COMMAND ----------
 
-# MAGIC %md #### Predict as UDF
+# MAGIC %scala
+# MAGIC dbutils.notebook.getContext.tags.mkString("\n")
 
 # COMMAND ----------
 
-df = spark.createDataFrame(data_to_predict)
-udf = mlflow.pyfunc.spark_udf(spark, model_uri)
-predictions = df.withColumn("prediction", udf(*df.columns))
-display(predictions)
