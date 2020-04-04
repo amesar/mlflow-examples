@@ -40,7 +40,7 @@ class Trainer():
 
         return X_train, X_test, y_train, y_test 
 
-    def train(self, max_depth, max_leaf_nodes, model_name):
+    def train(self, max_depth, max_leaf_nodes, model_name, output_path):
         with mlflow.start_run(run_name=self.run_origin) as run:  # NOTE: mlflow CLI ignores run_name
             run_id = run.info.run_uuid
             experiment_id = run.info.experiment_id
@@ -94,5 +94,12 @@ class Trainer():
             plot_file = "plot.png"
             plot_utils.create_plot_file(self.y_test, predictions, plot_file)
             mlflow.log_artifact(plot_file)
+
+            # Write run ID to file
+            if (output_path):
+                mlflow.set_tag("output_path", output_path)
+                output_path = output_path.replace("dbfs:","/dbfs")
+                with open(output_path, "w") as f:
+                    f.write(run_id)
 
         return (experiment_id,run_id)
