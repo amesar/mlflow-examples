@@ -1,8 +1,7 @@
 # Databricks notebook source
-# MAGIC %md # Sklearn MLflow train and predict for CICD
+# MAGIC %md # Sklearn MLflow train and predict for CICD example
 # MAGIC * Trains and saves model as sklearn
-# MAGIC * Predicts using sklearn and pyfunc UDF flavors
-# MAGIC * https://demo.cloud.databricks.com/#mlflow/experiments/6231308
+# MAGIC * Predicts using sklearn flavors
 
 # COMMAND ----------
 
@@ -18,15 +17,9 @@ import sklearn
 import mlflow
 import mlflow.sklearn
 print("MLflow Version:", mlflow.__version__)
-print("sklearn version:",sklearn.__version__)
+print("sklearn version:", sklearn.__version__)
 
 # COMMAND ----------
-
-#dbutils.widgets.remove("Experiment Name")
-
-# COMMAND ----------
-
-##default_experiment_name = get_experiment_name()
 
 dbutils.widgets.text("Experiment Name", "") 
 dbutils.widgets.text("Max Depth", "1") 
@@ -119,7 +112,7 @@ with mlflow.start_run(run_name=run_name) as run:
 
 # COMMAND ----------
 
-# MAGIC %md #### Write the run ID in DBFS log file
+# MAGIC %md #### Write the run ID to a DBFS log file
 
 # COMMAND ----------
 
@@ -127,16 +120,11 @@ dbutils.fs.put(output_file, run.info.run_id, True)
 
 # COMMAND ----------
 
-#display_run_uri(run.info.experiment_id, run.info.run_id)
-# https://demo.cloud.databricks.com/#mlflow/experiments/6230591/runs/e5e4879ed7c447ffaa72dc7fec0833c6
-
-# COMMAND ----------
-
 # MAGIC %md ### Predict
 
 # COMMAND ----------
 
-model_uri = "runs:/{}/sklearn-model".format(run.info.run_id)
+model_uri = f"runs:/{run.info.run_id}/sklearn-model"
 
 # COMMAND ----------
 
@@ -148,11 +136,3 @@ model = mlflow.sklearn.load_model(model_uri)
 data_to_predict = data.drop(colLabel, axis=1)
 predictions = model.predict(data_to_predict)
 display(pd.DataFrame(predictions,columns=[colPrediction]))
-
-# COMMAND ----------
-
-# MAGIC %scala
-# MAGIC dbutils.notebook.getContext.tags.mkString("\n")
-
-# COMMAND ----------
-
