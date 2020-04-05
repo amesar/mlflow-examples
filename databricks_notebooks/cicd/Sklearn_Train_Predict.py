@@ -1,7 +1,16 @@
 # Databricks notebook source
 # MAGIC %md # Sklearn MLflow train and predict for CICD example
+# MAGIC 
+# MAGIC **Overview**
+# MAGIC * Notebook runs both as interactive and as a notebook task from job run
 # MAGIC * Trains and saves model as sklearn
 # MAGIC * Predicts using sklearn flavors
+# MAGIC 
+# MAGIC **Widgets**
+# MAGIC * Experiment Name - If blank will use the default notebook experiment. The notebook experiment is not available when you run the notebook as a job, so we have to explicity call `mlflow.set_experiment()`.
+# MAGIC * Max Depth - Parameter to model run
+# MAGIC * Run Name - Name associated with the MLflow run.
+# MAGIC * Scratch Dir - Folder where to copy the wine quality dataset.
 
 # COMMAND ----------
 
@@ -9,49 +18,50 @@
 
 # COMMAND ----------
 
-# MAGIC %run ./common
-
-# COMMAND ----------
-
+import os
+import requests
 import sklearn
 import mlflow
 import mlflow.sklearn
-print("MLflow Version:", mlflow.__version__)
-print("sklearn version:", sklearn.__version__)
+print("MLflow version:", mlflow.__version__)
+print("Sklearn version:", sklearn.__version__)
 
 # COMMAND ----------
 
 dbutils.widgets.text("Experiment Name", "") 
 dbutils.widgets.text("Max Depth", "1") 
-dbutils.widgets.text("Run Name", "Local")
-dbutils.widgets.text("Output", "dbfs:/tmp/mlflow_cicd_test.log")
+dbutils.widgets.text("Run Name", "Interactive")
+dbutils.widgets.text("Scratch Dir", "dbfs:/tmp/mlflow_cicd")
 
 experiment_name = dbutils.widgets.get("Experiment Name")
 max_depth = int(dbutils.widgets.get("Max Depth"))
 run_name = dbutils.widgets.get("Run Name")
-output_file = dbutils.widgets.get("Output")
+scratch_dir = dbutils.widgets.get("Scratch Dir")
 
-print("experiment_name:",experiment_name)
-print("run_name:",run_name)
-print("output_file:",output_file)
-print("max_depth:",max_depth)
+output_file = os.path.join(scratch_dir,"mlflow_cicd.log")
+print("experiment_name:", experiment_name)
+print("run_name:", run_name)
+print("scratch_dir:", scratch_dir)
+print("output_file:", output_file)
+print("max_depth:", max_depth)
+
+dbutils.fs.mkdirs(scratch_dir)
 
 # COMMAND ----------
 
 client = mlflow.tracking.MlflowClient()
-if experiment_name == "":
+if experiment_name == "": # if running as notebook
     experiment_name = dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get()
-else:
+else: # if running as job
     mlflow.set_experiment(experiment_name)
 experiment = client.get_experiment_by_name(experiment_name)
-print("experiment_id:",experiment.experiment_id)
-print("experiment_name:",experiment.name)
+print("experiment_id:", experiment.experiment_id)
+print("experiment_name:", experiment.name)
 
 # COMMAND ----------
 
 colLabel = "quality"
 colPrediction = "prediction"
-colFeatures = "features"
 
 # COMMAND ----------
 
@@ -59,18 +69,28 @@ colFeatures = "features"
 
 # COMMAND ----------
 
-data_path = download_wine_file()
+def download_uri(uri, path):
+    if os.path.exists(path):
+        print(f"File {path} already exists")
+    else:
+        print(f"Downloading:\n  src: {uri}\n  dst: {path}")
+        rsp = requests.get(uri)
+        dbutils.fs.put(path, rsp.text, True)
+
+WINE_URI = "https://raw.githubusercontent.com/amesar/mlflow-examples/master/data/wine-quality-white.csv"
+data_path = os.path.join(scratch_dir, "wine-quality-white.csv")
+download_uri(WINE_URI, data_path)
 
 # COMMAND ----------
 
 import pandas as pd
-data = pd.read_csv(data_path)
+data = pd.read_csv(data_path.replace("dbfs:","/dbfs"))
 
 # COMMAND ----------
 
 from sklearn.model_selection import train_test_split
 
-train, test = train_test_split(data, test_size=0.30, random_state=2019)
+train, test = train_test_split(data, test_size=0.30, random_state=42)
 train_x = train.drop([colLabel], axis=1)
 test_x = test.drop([colLabel], axis=1)
 train_y = train[colLabel]
@@ -95,11 +115,15 @@ with mlflow.start_run(run_name=run_name) as run:
     print("  run_id:",run.info.run_id)
     print("  experiment_id:",run.info.experiment_id)
     print("  max_depth:",max_depth)
+    print("  scratch_dir:",scratch_dir)
+    print("  data_path:",data_path)
+
     mlflow.log_param("max_depth", max_depth)
-    mlflow.set_tag("run_name", run_name)
     mlflow.set_tag("run_id", run.info.run_id)
     mlflow.set_tag("experiment_id", experiment.experiment_id)
     mlflow.set_tag("experiment_name", experiment_name)
+    mlflow.set_tag("scratch_dir", scratch_dir)
+    mlflow.set_tag("data_path", data_path)
 
     model = DecisionTreeRegressor(max_depth=max_depth)
     model.fit(train_x, train_y)
@@ -109,6 +133,19 @@ with mlflow.start_run(run_name=run_name) as run:
     rmse = np.sqrt(mean_squared_error(test_y, predictions))
     print("  rmse:",rmse)
     mlflow.log_metric("rmse", rmse)
+
+# COMMAND ----------
+
+# MAGIC %md ### Display Run URI
+
+# COMMAND ----------
+
+try:
+    host_name = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().get("browserHostName").get()
+    uri = f"https://{host_name}/#mlflow/experiments/{run.info.experiment_id}/runs/{run.info.run_id}"
+    displayHTML("""<b>Run URI:</b> <a href="{}">{}</a>""".format(uri,uri))
+except Exception as e: # py4j.protocol.Py4JJavaError
+    pass
 
 # COMMAND ----------
 
@@ -136,3 +173,15 @@ model = mlflow.sklearn.load_model(model_uri)
 data_to_predict = data.drop(colLabel, axis=1)
 predictions = model.predict(data_to_predict)
 display(pd.DataFrame(predictions,columns=[colPrediction]))
+
+# COMMAND ----------
+
+# MAGIC %md ### Check scratch directory
+
+# COMMAND ----------
+
+os.environ["SCRATCH_DIR"] = scratch_dir.replace("dbfs:","/dbfs")
+
+# COMMAND ----------
+
+# MAGIC %sh ls -l $SCRATCH_DIR
