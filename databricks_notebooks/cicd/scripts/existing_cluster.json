@@ -1,0 +1,13 @@
+{
+  "name": "MLflow CICD Notebook Existing Cluster",
+  "existing_cluster_id": "{CLUSTER_ID}",
+  "notebook_task": {
+    "notebook_path": "/Users/john.doe@acme.com/tmp/mlflow_cicd/Sklearn_Train_Predict",
+    "base_parameters": { 
+       "Experiment Name": "/Users/john.doe@acme.com/tmp/mlflow_cicd/Sklearn_Train_Predict_exp",
+       "Run Name": "MLflow CICD Notebook Existing Cluster",
+       "Scratch Dir": "dbfs:/john.doe@acme.com/tmp/mlflow_cicd/job_run"
+    }
+  },
+  "timeout_seconds": 3600
+}
