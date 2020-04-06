@@ -1,3 +1,4 @@
+import os
 import pytest
 import train
 import register_model
@@ -6,7 +7,9 @@ import deploy_server
 import common
 
 model_uri = None
-launch_container = False
+
+launch_container = os.environ.get("LAUNCH_CONTAINER",False)
+print("launch_container.2:",launch_container)
 
 @pytest.mark.run(order=1)
 def test_train():
