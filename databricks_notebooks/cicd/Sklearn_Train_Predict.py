@@ -38,7 +38,8 @@ max_depth = int(dbutils.widgets.get("Max Depth"))
 run_name = dbutils.widgets.get("Run Name")
 scratch_dir = dbutils.widgets.get("Scratch Dir")
 
-output_file = os.path.join(scratch_dir,"mlflow_cicd.log")
+output_file = os.path.join(scratch_dir, "mlflow_cicd.log")
+
 print("experiment_name:", experiment_name)
 print("run_name:", run_name)
 print("scratch_dir:", scratch_dir)
@@ -140,12 +141,18 @@ with mlflow.start_run(run_name=run_name) as run:
 
 # COMMAND ----------
 
-try:
-    host_name = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().get("browserHostName").get()
+def get_tag(tag_name):
+    try:
+        return dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().get(tag_name).get()
+    except Exception as e: # py4j.protocol.Py4JJavaError
+        return None
+
+# COMMAND ----------
+
+host_name = get_tag("browserHostName")
+if host_name:
     uri = f"https://{host_name}/#mlflow/experiments/{run.info.experiment_id}/runs/{run.info.run_id}"
     displayHTML("""<b>Run URI:</b> <a href="{}">{}</a>""".format(uri,uri))
-except Exception as e: # py4j.protocol.Py4JJavaError
-    pass
 
 # COMMAND ----------
 
