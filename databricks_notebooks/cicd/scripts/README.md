@@ -104,7 +104,7 @@ python -u cicd_driver.py \
   --src_dir https://raw.githubusercontent.com/amesar/mlflow-examples/master/databricks_notebooks/cicd \
   --src_files Sklearn_Train_Predict.py \
   --dst_dir /Users/john.doe@databricks.com/tmp/cicd \
-  --cluster_spec new_cluster.json
+  --cluster_spec new_cluster.json \
   --scratch_dir out \
   --report_file report.json
 ```
@@ -114,8 +114,8 @@ python -u cicd_driver.py \
 python -u cicd_driver.py \
   --src_dir /Users/john.doe@databricks.com/mlflow/mlflow_galleries/cicd \
   --src_files Sklearn_Train_Predict.py \
-  --dst_dir /Users/john.doe@databricks.com/tmp/cicd\
-  --cluster_spec new_cluster.json
+  --dst_dir /Users/john.doe@databricks.com/tmp/cicd \
+  --cluster_spec new_cluster.json \
   --scratch_dir out \
   --report_file report.json
 ```
