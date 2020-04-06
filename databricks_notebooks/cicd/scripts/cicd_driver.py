@@ -12,6 +12,9 @@ from databricks_cli.sdk.service import WorkspaceService, JobsService, DbfsServic
 import mlflow
 from base_cicd_driver import BaseCicdDriver, fmt
 
+def strip_underscores(obj):
+    return { k[1:]:v for (k,v) in obj.__dict__.items() }
+
 class CicdDriver(BaseCicdDriver):
     def __init__(self, profile, src_dir, files, dst_dir, scratch_dir, cluster_spec_file, report_file, args):
         super().__init__(profile, cluster_spec_file, args)
@@ -123,13 +126,20 @@ class CicdDriver(BaseCicdDriver):
         experiment = client.get_experiment(run.info.experiment_id)
         run_uri = f"{self.host}/#mlflow/experiments/{run.info.experiment_id}/runs/{run.info.run_id}"
         print(f"Run info:")
-        print(f"  Run ID: {run.info.run_id}")
         print(f"  Experiment ID: {run.info.experiment_id}")
         print(f"  Experiment Name: {experiment.name}")
+        print(f"  Run ID: {run.info.run_id}")
+        print(f"  Run params: {run.data.params}")
+        print(f"  Run metrics: {run.data.metrics}")
         print(f"  Run URI: {run_uri}")
         print(f'  Browser: open -a "Google Chrome" "{run_uri}"')
-        self.report["mlflow_run"] = { "run_id": run.info.run_id, "experiment_id": run.info.experiment_id,
-            "experiment_name": experiment.name, "run_uri": run_uri }
+
+        self.report["mlflow_run"] =  \
+            { "run_uri": run_uri,
+              "run": { "info": strip_underscores(run.info), 
+                       "params": run.data.params, 
+                       "metrics": run.data.metrics, 
+                       "tags": run.data.tags } }
 
     
     def run(self):
