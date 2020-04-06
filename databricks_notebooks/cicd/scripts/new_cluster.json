@@ -6,11 +6,12 @@
     "num_workers": 1
   },
   "notebook_task": {
-    "notebook_path": "/Users/john.doe@acme.com/tmp/cicd/Sklearn_Train_Predict",
+    "notebook_path": "/Users/john.doe@acme.com/tmp/mlflow_cicd/Sklearn_Train_Predict",
     "base_parameters": {
-       "Experiment Name": "/Users/john.doe@acme.com/tmp/Sklearn_Train_Predict",
-       "Run Name": "MLflow CICD Notebook New Cluster",
-       "Scratch Dir": "dbfs:/john.doe@acme.com/tmp/mlflow_cicd/notebook"
+       "Experiment Name": "/Users/john.doe@acme.com/tmp/mlflow_cicd/Sklearn_Train_Predict_exp",
+       "Run Name": "MLflow CICD Notebook Existing Cluster",
+       "Scratch Dir": "dbfs:/john.doe@acme.com/tmp/mlflow_cicd/job_run",
+       "Max Depth": 8
     }
   },
   "timeout_seconds": 3600

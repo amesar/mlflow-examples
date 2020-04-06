@@ -1,0 +1,111 @@
+{
+  "info": {
+    "start_time": "2020-04-06_02:31:50",
+    "result_state": "SUCCESS",
+    "end_time": "2020-04-06_02:32:06"
+  },
+  "arguments": {
+    "profile": null,
+    "src_dir": "https://raw.githubusercontent.com/amesar/mlflow-examples/master/databricks_notebooks/cicd",
+    "src_files": "Sklearn_Train_Predict.py",
+    "dst_dir": "/Users/john.doe@acme.com/tmp/mlflow_cicd",
+    "scratch_dir": "out",
+    "cluster_spec_file": "new_cluster.json.json",
+    "report_file": "report.json"
+  },
+  "cluster_spec_file": "new_cluster.json",
+  "cluster_spec": {
+    "existing_cluster_id": "0303-131908-ills262",
+    "notebook_task": {
+      "notebook_path": "/Users/john.doe@acme.com/tmp/mlflow_cicd/Sklearn_Train_Predict",
+      "base_parameters": {
+        "Experiment Name": "/Users/john.doe@acme.com/tmp/mlflow_cicd/Sklearn_Train_Predict_exp",
+        "Run Name": "Laptop MLflow CICD Notebook Existing Cluster",
+        "Scratch Dir": "dbfs:/john.doe@acme.com/tmp/mlflow_cicd/job_run",
+        "Max Depth": 8
+      }
+    },
+    "timeout_seconds": 3600,
+    "run_name": "MLflow CICD Notebook Existing Cluster"
+  },
+  "downloaded_files": [
+    "https://raw.githubusercontent.com/amesar/mlflow-examples/master/databricks_notebooks/cicd/Sklearn_Train_Predict.py"
+  ],
+  "uploaded_files": [
+    "/Users/john.doe@acme.com/tmp/mlflow_cicd/Sklearn_Train_Predict"
+  ],
+  "databricks_job": {
+    "job_id": 33535,
+    "run_id": 2398567,
+    "number_in_job": 1,
+    "state": {
+      "life_cycle_state": "TERMINATED",
+      "result_state": "SUCCESS",
+      "state_message": ""
+    },
+    "task": {
+      "notebook_task": {
+        "notebook_path": "/Users/john.doe@acme.com/tmp/mlflow_cicd/Sklearn_Train_Predict",
+        "base_parameters": {
+          "Experiment Name": "/Users/john.doe@acme.com/tmp/mlflow_cicd/Sklearn_Train_Predict_exp",
+          "Run Name": "Laptop MLflow CICD Notebook Existing Cluster",
+          "Scratch Dir": "dbfs:/john.doe@acme.com/tmp/mlflow_cicd/job_run",
+          "Max Depth": "8"
+        }
+      }
+    },
+    "cluster_spec": {
+      "existing_cluster_id": "0303-131908-ills262"
+    },
+    "cluster_instance": {
+      "cluster_id": "0303-131908-ills262",
+      "spark_context_id": "8835776947823885837"
+    },
+    "start_time": 1586154712222,
+    "setup_duration": 1000,
+    "execution_duration": 10000,
+    "cleanup_duration": 0,
+    "creator_user_name": "john.doe@acme.com",
+    "run_name": "MLflow CICD Notebook Existing Cluster",
+    "run_page_url": "https://demo.cloud.databricks.com#job/33535/run/1",
+    "run_type": "SUBMIT_RUN"
+  },
+  "mlflow_run": {
+    "run_uri": "https://demo.cloud.databricks.com/#mlflow/experiments/6276803/runs/432d2ca7e9bc4042b022dffcbca7d49e",
+    "run": {
+      "info": {
+        "run_uuid": "432d2ca7e9bc4042b022dffcbca7d49e",
+        "run_id": "432d2ca7e9bc4042b022dffcbca7d49e",
+        "experiment_id": "6276803",
+        "user_id": "",
+        "status": "FINISHED",
+        "start_time": 1586154720761,
+        "end_time": 1586154721903,
+        "lifecycle_stage": "active",
+        "artifact_uri": "dbfs:/databricks/mlflow/6276803/432d2ca7e9bc4042b022dffcbca7d49e/artifacts"
+      },
+      "params": {
+        "max_depth": "8"
+      },
+      "metrics": {
+        "rmse": 0.7444946754042513
+      },
+      "tags": {
+        "data_path": "dbfs:/john.doe@acme.com/tmp/mlflow_cicd/job_run/wine-quality-white.csv",
+        "experiment_id": "6276803",
+        "experiment_name": "/Users/john.doe@acme.com/tmp/mlflow_cicd/Sklearn_Train_Predict_exp",
+        "mlflow.databricks.jobID": "33535",
+        "mlflow.databricks.jobRunID": "1",
+        "mlflow.databricks.jobType": "notebook",
+        "mlflow.databricks.webappURL": "https://demo.cloud.databricks.com",
+        "mlflow.log-model.history": "[{\"run_id\":\"432d2ca7e9bc4042b022dffcbca7d49e\",\"artifact_path\":\"sklearn-model\",\"utc_time_created\":\"2020-04-06 06:32:01.155891\",\"flavors\":{\"python_function\":{\"loader_module\":\"mlflow.sklearn\",\"python_version\":\"3.7.3\",\"data\":\"model.pkl\",\"env\":\"conda.yaml\"},\"sklearn\":{\"pickled_model\":\"model.pkl\",\"sklearn_version\":\"0.20.3\",\"serialization_format\":\"cloudpickle\"}}}]",
+        "mlflow.runName": "Laptop MLflow CICD Notebook Existing Cluster",
+        "mlflow.source.name": "jobs/33535/run/1",
+        "mlflow.source.type": "JOB",
+        "mlflow.user": "john.doe@acme.com",
+        "run_id": "432d2ca7e9bc4042b022dffcbca7d49e",
+        "scratch_dir": "dbfs:/john.doe@acme.com/tmp/mlflow_cicd/job_run"
+      }
+    }
+  }
+}
