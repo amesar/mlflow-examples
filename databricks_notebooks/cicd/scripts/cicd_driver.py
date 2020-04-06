@@ -34,6 +34,7 @@ class CicdDriver(BaseCicdDriver):
     def mk_dst_path(self, path):
         return os.path.join(self.dst_dir, path)
 
+
     def download_from_git(self, uri):
         """ Download notebooks from git """
         filename = os.path.basename(uri)
@@ -87,9 +88,7 @@ class CicdDriver(BaseCicdDriver):
             content = base64.b64encode(content.encode()).decode()
             self.workspace_service.import_workspace(opath, language="PYTHON", content=content, overwrite=True) # OK for dbx
         self.report["uploaded_files"] = [ self.mk_dst_path(file).replace(".py","") for file in files ]
-    
 
-    
 
     def check_run(self, job_run):
         """ Check results of the job run and the MLflow run"""
@@ -109,7 +108,7 @@ class CicdDriver(BaseCicdDriver):
             return
 
         # Checking MLflow run
-        print("**** Check MLflow run")
+        print("**** Checking MLflow run")
         client = mlflow.tracking.MlflowClient()
         print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 
@@ -155,10 +154,10 @@ class CicdDriver(BaseCicdDriver):
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument("--profile", dest="profile", help="~/.databrickscfg profile", default=None)
-    parser.add_argument("--src_dir", dest="src_dir", help="Source - Databricks workspace folder or https://raw.github URI", required=True)
-    parser.add_argument("--src_files", dest="src_files", help="Source files - comma delimited", required=True)
-    parser.add_argument("--dst_dir", dest="dst_dir", help="Destination Databricks workspace folder", required=True)
+    parser.add_argument("--profile", dest="profile", help="Profile in ~/.databrickscfg profile", default=None)
+    parser.add_argument("--src_dir", dest="src_dir", help="https://raw.github URI or Databricks workspace folder", required=True)
+    parser.add_argument("--src_files", dest="src_files", help="Source notebooks - comma delimited", required=True)
+    parser.add_argument("--dst_dir", dest="dst_dir", help="Destination Databricks scratch workspace folder", required=True)
     parser.add_argument("--scratch_dir", dest="scratch_dir", help="Temporary scratch folder for downloaded notebooks", default="out")
     parser.add_argument("--cluster_spec_file", dest="cluster_spec_file", help="JSON cluster spec file", required=True)
     parser.add_argument("--report_file", dest="report_file", help="Report file", default="report.json")
