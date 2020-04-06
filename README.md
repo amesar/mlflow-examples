@@ -2,6 +2,39 @@
 
 MLflow examples - basic and advanced.
 
+## Examples
+
+**Python examples**
+* [hello_world](python/hello_world) - Hello World - no training or scoring.
+* [sklearn](python/sklearn) - Scikit-learn model - train and score. ONNX too.
+* [sparkml](python/sparkml) - Spark ML model - train and score.  ONNX too.
+* [keras](python/keras) - Keras/Tensorflow - train and score. ONNX too.
+* [xgboost](python/xgboost) - XGBoost (sklearn wrapper) model - train and score.
+* [pytorch](python/pytorch) - Pytorch  - train and score. ONNX too.
+* [onnx](python/onnx) - Convert sklearn model to ONNX flavor - train and score.
+* [model_registry](python/model_registry) - Jupyter notebook sampling the Model Registry API.
+* [e2e-ml-pipeline](python/e2e-ml-pipeline) - End-to-end ML pipeline - training to real-time scoring.
+* [reproduce](python/reproduce) - Reproduce an existing run.
+* [benchmarks](python/benchmarks) - Simple scoring server performance benchmark.
+
+The sklearn and Spark ML examples also showcase:
+* Different ways to run a project with the mlflow CLI 
+* Real-time server scoring with docker containers
+* Running a project against a Databricks cluster
+
+**Scala examples - uses the MLflow Java client**
+* [hello_world](scala/sparkml/README.md#hello_world) - Hello World - no training or scoring.
+* [sparkml](scala/sparkml/) - Scala Spark ML train and score.
+* [mleap](scala/mleap) - Score an MLeap model with MLeap runtime (no Spark dependencies).
+* [onnx](scala/onnx) - Score an ONNX model (that was created in Scikit-learn) in Java.
+
+**Databricks**
+* [databricks_notebooks](databricks_notebooks) - Databricks notebooks
+* [Notebook CICD](databricks_notebooks/cicd) - Lighweight CICD example with Databricks notebook
+
+**Other**
+* [docker](docker) - MLflow tracking server and MySQL database containers.
+
 ## Setup
 
 Use Python 3.7.5
@@ -88,34 +121,6 @@ Before running an experiment
 export MLFLOW_TRACKING_URI=http://localhost:5000
 ```
 
-### Samples
-
-**Python examples**
-* [hello_world](python/hello_world) - Hello World - no training or scoring.
-* [sklearn](python/sklearn) - Scikit-learn model - train and score. ONNX too.
-* [sparkml](python/sparkml) - Spark ML model - train and score.  ONNX too.
-* [keras](python/keras) - Keras/Tensorflow - train and score. ONNX too.
-* [xgboost](python/xgboost) - XGBoost (sklearn wrapper) model - train and score.
-* [pytorch](python/pytorch) - Pytorch  - train and score. ONNX too.
-* [onnx](python/onnx) - Convert sklearn model to ONNX flavor - train and score.
-* [model_registry](python/model_registry) - Jupyter notebook sampling the Model Registry API.
-* [e2e-ml-pipeline](python/e2e-ml-pipeline) - End-to-end ML pipeline - training to real-time scoring.
-* [reproduce](python/reproduce) - Reproduce an existing run.
-* [benchmarks](python/benchmarks) - Simple scoring server performance benchmark.
-
-The sklearn and sparkml examples also showcase:
-* Different ways to run a project with the mlflow CLI 
-* Real-time server scoring with docker containers
-* Running a project against a Databricks cluster
-
-**Scala examples - uses the MLflow Java client**
-* [hello_world](scala/sparkml/README.md#hello_world) - Hello World - no training or scoring.
-* [sparkml](scala/sparkml/) - Scala Spark ML train and score.
-* [mleap](scala/mleap) - Score an MLeap model with MLeap runtime (no Spark dependencies).
-* [onnx](scala/onnx) - Score an ONNX model (that was created in Scikit-learn) in Java.
-
-**Other**
-* [docker](docker) - MLflow tracking server and MySQL database containers.
 
 ## Data
 
