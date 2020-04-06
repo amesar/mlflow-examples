@@ -9,7 +9,7 @@ import common
 model_uri = None
 
 launch_container = os.environ.get("LAUNCH_CONTAINER",False)
-print("launch_container.2:",launch_container)
+print("launch_container:",launch_container)
 
 @pytest.mark.run(order=1)
 def test_train():
