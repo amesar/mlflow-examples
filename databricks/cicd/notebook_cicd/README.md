@@ -101,7 +101,7 @@ See [cicd_driver.py](cicd_driver.py) and [base_cicd_driver.py](base_cicd_driver.
 #### Run by downloading notebook from github
 ```
 python -u cicd_driver.py \
-  --src_dir https://raw.githubusercontent.com/amesar/mlflow-examples/master/databricks_notebooks/cicd \
+  --src_dir https://raw.githubusercontent.com/amesar/mlflow-examples/master/databricks/cicd/notebook_cicd/notebooks \
   --src_files Sklearn_Train_Predict.py \
   --dst_dir /Users/john.doe@databricks.com/tmp/cicd \
   --cluster_spec new_cluster.json \
@@ -124,7 +124,7 @@ python -u cicd_driver.py \
 ```
 Arguments:
   profile: None
-  src_dir: https://raw.githubusercontent.com/amesar/mlflow-examples/master/databricks_notebooks/cicd
+  --src_dir https://raw.githubusercontent.com/amesar/mlflow-examples/master/databricks/cicd/notebook_cicd/notebooks \
   src_files: Sklearn_Train_Predict.py
   dst_dir: /Users/john.doe@acme.com/tmp/mlflow_cicd
   scratch_dir: out
@@ -132,7 +132,7 @@ Arguments:
   report_file: report.json
 Host: https://acme.cloud.databricks.com
 **** Downloading notebooks
-Downloading https://raw.githubusercontent.com/amesar/mlflow-examples/master/databricks_notebooks/cicd/Sklearn_Train_Predict.py to out
+https://raw.githubusercontent.com/amesar/mlflow-examples/master/databricks/cicd/notebook_cicd/notebooks/Sklearn_Train_Predict.py to out
 **** Importing notebooks into Databricks
 Importing into /Users/john.doe@acme.com/tmp/mlflow_cicd/Sklearn_Train_Predict
 **** Running MLflow training job
@@ -169,7 +169,7 @@ A JSON report of the run is also created - see [report.json](samples/report.json
   },
   "arguments": {
     "profile": null,
-    "src_dir": "https://raw.githubusercontent.com/amesar/mlflow-examples/master/databricks_notebooks/cicd",
+    "src_dir": "https://raw.githubusercontent.com/amesar/mlflow-examples/master/databricks/cicd/notebook_cicd/notebooks",
     "src_files": "Sklearn_Train_Predict.py",
     "dst_dir": "/Users/john.doe@acme.com/tmp/mlflow_cicd",
     "scratch_dir": "out",
@@ -192,7 +192,7 @@ A JSON report of the run is also created - see [report.json](samples/report.json
     "run_name": "MLflow CICD Notebook Existing Cluster"
   },
   "downloaded_files": [
-    "https://raw.githubusercontent.com/amesar/mlflow-examples/master/databricks_notebooks/cicd/Sklearn_Train_Predict.py"
+    "https://raw.githubusercontent.com/amesar/mlflow-examples/master/databricks/cicd/notebook_cicd/notebooks/Sklearn_Train_Predict.py"
   ],
   "uploaded_files": [
     "/Users/john.doe@acme.com/tmp/mlflow_cicd/Sklearn_Train_Predict"
