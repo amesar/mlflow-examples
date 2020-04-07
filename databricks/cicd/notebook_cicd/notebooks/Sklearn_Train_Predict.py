@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %md # Sklearn MLflow train and predict for CICD example
+# MAGIC %md # Notebook for Lightweight MLflow CICD example
 # MAGIC 
 # MAGIC **Overview**
 # MAGIC * Notebook runs both as interactive and as a notebook task from job run
@@ -103,7 +103,6 @@ test_y = test[colLabel]
 
 # COMMAND ----------
 
-import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
