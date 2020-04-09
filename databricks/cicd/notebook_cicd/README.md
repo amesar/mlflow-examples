@@ -145,7 +145,7 @@ Waited 6.9 seconds
 state: {'life_cycle_state': 'TERMINATED', 'result_state': 'SUCCESS', 'state_message': ''}
 **** Checking MLflow run
 Tracking URI: databricks
-Output file: dbfs:/john.doe@acme.com/tmp/mlflow_cicd/job_run/mlflow_cicd.log
+Output file: dbfs:/john.doe@acme.com/tmp/mlflow_cicd/notebook_run/mlflow_cicd.log
 Run info:
   Experiment ID: 6276803
   Experiment Name: /Users/john.doe@acme.com/tmp/mlflow_cicd/Sklearn_Train_Predict_exp
@@ -184,7 +184,7 @@ A JSON report of the run is also created - see [report.json](samples/report.json
       "base_parameters": {
         "Experiment Name": "/Users/john.doe@acme.com/tmp/mlflow_cicd/Sklearn_Train_Predict_exp",
         "Run Name": "Laptop MLflow CICD Notebook Existing Cluster",
-        "Scratch Dir": "dbfs:/john.doe@acme.com/tmp/mlflow_cicd/job_run",
+        "Scratch Dir": "dbfs:/john.doe@acme.com/tmp/mlflow_cicd/notebook_run",
         "Max Depth": 8
       }
     },
