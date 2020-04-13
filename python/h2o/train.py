@@ -35,6 +35,9 @@ def train(data_path, ntrees, log_as_onnx):
         mlflow.log_metric("r2", rf.r2())
         mlflow.log_metric("mae", rf.mae())
 
+        mlflow.set_tag("mlflow_version", mlflow.__version__)
+        mlflow.set_tag("h2o_version", h2o.__version__)
+
         mlflow.h2o.log_model(rf, "h2o-model")
 
         if log_as_onnx:
