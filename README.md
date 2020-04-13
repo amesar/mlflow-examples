@@ -12,7 +12,7 @@ MLflow examples - basic and advanced.
 * [xgboost](python/xgboost) - XGBoost (sklearn wrapper) model - train and score.
 * [pytorch](python/pytorch) - Pytorch  - train and score. ONNX too.
 * [onnx](python/onnx) - Convert sklearn model to ONNX flavor - train and score.
-* [h2o](python/h2o) - H2O model - train and score. ONNX too.
+* [h2o](python/h2o) - H2O model - train and score - with AutoML. ONNX too.
 * [model_registry](python/model_registry) - Jupyter notebook sampling the Model Registry API.
 * [e2e-ml-pipeline](python/e2e-ml-pipeline) - End-to-end ML pipeline - training to real-time scoring.
 * [reproduce](python/reproduce) - Reproduce an existing run.
