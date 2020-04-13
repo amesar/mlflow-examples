@@ -7,7 +7,7 @@ import mlflow
 import mlflow.pytorch
 
 print("Torch Version:", torch.__version__)
-print("MLflow Version:", mlflow.version.VERSION)
+print("MLflow Version:", mlflow.__version__)
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 
 x_data = torch.Tensor([[1.0], [2.0], [3.0]])

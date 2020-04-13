@@ -4,6 +4,7 @@
 
 import pandas as pd
 import numpy as np
+import sklearn
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
@@ -11,7 +12,7 @@ import mlflow
 import mlflow.sklearn
 from wine_quality import plot_utils
 
-print("MLflow Version:", mlflow.version.VERSION)
+print("MLflow Version:", mlflow.__version__)
 print("MLflow Tracking URI:", mlflow.get_tracking_uri())
 client = mlflow.tracking.MlflowClient()
 
@@ -80,7 +81,8 @@ class Trainer():
             mlflow.set_tag("mlflow.runName", self.run_origin) # mlflow CLI picks this up
             mlflow.set_tag("data_path", self.data_path)
             mlflow.set_tag("run_origin", self.run_origin)
-            mlflow.set_tag("mlflow_version", mlflow.version.VERSION)
+            mlflow.set_tag("mlflow_version", mlflow.__version__)
+            mlflow.set_tag("sklearn_version", sklearn.__version__)
 
             # MLflow log model
             mlflow.sklearn.log_model(dt, "sklearn-model", registered_model_name=model_name)

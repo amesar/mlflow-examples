@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 import mlflow
 from mlflow.entities import Param,Metric,RunTag
 
-print("MLflow Version:", mlflow.version.VERSION)
+print("MLflow Version:", mlflow.__version__)
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 client = mlflow.tracking.MlflowClient()
 
@@ -19,7 +19,7 @@ def run(alpha, run_origin):
         mlflow.log_param("alpha", alpha)
         mlflow.log_metric("rmse", 0.789)
         mlflow.set_tag("run_origin", run_origin)
-        mlflow.set_tag("mlflow_version", mlflow.version.VERSION)
+        mlflow.set_tag("mlflow_version", mlflow.__version__)
         mlflow.set_tag("python_version", platform.python_version())
         mlflow.set_tag("platform", platform.system())
         with open("info.txt", "w") as f:

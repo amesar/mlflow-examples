@@ -6,7 +6,7 @@ import mlflow.keras
 import utils
 
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
-print("MLflow Version:", mlflow.version.VERSION)
+print("MLflow Version:", mlflow.__version__)
 print("Keras version:", keras.__version__)
 print("TensorFlow version:", tf.__version__)
 
@@ -88,7 +88,7 @@ if __name__ == "__main__":
             print("MLflow:")
             print("  run_id:",run.info.run_id)
             print("  experiment_id:",run.info.experiment_id)
-            mlflow.set_tag("mlflow_version", mlflow.version.VERSION)
+            mlflow.set_tag("mlflow_version", mlflow.__version__)
             mlflow.set_tag("keras_version", keras.__version__)
             mlflow.set_tag("tensorflow_version", tf.__version__)
             mlflow.set_tag("autolog", args.autolog)

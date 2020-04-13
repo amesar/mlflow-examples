@@ -5,7 +5,7 @@ import mlflow
 import mlflow.pyfunc
 import utils
 
-print("MLflow Version:", mlflow.version.VERSION)
+print("MLflow Version:", mlflow.__version__)
 
 if __name__ == "__main__":
     if len(sys.argv) < 1:

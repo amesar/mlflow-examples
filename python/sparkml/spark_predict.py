@@ -5,7 +5,7 @@ from pyspark.sql import SparkSession
 import mleap_utils
 from common import *
 
-print("MLflow Version:", mlflow.version.VERSION)
+print("MLflow Version:", mlflow.__version__)
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ import mlflow
 import mlflow.xgboost
 
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
-print("MLflow Version:", mlflow.version.VERSION)
+print("MLflow Version:", mlflow.__version__)
 print("XGBoost version:",xgb.__version__)
 
 def build_data(data_path):

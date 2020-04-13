@@ -10,7 +10,7 @@ import onnx_utils
 
 print("Torch Version:", torch.__version__)
 client = mlflow.tracking.MlflowClient()
-print("MLflow Version:", mlflow.version.VERSION)
+print("MLflow Version:", mlflow.__version__)
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ import mlflow.onnx
 import utils
 from wine_quality import onnx_utils
 
-print("MLflow Version:", mlflow.version.VERSION)
+print("MLflow Version:", mlflow.__version__)
 
 if __name__ == "__main__":
     if len(sys.argv) < 1:

@@ -8,7 +8,7 @@ import mlflow
 import mlflow.sklearn
 import onnx_utils
 
-print("MLflow Version:", mlflow.version.VERSION)
+print("MLflow Version:", mlflow.__version__)
 print("MLflow Tracking URI:", mlflow.get_tracking_uri())
 client = mlflow.tracking.MlflowClient()
 
@@ -62,7 +62,7 @@ def train(data_path, max_depth, max_leaf_nodes):
         
         # MLflow tags
         mlflow.set_tag("data_path", data_path)
-        mlflow.set_tag("mlflow_version", mlflow.version.VERSION)
+        mlflow.set_tag("mlflow_version", mlflow.__version__)
 
         # MLflow log skearn model
         mlflow.sklearn.log_model(dt, "sklearn-model")

@@ -3,7 +3,7 @@ import pandas as pd
 import mlflow
 import mlflow.pyfunc
 
-print("MLflow Version:", mlflow.version.VERSION)
+print("MLflow Version:", mlflow.__version__)
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 
 if __name__ == "__main__":

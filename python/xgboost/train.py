@@ -6,7 +6,7 @@ import xgboost as xgb
 import mlflow
 import mlflow.xgboost
 
-print("MLflow Version:", mlflow.version.VERSION)
+print("MLflow Version:", mlflow.__version__)
 print("MLflow Tracking URI:", mlflow.get_tracking_uri())
 print("XGBoost version:",xgb.__version__)
 client = mlflow.tracking.MlflowClient()
