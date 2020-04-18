@@ -26,7 +26,7 @@ The sklearn and Spark ML examples also showcase:
 
 **Scala examples - uses the MLflow Java client**
 * [hello_world](scala/sparkml/README.md#hello_world) - Hello World - no training or scoring.
-* [sparkml](scala/sparkml/) - Scala Spark ML train and score.
+* [sparkml](scala/sparkml/) - Scala train and score - Spark ML and XGBoost4j
 * [mleap](scala/mleap) - Score an MLeap model with MLeap runtime (no Spark dependencies).
 * [onnx](scala/onnx) - Score an ONNX model (that was created in Scikit-learn) in Java.
 

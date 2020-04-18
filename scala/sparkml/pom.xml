@@ -12,6 +12,7 @@
     <spark.version>2.3.0</spark.version>
     <mlflow.version>1.7.0</mlflow.version>
     <mleap.version>0.12.0</mleap.version>
+    <xgboost4j.version>0.90</xgboost4j.version>
     <jcommander.version>1.72</jcommander.version>
   </properties>
 
@@ -61,6 +62,12 @@
       <groupId>ml.combust.mleap</groupId>
       <artifactId>mleap-spark-base_2.11</artifactId>
       <version>${mleap.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ml.dmlc</groupId>
+      <artifactId>xgboost4j-spark</artifactId>
+      <version>${xgboost4j.version}</version>
     </dependency>
 
     <dependency>

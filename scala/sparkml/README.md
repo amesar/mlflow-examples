@@ -29,7 +29,8 @@ Run ID: 81cc7941adae4860899ad5449df52802
 ```
 
 ### Source
-Source snippet from [HelloWorld.scala](src/main/scala/org/andre/mlflow/examples/hello/HelloWorld.scala).
+
+Source: [HelloWorld.scala](src/main/scala/org/andre/mlflow/examples/hello/HelloWorld.scala).
 ```
 // Create client
 val trackingUri = args(0)
@@ -68,17 +69,17 @@ Saves model as Spark ML and MLeap artifacts in MLflow.
 
 #### Source
 
-Source: [TrainWine.scala](src/main/scala/org/andre/mlflow/examples/wine/TrainWine.scala).
+Source: [TrainWine.scala](src/main/scala/org/andre/mlflow/examples/wine/sparkml/TrainWine.scala).
 
 ### Run against local Spark and local MLflow tracking server
 
 ```
 spark-submit --master local[2] \
-  --class org.andre.mlflow.examples.TrainWine \
+  --class org.andre.mlflow.examples.wine.sparkml.TrainWine \
   target/mlflow-spark-examples-1.0-SNAPSHOT.jar \
   --trackingUri http://localhost:5000 \
-  --experimentName scala_wine \
-  --dataPath ../data/wine-quality-white.csv \
+  --experimentName scala_sparkml \
+  --dataPath ../../data/wine-quality-white.csv \
   --modelPath model_sample --maxDepth 5 --maxBins 5
 ```
 
@@ -89,8 +90,8 @@ spark-submit --master local[2] \
   --class org.andre.mlflow.examples.wine.sparkml.TrainWine \
   target/mlflow-spark-examples-1.0-SNAPSHOT.jar \
   --trackingUri https://acme.cloud.databricks.com --token MY_TOKEN \
-  --experimentName scala_wine \
-  --dataPath ../data/wine-quality-white.csv \
+  --experimentName scala_sparkml \
+  --dataPath ../../data/wine-quality-white.csv \
   --modelPath model_sample --maxDepth 5 --maxBins 5
 ```
 
@@ -104,7 +105,7 @@ In this example we showcase runs_submit.
 
 Upload the data file and jar to your Databricks cluster.
 ```
-databricks fs cp data/wine-quality-white.csv \
+databricks fs cp ../../data/wine-quality-white.csv \
   dbfs:/tmp/jobs/spark-scala-example/wine-quality-white.csv
 
 databricks fs cp target/mlflow-spark-examples-1.0-SNAPSHOT.jar \
@@ -219,3 +220,32 @@ spark-submit --master local[2] \
 +----------+-----+--------------------+
 ```
 
+## XGBoost4j-Spark Wine Quality XGBoostRegressor Sample
+
+### Train
+
+Source: [Train.scala](src/main/scala/org/andre/mlflow/examples/wine/xgboost/Train.scala).
+```
+spark-submit --master local[2] \
+  --class org.andre.mlflow.examples.wine.xgboost.Train \
+  target/mlflow-spark-examples-1.0-SNAPSHOT.jar \
+  --trackingUri http://localhost:5000 \
+  --experimentName scala_xgboost \
+  --dataPath ../data/wine-quality-white.csv \
+  --modelPath model_sample \
+  --maxDepth 5 \
+  --objective reg:squarederror
+```
+
+### Predict
+
+Source: [Predict.scala](src/main/scala/org/andre/mlflow/examples/wine/xgboost/Predict.scala).
+```
+spark-submit --master local[2] \
+  --class org.andre.mlflow.examples.wine.xgboost.Predict \
+  target/mlflow-spark-examples-1.0-SNAPSHOT.jar \
+  --trackingUri http://localhost:5000 \
+  --experimentName scala_xgboost \
+  --dataPath ../../data/wine-quality-white.csv  \
+  --runId 3e422c4736a34046a74795384741ac33
+```
