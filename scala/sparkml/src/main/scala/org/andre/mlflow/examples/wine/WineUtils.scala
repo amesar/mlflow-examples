@@ -2,7 +2,7 @@ package org.andre.mlflow.examples.wine
 
 import org.apache.spark.sql.SparkSession
 
-object Utils {
+object WineUtils {
   val colLabel = "quality"
   val colPrediction = "prediction"
   val colFeatures = "features"

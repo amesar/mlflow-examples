@@ -86,7 +86,7 @@ spark-submit --master local[2] \
 
 ```
 spark-submit --master local[2] \
-  --class org.andre.mlflow.examples.wine.TrainWine \
+  --class org.andre.mlflow.examples.wine.sparkml.TrainWine \
   target/mlflow-spark-examples-1.0-SNAPSHOT.jar \
   --trackingUri https://acme.cloud.databricks.com --token MY_TOKEN \
   --experimentName scala_wine \
@@ -120,7 +120,7 @@ Here is a snippet from
     { "jar": "dbfs:/tmp/jobs/spark-scala-example/mlflow-spark-examples-1.0-SNAPSHOT.jar" }
   ],
   "spark_jar_task": {
-    "main_class_name": "org.andre.mlflow.examples.wine.TrainWine",
+    "main_class_name": "org.andre.mlflow.examples.wine.sparkml.TrainWine",
     "parameters": [ 
       "--dataPath",  "dbfs:/tmp/jobs/spark-scala-example/wine-quality-white.csv",
       "--modelPath", "/dbfs/tmp/jobs/spark-scala-example/models",
@@ -156,7 +156,7 @@ curl -X POST -H "Authorization: Bearer MY_TOKEN" \
 
 Create a notebook with the following cell. Attach it to the existing cluster described above.
 ```
-import org.andre.mlflow.examples.wine.TrainWine
+import org.andre.mlflow.examples.wine.sparkml.TrainWine
 val dataPath = "dbfs:/tmp/jobs/spark-scala-example/wine-quality-white.csv"
 val modelPath = "/dbfs/tmp/jobs/spark-scala-example/models"
 val runOrigin = "run_from_jar_Notebook"

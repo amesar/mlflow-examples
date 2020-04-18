@@ -1,4 +1,4 @@
-package org.andre.mlflow.examples.wine
+package org.andre.mlflow.examples.wine.sparkml
 
 import com.beust.jcommander.{JCommander, Parameter}
 import org.apache.spark.sql.{SparkSession,DataFrame}
@@ -7,6 +7,7 @@ import org.apache.spark.sql.functions.desc
 import org.mlflow.tracking.MlflowClient
 import org.andre.mlflow.util.MLflowUtils
 import org.andre.mleap.util.SparkBundleUtils
+import org.andre.mlflow.examples.wine.WineUtils
 
 /**
 Predicts from Spark ML and MLeap models. Reads from artifact `spark-model` and `mleap-model/mleap/model'.
@@ -24,7 +25,7 @@ object PredictAsSpark {
 
     val client = MLflowUtils.createMlflowClient(opts.trackingUri, opts.token)
     val spark = SparkSession.builder.appName("Predict").getOrCreate()
-    val data = Utils.readData(spark, opts.dataPath)
+    val data = WineUtils.readData(spark, opts.dataPath)
 
     println("==== Spark ML")
     val modelPath = client.downloadArtifacts(opts.runId, "spark-model/sparkml").getAbsolutePath
@@ -41,7 +42,7 @@ object PredictAsSpark {
 
   def showPredictions(model: Transformer, data: DataFrame) {
     val predictions = model.transform(data)
-    val df = predictions.select(Utils.colFeatures,Utils.colLabel,Utils.colPrediction).sort(Utils.colFeatures,Utils.colLabel,Utils.colPrediction)
+    val df = predictions.select(WineUtils.colFeatures,WineUtils.colLabel,WineUtils.colPrediction).sort(WineUtils.colFeatures,WineUtils.colLabel,WineUtils.colPrediction)
     df.show(10)
     predictions.groupBy("prediction").count().sort(desc("count")).show
   }

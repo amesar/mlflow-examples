@@ -1,4 +1,4 @@
-package org.andre.mlflow.examples.wine
+package org.andre.mlflow.examples.wine.sparkml
 
 import com.beust.jcommander.{JCommander, Parameter}
 import ml.combust.mleap.runtime.frame.{DefaultLeapFrame, Row}

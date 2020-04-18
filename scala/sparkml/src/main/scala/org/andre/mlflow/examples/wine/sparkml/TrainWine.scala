@@ -1,4 +1,4 @@
-package org.andre.mlflow.examples.wine
+package org.andre.mlflow.examples.wine.sparkml
 
 import java.io.{File,PrintWriter}
 import com.beust.jcommander.{JCommander, Parameter}
@@ -11,6 +11,7 @@ import org.mlflow.tracking.{MlflowClient,MlflowClientVersion}
 import org.mlflow.api.proto.Service.RunStatus
 import org.andre.mlflow.util.MLflowUtils
 import org.andre.mleap.util.SparkBundleUtils
+import org.andre.mlflow.examples.wine.WineUtils
 
 /**
  * MLflow DecisionTreeRegressor with wine quality data.
@@ -44,11 +45,11 @@ object TrainWine {
   def train(client: MlflowClient, experimentId: String, modelDir: String, maxDepth: Int, maxBins: Int, runOrigin: String, dataPath: String) {
 
     // Read data
-    val data = Utils.readData(spark, dataPath)
+    val data = WineUtils.readData(spark, dataPath)
 
     // Process data
     println("Input data count: "+data.count())
-    val columns = data.columns.toList.filter(_ != Utils.colLabel)
+    val columns = data.columns.toList.filter(_ != WineUtils.colLabel)
     val assembler = new VectorAssembler()
       .setInputCols(columns.toArray)
       .setOutputCol("features")
@@ -76,8 +77,8 @@ object TrainWine {
 
     // Create model
     val dt = new DecisionTreeRegressor()
-      .setLabelCol(Utils.colLabel)
-      .setFeaturesCol(Utils.colFeatures)
+      .setLabelCol(WineUtils.colLabel)
+      .setFeaturesCol(WineUtils.colFeatures)
       .setMaxDepth(maxDepth)
       .setMaxBins(maxBins)
 
@@ -96,8 +97,8 @@ object TrainWine {
     println("Metrics:")
     for (metric <- metrics) {
       val evaluator = new RegressionEvaluator()
-        .setLabelCol(Utils.colLabel)
-        .setPredictionCol(Utils.colPrediction)
+        .setLabelCol(WineUtils.colLabel)
+        .setPredictionCol(WineUtils.colPrediction)
         .setMetricName(metric)
       val v = evaluator.evaluate(predictions)
       println(s"  $metric: $v - isLargerBetter: ${evaluator.isLargerBetter}")
