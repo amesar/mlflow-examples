@@ -62,8 +62,9 @@ object TrainWine {
 
     // MLflow - set tags
     client.setTag(runId, "dataPath",dataPath)
-    client.setTag(runId, "mlflowVersion",MlflowClientVersion.getClientVersion())
     client.setTag(runId, "mlflow.source.name",MLflowUtils.getSourceName(getClass()))
+    client.setTag(runId, "mlflowVersion",MlflowClientVersion.getClientVersion())
+    client.setTag(runId, "sparkVersion",spark.version)
 
     // MLflow - log parameters
     val params = Seq(("maxDepth",maxDepth),("maxBins",maxBins),("runOrigin",runOrigin))
