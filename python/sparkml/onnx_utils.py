@@ -10,6 +10,7 @@ def log_model(spark, model, name, model_name, data_df):
     mlflow.onnx.log_model(onnx_model, "onnx-model", \
         registered_model_name=None if not model_name else f"{model_name}_onnx")
     mlflow.set_tag("onnx_version", onnx.__version__)
+    mlflow.set_tag("onnxmltools_version", onnxmltools.__version__)
 
 def score_model(model, data_ndarray):
     import numpy as np
