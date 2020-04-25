@@ -6,13 +6,35 @@
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
 
+  <profiles>
+    <profile>
+      <id>spark.2x</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <scala.version>2.11.8</scala.version>
+        <scala.binary.version>2.11</scala.binary.version>
+        <spark.version>2.4.5</spark.version>
+        <xgboost4j-spark.version>0.90</xgboost4j-spark.version>
+        <xgboost4j-spark.artifact>xgboost4j-spark</xgboost4j-spark.artifact>
+      </properties>
+    </profile>
+    <profile>
+      <id>spark.3x</id>
+      <properties>
+        <scala.version>2.12.8</scala.version>
+        <scala.binary.version>2.12</scala.binary.version>
+        <spark.version>3.0.0-preview2</spark.version>
+        <xgboost4j-spark.version>1.0.0</xgboost4j-spark.version>
+        <xgboost4j-spark.artifact>xgboost4j-spark_2.12</xgboost4j-spark.artifact>
+      </properties>
+    </profile>
+  </profiles>
+
   <properties>
-    <scala.version>2.11.8</scala.version>
-    <scala.binary.version>2.11</scala.binary.version>
-    <spark.version>2.4.5</spark.version>
-    <mlflow.version>1.8.0</mlflow.version>
     <mleap.version>0.15.0</mleap.version>
-    <xgboost4j.version>0.90</xgboost4j.version>
+    <mlflow.version>1.8.0</mlflow.version>
     <jcommander.version>1.72</jcommander.version>
   </properties>
 
@@ -47,20 +69,19 @@
 
     <dependency>
       <groupId>ml.combust.mleap</groupId>
-      <artifactId>mleap-spark_2.11</artifactId>
+      <artifactId>mleap-spark_${scala.binary.version}</artifactId>
       <version>${mleap.version}</version>
     </dependency>
-
     <dependency>
       <groupId>ml.combust.mleap</groupId>
-      <artifactId>mleap-spark-base_2.11</artifactId>
+      <artifactId>mleap-spark-base_${scala.binary.version}</artifactId>
       <version>${mleap.version}</version>
     </dependency>
 
     <dependency>
       <groupId>ml.dmlc</groupId>
-      <artifactId>xgboost4j-spark</artifactId>
-      <version>${xgboost4j.version}</version>
+      <artifactId>${xgboost4j-spark.artifact}</artifactId>
+      <version>${xgboost4j-spark.version}</version>
     </dependency>
 
     <dependency>
@@ -72,7 +93,6 @@
   </dependencies>
 
   <build>
-
     <plugins>
       <plugin>
         <groupId>net.alchim31.maven</groupId>
@@ -107,16 +127,16 @@
         <artifactId>maven-shade-plugin</artifactId>
         <version>1.7.1</version>
         <configuration>
-            <filters>
-                <filter>
-                    <artifact>*:*</artifact>
-                    <excludes>
-                        <exclude>META-INF/*.SF</exclude>
-                        <exclude>META-INF/*.DSA</exclude>
-                        <exclude>META-INF/*.RSA</exclude>
-                    </excludes>
-                </filter>
-            </filters>
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>META-INF/*.SF</exclude>
+                <exclude>META-INF/*.DSA</exclude>
+                <exclude>META-INF/*.RSA</exclude>
+              </excludes>
+            </filter>
+          </filters>
         </configuration>
         <executions>
           <execution>
@@ -124,27 +144,19 @@
             <goals>
               <goal>shade</goal>
             </goals>
-              <configuration>
-                <transformers>
-                    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                    <!-- Some care is required: http://doc.akka.io/docs/akka/snapshot/general/configuration.html -->
-                    <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                        <resource>reference.conf</resource>
-                    </transformer>
-                </transformers>
-              </configuration>
           </execution>
         </executions>
       </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+
 </project>
