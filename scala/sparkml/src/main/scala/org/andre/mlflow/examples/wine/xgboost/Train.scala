@@ -42,12 +42,15 @@ object Train {
     val runInfo = client.createRun(experimentId)
     val runId = runInfo.getRunId()
     println(s"Run ID: $runId")
+    println(s"sparkVersion: ${spark.version}")
+    println(s"scalaVersion: ${util.Properties.versionString}")
 
     // MLflow - set tags
     client.setTag(runId, "dataPath",dataPath)
     client.setTag(runId, "mlflow.source.name",MLflowUtils.getSourceName(getClass()))
     client.setTag(runId, "mlflowVersion",MlflowClientVersion.getClientVersion())
     client.setTag(runId, "sparkVersion",spark.version)
+    client.setTag(runId, "scalaVersion",util.Properties.versionString)
 
     // Process data
     val dataTransformed = Utils.transformData(data)
