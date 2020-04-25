@@ -31,6 +31,7 @@ object TrainWine {
     println(s"  maxDepth: ${opts.maxDepth}")
     println(s"  maxBins: ${opts.maxBins}")
     println(s"  runOrigin: ${opts.runOrigin}")
+    println(s"  skipMLeapScoring: ${opts.skipMLeapScoring}")
 
     // MLflow - create or get existing experiment
     val client = MLflowUtils.createMlflowClient(opts.trackingUri, opts.token)
@@ -39,10 +40,10 @@ object TrainWine {
     println("Experiment ID: "+experimentId)
 
     // Train model
-    train(client, experimentId, opts.modelPath, opts.maxDepth, opts.maxBins, opts.runOrigin, opts.dataPath)
+    train(client, experimentId, opts.modelPath, opts.maxDepth, opts.maxBins, opts.runOrigin, opts.dataPath, opts.skipMLeapScoring)
   }
 
-  def train(client: MlflowClient, experimentId: String, modelDir: String, maxDepth: Int, maxBins: Int, runOrigin: String, dataPath: String) {
+  def train(client: MlflowClient, experimentId: String, modelDir: String, maxDepth: Int, maxBins: Int, runOrigin: String, dataPath: String, skipMLeapScoring: Boolean) {
 
     // Read data
     val data = WineUtils.readData(spark, dataPath)
@@ -60,12 +61,17 @@ object TrainWine {
     val runId = runInfo.getRunId()
     println(s"Run ID: $runId")
     println(s"runOrigin: $runOrigin")
+    println(s"SparkVersion: ${spark.version}")
+    println(s"ScalaVersion: ${util.Properties.versionString}")
+    println(s"MLeapVersion: ${SparkBundleUtils.getMLeapBundleVersion}")
 
     // MLflow - set tags
     client.setTag(runId, "dataPath",dataPath)
     client.setTag(runId, "mlflow.source.name",MLflowUtils.getSourceName(getClass()))
     client.setTag(runId, "mlflowVersion",MlflowClientVersion.getClientVersion())
     client.setTag(runId, "sparkVersion",spark.version)
+    client.setTag(runId, "scalaVersion",util.Properties.versionString)
+    client.setTag(runId, "MLeapVersion",SparkBundleUtils.getMLeapBundleVersion)
 
     // MLflow - log parameters
     val params = Seq(("maxDepth",maxDepth),("maxBins",maxBins),("runOrigin",runOrigin))
@@ -113,7 +119,9 @@ object TrainWine {
 
     // MLflow - Save model in Spark ML and MLeap formats
     logModelAsSparkML(client, runId, modelDir, model)
-    logModelAsMLeap(client, runId, modelDir, model, data, predictions)
+    if (!skipMLeapScoring) {
+        logModelAsMLeap(client, runId, modelDir, model, data, predictions)
+    }
 
     // MLflow - close run
     client.setTerminated(runId, RunStatus.FINISHED, System.currentTimeMillis())
@@ -169,5 +177,8 @@ object TrainWine {
 
     @Parameter(names = Array("--experimentName" ), description = "Experiment name", required=false)
     var experimentName = "scala_classic"
+
+    @Parameter(names = Array("--skipMLeapScoring" ), description = "Score with MLeap also", required=false)
+    var skipMLeapScoring: Boolean = false
   }
 }
