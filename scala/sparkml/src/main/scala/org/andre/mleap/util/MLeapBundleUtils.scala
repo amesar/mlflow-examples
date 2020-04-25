@@ -13,6 +13,8 @@ import scala.io.Source
 object MLeapBundleUtils {
   println("Mleap Bundle version: "+Bundle.version)
 
+  def getMLeapBundleVersion = Bundle.version
+
   def readModel(bundlePath: String) : Transformer = {
     val bundle = BundleFile(bundlePath)
     try {

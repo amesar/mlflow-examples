@@ -8,6 +8,8 @@ import ml.combust.mleap.spark.SparkSupport._
 
 object SparkBundleUtils {
 
+  def getMLeapBundleVersion = ml.combust.bundle.dsl.Bundle.version
+
   def saveModel(bundlePath: String, model: PipelineModel, data: DataFrame) {
     val bundle = BundleFile(bundlePath)
     try {
