@@ -21,7 +21,6 @@ object PredictAsSpark {
     println(s"  token: ${opts.token}")
     println(s"  dataPath: ${opts.dataPath}")
     println(s"  runId: ${opts.runId}")
-    println(s"  skipMLeapScoring: ${opts.skipMLeapScoring}")
 
     val client = MLflowUtils.createMlflowClient(opts.trackingUri, opts.token)
     val spark = SparkSession.builder.appName("Predict").getOrCreate()
@@ -32,11 +31,20 @@ object PredictAsSpark {
     val model = PipelineModel.load(modelPath)
     showPredictions(model, data)
 
-    if (!opts.skipMLeapScoring) {
+    try {
       println("==== MLeap")
       val modelPath = "file:" + client.downloadArtifacts(opts.runId, "mleap-model/mleap/model").getAbsolutePath
       val model = SparkBundleUtils.readModel(modelPath)
       showPredictions(model, data)
+    } catch {
+      case e: Exception => {
+        val emsg = "IOError('No such file or directory"
+        if (e.getMessage.contains(emsg)) {
+          println("NOTE: MLeap model is not available")
+        } else {
+          throw e
+        }
+      }
     }
   }
 
@@ -59,8 +67,5 @@ object PredictAsSpark {
 
     @Parameter(names = Array("--runId" ), description = "Run ID", required=true)
     var runId: String = null
-
-    @Parameter(names = Array("--skipMLeapScoring" ), description = "Score with MLeap also", required=false)
-    var skipMLeapScoring: Boolean = false
   }
 }
