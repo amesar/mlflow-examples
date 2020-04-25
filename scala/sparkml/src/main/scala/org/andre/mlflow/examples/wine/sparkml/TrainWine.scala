@@ -31,7 +31,7 @@ object TrainWine {
     println(s"  maxDepth: ${opts.maxDepth}")
     println(s"  maxBins: ${opts.maxBins}")
     println(s"  runOrigin: ${opts.runOrigin}")
-    println(s"  skipMLeapScoring: ${opts.skipMLeapScoring}")
+    println(s"  skipMLeap: ${opts.skipMLeap}")
 
     // MLflow - create or get existing experiment
     val client = MLflowUtils.createMlflowClient(opts.trackingUri, opts.token)
@@ -40,10 +40,10 @@ object TrainWine {
     println("Experiment ID: "+experimentId)
 
     // Train model
-    train(client, experimentId, opts.modelPath, opts.maxDepth, opts.maxBins, opts.runOrigin, opts.dataPath, opts.skipMLeapScoring)
+    train(client, experimentId, opts.modelPath, opts.maxDepth, opts.maxBins, opts.runOrigin, opts.dataPath, opts.skipMLeap)
   }
 
-  def train(client: MlflowClient, experimentId: String, modelDir: String, maxDepth: Int, maxBins: Int, runOrigin: String, dataPath: String, skipMLeapScoring: Boolean) {
+  def train(client: MlflowClient, experimentId: String, modelDir: String, maxDepth: Int, maxBins: Int, runOrigin: String, dataPath: String, skipMLeap: Boolean) {
 
     // Read data
     val data = WineUtils.readData(spark, dataPath)
@@ -119,7 +119,7 @@ object TrainWine {
 
     // MLflow - Save model in Spark ML and MLeap formats
     logModelAsSparkML(client, runId, modelDir, model)
-    if (!skipMLeapScoring) {
+    if (!skipMLeap) {
         logModelAsMLeap(client, runId, modelDir, model, data, predictions)
     }
 
@@ -178,7 +178,7 @@ object TrainWine {
     @Parameter(names = Array("--experimentName" ), description = "Experiment name", required=false)
     var experimentName = "scala_classic"
 
-    @Parameter(names = Array("--skipMLeapScoring" ), description = "Score with MLeap also", required=false)
-    var skipMLeapScoring: Boolean = false
+    @Parameter(names = Array("--skipMLeap" ), description = "Score with MLeap also", required=false)
+    var skipMLeap: Boolean = false
   }
 }
