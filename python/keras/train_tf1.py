@@ -20,6 +20,7 @@ def build_model():
     return model
 
 def train(epochs, batch_size, autolog, log_as_onnx):
+    print("autolog:", autolog)
     x_train, y_train, x_test, y_test = utils.build_data()
     model = build_model()
 
@@ -70,15 +71,19 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", dest="epochs", help="Epochs", default=5, type=int)
     parser.add_argument("--batch_size", dest="batch_size", help="Batch size", default=128, type=int)
     parser.add_argument("--repeats", dest="repeats", help="Repeats", default=1, type=int)
-    parser.add_argument("--autolog", dest="autolog", help="Automatically log params and metrics", default=False, action='store_true')
+    parser.add_argument("--keras_autolog", dest="keras_autolog", help="Automatically log params and metrics with mlflow.kears.autolof", default=False, action='store_true')
+    parser.add_argument("--tensorflow_autolog", dest="tensorflow_autolog", help="Automatically log params and metrics with mlflow.kears.autolof", default=False, action='store_true')
     parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX flavor", default=False, action='store_true')
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):
         print(f"  {arg}: {getattr(args, arg)}")
 
-    if args.autolog:
+    if args.keras_autolog:
         mlflow.keras.autolog()
+    if args.tensorflow_autolog:
+        import mlflow.tensorflow
+        mlflow.tensorflow.autolog()
 
     if args.experiment_name:
         mlflow.set_experiment(args.experiment_name)
@@ -91,5 +96,7 @@ if __name__ == "__main__":
             mlflow.set_tag("mlflow_version", mlflow.__version__)
             mlflow.set_tag("keras_version", keras.__version__)
             mlflow.set_tag("tensorflow_version", tf.__version__)
-            mlflow.set_tag("autolog", args.autolog)
-            train(args.epochs, args.batch_size, args.autolog, args.log_as_onnx)
+            mlflow.set_tag("keras_autolog", args.keras_autolog)
+            mlflow.set_tag("tensorflow_autolog", args.tensorflow_autolog)
+            autolog = args.keras_autolog or args.tensorflow_autolog
+            train(args.epochs, args.batch_size, autolog, args.log_as_onnx)

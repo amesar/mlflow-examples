@@ -34,10 +34,31 @@ python train_tf1.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --
 ```
 
 ### Autologging
-To run with autologging and no user logging. 
+
+There are two autologging options:
+* keras_autolog - calls mlflow.keras.autolog()
+* tensorflow_autolog - calls mlflow.tensorflow.autolog()
+
+Interestingly, they behave differently depending on the TensorFlow version.
+
+| TensorFlow Version | Autolog Method | Params | 
+|---|---|---|
+| 1x | mlflow.keras.autolog | OK | 
+| 1x | mlflow.tensorflow.autolog | none |
+| 2x | mlflow.keras.autolog | none | 
+| 2x | mlflow.tensorflow.autolog | OK |
+
+
+TensorFlow 1x
 ```
-python train_tf1.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --autolog
+python train_tf1.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --keras_autolog
 ```
+
+TensorFlow 2x
+```
+python train_tf2.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --tensorflow_autolog
+```
+
 Autologging will create a model under the name `model`.
 
 Autlogging Parameters:
