@@ -22,7 +22,12 @@ if __name__ == "__main__":
     print("data.type:", type(data))
     print("data.shape:", data.shape)
 
-    predictions = model.model.predict_classes(data)
+    print("== model.predict")
+    predictions = model.predict(data)
     print("predictions.type:",type(predictions))
     print("predictions.shape:",predictions.shape)
+    print("predictions:", predictions)
+
+    print("== model.predict_classes")
+    predictions = model.predict_classes(data)
     print("predictions:", predictions)

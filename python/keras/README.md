@@ -2,30 +2,41 @@
 
 ## Overview
 * Keras/TensorFlow train and predict.
+* Examples for TensorFlow 1x and TensorFlow 2x.
 * Saves model as keras flavor.
 * MNIST dataset.
 * Option to [autolog](https://mlflow.org/docs/latest/python_api/mlflow.keras.html#mlflow.keras.autolog) parameters and metrics.
 * Option to log and score model as ONNX.
 * Setup: [conda.yaml](conda.yaml).
 
+## Keras with TensorFlow 2
+
+Source: [train_tf2.py](train_tf2.py).
+
+Pip install:
+```
+keras==2.3.1
+tensorflow==2.1.0
+```
+
 ## Training
 
-Source: [train.py](train.py).
+Source: [train_tf1.py](train_tf1.py).
 
 To run with user logging (no autologging).
 ```
-python main.py --experiment_name keras_mnist --epochs 3 --batch_size 128
+python train_tf1.py --experiment_name keras_mnist --epochs 3 --batch_size 128
 ```
 
 To log a model as ONNX flavor under the artifact path `onnx-model`.
 ```
-python main.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --log_as_onnx
+python train_tf1.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --log_as_onnx
 ```
 
 ### Autologging
 To run with autologging and no user logging. 
 ```
-python main.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --autolog
+python train_tf1.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --autolog
 ```
 Autologging will create a model under the name `model`.
 
