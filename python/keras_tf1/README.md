@@ -1,7 +1,7 @@
-# mlflow-examples - keras2
+# mlflow-examples - keras_tf1
 
 ## Overview
-* Keras with TensorFlow 2.x train and predict.
+* Keras with TensorFlow 1.x train and predict.
 * Saves model as keras flavor.
 * MNIST dataset.
 * Option to [autolog](https://mlflow.org/docs/latest/python_api/mlflow.keras.html#mlflow.keras.autolog) parameters and metrics.
@@ -12,8 +12,8 @@
 
 Libraries
 ```
-pip install keras==2.3.1
-pip install tensorflow==2.1.0
+pip install keras==2.2.5
+pip install tensorflow==1.15.0
 ```
 
 ## Training
@@ -35,16 +35,6 @@ python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --log_
 There are two autologging options:
 * keras_autolog - calls mlflow.keras.autolog()
 * tensorflow_autolog - calls mlflow.tensorflow.autolog()
-
-Interestingly, they behave differently depending on the TensorFlow version.
-
-| TensorFlow Version | Autolog Method | Params | 
-|---|---|---|
-| 1x | mlflow.keras.autolog | OK | 
-| 1x | mlflow.tensorflow.autolog | none |
-| 2x | mlflow.keras.autolog | none | 
-| 2x | mlflow.tensorflow.autolog | OK |
-
 
 ```
 python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --keras_autolog
