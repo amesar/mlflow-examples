@@ -50,14 +50,14 @@ def build_wine_data(data_path):
 import mlflow
 client = mlflow.tracking.MlflowClient()
 
-def dump(model_uri):
-    toks = model_uri.split("/")
-    run_id = toks[1]
+def dump(run_id):
+    #toks = model_uri.split("/")
+    #run_id = toks[1]
     print("  run_id:",run_id)
     run = client.get_run(run_id)
     exp = client.get_experiment(run.info.experiment_id)
     print("Run:")
-    print("  model_uri:",model_uri)
+    #print("  model_uri:",model_uri)
     print("  run_id:",run_id)
     print("  experiment_id:",exp.experiment_id)
     print("  experiment_name:",exp.name)

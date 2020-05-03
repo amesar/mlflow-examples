@@ -12,6 +12,7 @@
 pip install onnx==1.4.1
 pip install onnxruntime==0.3.0
 pip install skl2onnx==1.6.0
+pip install tf2onnx==1.5.6
 ```
 
 ## Training
