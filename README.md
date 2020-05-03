@@ -8,7 +8,9 @@ MLflow examples - basic and advanced.
 * [hello_world](python/hello_world) - Hello World - no training or scoring.
 * [sklearn](python/sklearn) - Scikit-learn model - train and score. ONNX working too.
 * [sparkml](python/sparkml) - Spark ML model - train and score.  ONNX too.
-* [keras](python/keras) - Keras/Tensorflow - train and score. ONNX working too.
+* Keras/Tensorflow - train and score. ONNX working too.
+  * [keras2](python/keras2) - Keras with TensorFlow 2.x
+  * [keras](python/keras) - Keras with TensorFlow 1.x
 * [xgboost](python/xgboost) - XGBoost (sklearn wrapper) model - train and score.
 * [catboost](python/catboost) - Catboost (using sklearn) model - train and score. ONNX working too.
 * [pytorch](python/pytorch) - Pytorch  - train and score. ONNX too.
