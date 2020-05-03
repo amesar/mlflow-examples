@@ -19,6 +19,8 @@ print("TensorFlow version:", tf.__version__)
 np.random.seed(42)
 tf.random.set_seed(42)
 
+tmp_dir = "out"
+
 def train(data_path, epochs, batch_size, mlflow_log, log_as_onnx):
     print("mlflow_log:", mlflow_log)
     x_train, _, y_train, _ = utils.build_wine_data(data_path)
@@ -36,13 +38,27 @@ def train(data_path, epochs, batch_size, mlflow_log, log_as_onnx):
     mlflow.log_param("epochs", epochs)
     mlflow.log_param("batch_size", batch_size)
 
-    # MLflow - log Keras model
-    mlflow.keras.log_model(model, "keras-model")
+    # MLflow - log Keras HD5 model
+    mlflow.keras.log_model(model, "keras-hd5-model")
 
     # MLflow - log onnx model
     if log_as_onnx:
         import onnx_utils
         onnx_utils.log_model(model, "onnx-model")
+
+    # Save as TensorFlow savemodel format
+    path = "tensorflow-model"
+    tf.keras.models.save_model(model, path, overwrite=True, include_optimizer=True)
+    mlflow.log_artifact(path)
+
+    # Save as TensorFlow Lite format
+    converter = tf.lite.TFLiteConverter.from_keras_model(model)
+    tflite_model = converter.convert()
+    apath = "tensorflow-lite-model"
+    path = "model.tflite"
+    with open(path, "wb") as f:
+        f.write(tflite_model)
+    mlflow.log_artifact(path,apath)
 
     # Evaluate model
     estimator = KerasRegressor(build_fn=baseline_model, epochs=epochs, batch_size=batch_size, verbose=0)

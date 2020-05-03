@@ -24,7 +24,20 @@ Source: [wine_train.py](wine_train.py).
 python wine_train.py --experiment_name keras_wine --epochs 3 --batch_size 128
 ```
 
+
 ### Scoring
+
+Flavors and formats supported:
+* MLflow load.model flavors
+  * keras-hd5-model - Keras HD5 format - TensorFlow 2.x legacy
+  * keras-hd5-model - pyfunc
+  * onnx-model - ONNX flavor
+  * onnx-model - pyfunc - does not score correctly unlike Keras with TensorFlow 1.x
+* MLflow download.artifact - unsupported flavors
+  * tensorflow-model - Standard TensorFlow [SavedModel](https://www.tensorflow.org/guide/saved_model) format (not HD5 format)
+  * tensorflow-lite-model - TensorFlow Lite format
+
+Note: ONNX pyfunc does not score correctly unlike Keras with TensorFlow 1.x.
 
 Source: [wine_predict.py](wine_predict.py).
 ```
@@ -32,7 +45,7 @@ python wine_predict.py --run_id 7e674524514846799310c41f10d6b99d
 ```
 
 ```
-mlflow.keras.load_model - runs:/2ff1d36956ab4e479c59db63a0514aaa/keras-model
+mlflow.keras.load_model - runs:/2ff1d36956ab4e479c59db63a0514aaa/keras-hd5-model
 model.type: <class 'tensorflow.python.keras.engine.sequential.Sequential'>
 predictions.shape: (3428, 1)
 +--------------+
@@ -61,6 +74,16 @@ predictions.shape: (3428, 1)
 |          nan |
 |          nan |
 +--------------+
+
+keras.models.load_model - tensorflow-model
+model.type: <class 'tensorflow.python.keras.saving.saved_model.load.Sequential'>
+predictions.shape: (3428, 1)
++--------------+
+|   prediction |
+|--------------|
+|   -0.753219  |
+|   -0.34244   |
++--------------+
 ```
 
 ## Experiment with MNIST Data 
@@ -86,7 +109,7 @@ python mnist_train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 
 
 Source: [mnist_keras_predict.py](mnist_keras_predict.py).
 ```
-python mnist_keras_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/keras-model
+python mnist_keras_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/keras-hd5-model
 ```
 
 ```
@@ -102,7 +125,7 @@ Source: [mnist_pyfunc_predict.py](mnist_pyfunc_predict.py).
 ##### Score Keras model with Pyfunc 
 
 ```
-python mnist_pyfunc_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/keras-model
+python mnist_pyfunc_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/keras-hd5-model
 ```
 
 ```
