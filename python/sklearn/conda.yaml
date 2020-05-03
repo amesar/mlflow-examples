@@ -1,11 +1,10 @@
-name: mlflow-examples
+name: mlflow-train-sklearn-wine
 channels:
 - conda-forge
 dependencies:
-- python=3.7.5
+- python=3.7.6
 - pip:
-    - mlflow==1.6.0
-    - scikit-learn==0.19.2
-    - matplotlib==3.1.1
-    - scipy==1.4.1
+    - mlflow==1.8.0
+    - scikit-learn==0.20.2
+    - matplotlib==3.2.1
     - pyarrow==0.12.1

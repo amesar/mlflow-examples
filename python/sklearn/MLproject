@@ -2,6 +2,9 @@ name: mlflow_examples_sklearn
 
 conda_env: conda.yaml
 
+#docker_env:
+  #image:  mlflow-train-sklearn-wine
+
 entry_points:
   main:
     parameters:
