@@ -18,16 +18,16 @@ pip install tensorflow==2.1.0
 
 ## Training
 
-Source: [train.py](train.py).
+Source: [train_mnist.py](train_mnist.py).
 
 To run with user logging (no autologging).
 ```
-python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128
+python train_mnist.py --experiment_name keras_mnist --epochs 3 --batch_size 128
 ```
 
 To log a model as ONNX flavor under the artifact path `onnx-model`.
 ```
-python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --log_as_onnx
+python train_mnist.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --log_as_onnx
 ```
 
 ### Autologging
@@ -47,7 +47,7 @@ Interestingly, they behave differently depending on the TensorFlow version.
 
 
 ```
-python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --keras_autolog
+python train_mnist.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --keras_autolog
 ```
 
 Autologging will create a model under the name `model`.
@@ -82,9 +82,9 @@ workers
 
 ### Score as Keras flavor
 
-Source: [keras_predict.py](keras_predict.py).
+Source: [mnist_keras_predict.py](mnist_keras_predict.py).
 ```
-python keras_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/keras-model
+python mnist_keras_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/keras-model
 ```
 
 ```
@@ -95,12 +95,12 @@ predictions: [7 2 1 ... 4 5 6]
 
 ### Score as Pyfunc flavor
 
-Source: [pyfunc_predict.py](pyfunc_predict.py).
+Source: [mnist_pyfunc_predict.py](mnist_pyfunc_predict.py).
 
 #### Score Keras model with Pyfunc 
 
 ```
-python pyfunc_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/keras-model
+python mnist_pyfunc_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/keras-model
 ```
 
 ```
@@ -118,7 +118,7 @@ predictions:                  0             1  ...             8             9
 #### Score ONNX model with Pyfunc 
 
 ```
-python pyfunc_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/onnx-model
+python mnist_pyfunc_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/onnx-model
 ```
 ```
 predictions.type: <class 'pandas.core.frame.DataFrame'>
@@ -134,9 +134,9 @@ predictions:             dense_2
 
 ### Score as ONNX flavor
 
-Source: [onnx_predict.py](onnx_predict.py) and [onnx_utils.py](onnx_utils.py).
+Source: [mnist_onnx_predict.py](mnist_onnx_predict.py) and [onnx_utils.py](onnx_utils.py).
 ```
-python onnx_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/onnx-model
+python mnist_onnx_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/onnx-model
 ```
 ```
 predictions.type: <class 'numpy.ndarray'>

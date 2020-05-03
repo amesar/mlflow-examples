@@ -21,7 +21,7 @@ def build_model():
 
 def train(epochs, batch_size, autolog, log_as_onnx):
     print("autolog:", autolog)
-    x_train, y_train, x_test, y_test = utils.build_data()
+    x_train, y_train, x_test, y_test = utils.build_mnist_data()
     model = build_model()
 
     model.compile(

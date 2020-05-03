@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
-import pandas as pd
+import numpy as np
 import mlflow
-import mlflow.pyfunc
+import mlflow.keras
 import utils
 
 print("MLflow Version:", mlflow.__version__)
@@ -14,15 +14,20 @@ if __name__ == "__main__":
     print("Arguments:")
     for arg in vars(args):
         print(f"  {arg}: {getattr(args, arg)}")
-
-    model = mlflow.pyfunc.load_model(args.model_uri)
-    print("model:", model)
-
-    _,_,ndarray,_  = utils.build_data()
-    data = pd.DataFrame(ndarray)
+        
+    model = mlflow.keras.load_model(args.model_uri)
+    print("model:", type(model))
+    
+    _,_,data,_  = utils.build_mnist_data()
+    print("data.type:", type(data))
     print("data.shape:", data.shape)
 
+    print("== model.predict")
     predictions = model.predict(data)
-    print("predictions.type:", type(predictions))
-    print("predictions.shape:", predictions.shape)
+    print("predictions.type:",type(predictions))
+    print("predictions.shape:",predictions.shape)
+    print("predictions:", predictions)
+
+    print("== model.predict_classes")
+    predictions = model.predict_classes(data)
     print("predictions:", predictions)
