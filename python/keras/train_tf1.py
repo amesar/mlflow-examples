@@ -3,6 +3,7 @@ import tensorflow as tf
 import keras
 import mlflow
 import mlflow.keras
+import mlflow.tensorflow
 import utils
 
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
@@ -23,6 +24,7 @@ def train(epochs, batch_size, autolog, log_as_onnx):
     print("autolog:", autolog)
     x_train, y_train, x_test, y_test = utils.build_data()
     model = build_model()
+    print("model:",type(model))
 
     model.compile(
         optimizer='rmsprop',
@@ -41,7 +43,9 @@ def train(epochs, batch_size, autolog, log_as_onnx):
 
         mlflow.log_metric("test_acc", test_acc)
         mlflow.log_metric("test_loss", test_loss)
+
         mlflow.keras.log_model(model, "keras-model")
+        #mlflow.tensorflow.log_model(model, "tensorflow-model")
 
         # write model as yaml file
         with open("model.yaml", "w") as f:
@@ -71,8 +75,8 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", dest="epochs", help="Epochs", default=5, type=int)
     parser.add_argument("--batch_size", dest="batch_size", help="Batch size", default=128, type=int)
     parser.add_argument("--repeats", dest="repeats", help="Repeats", default=1, type=int)
-    parser.add_argument("--keras_autolog", dest="keras_autolog", help="Automatically log params and metrics with mlflow.kears.autolof", default=False, action='store_true')
-    parser.add_argument("--tensorflow_autolog", dest="tensorflow_autolog", help="Automatically log params and metrics with mlflow.kears.autolof", default=False, action='store_true')
+    parser.add_argument("--keras_autolog", dest="keras_autolog", help="Automatically log params and metrics with mlflow.keras.autolog", default=False, action='store_true')
+    parser.add_argument("--tensorflow_autolog", dest="tensorflow_autolog", help="Automatically log params and metrics with mlflow.keras.autolog", default=False, action='store_true')
     parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX flavor", default=False, action='store_true')
     args = parser.parse_args()
     print("Arguments:")
