@@ -1,5 +1,4 @@
 from argparse import ArgumentParser
-import numpy as np
 import mlflow
 import mlflow.keras
 import utils

@@ -12,6 +12,7 @@ import utils
 print("MLflow Version:", mlflow.__version__)
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 client = mlflow.tracking.MlflowClient()
+tmp_dir = "out" # TODO 
 
 def predict_keras(model_uri, data):
     print(f"\nmlflow.keras.load_model - {model_uri}")
@@ -40,12 +41,42 @@ def predict_onnx(model_uri, data):
 def predict_tensorflow_model(run_id, data):
     model_name = "tensorflow-model"
     print(f"\nkeras.models.load_model - {model_name} - {run_id}")
-    tmp_dir = "out"
     client.download_artifacts(run_id, model_name, tmp_dir)
     model = keras.models.load_model(os.path.join(tmp_dir, model_name))
     print("model.type:",type(model))
     predictions = model.predict(data)
     display(predictions)
+
+def predict_tensorflow_lite_model(run_id, data):
+   # Get model from MLflow
+    model_name = "tensorflow-lite-model"
+    print(f"\ntf.lite.Interpreter - {model_name} - {run_id}")
+    client.download_artifacts(run_id, model_name, tmp_dir)
+    path = os.path.join(tmp_dir, model_name, "model.tflite")
+    with open(path, "rb") as f:
+        model = f.read()
+    print("model.type:",type(model))
+
+   # Create interpreter
+    interpreter = tf.lite.Interpreter(model_content=model)
+    interpreter.allocate_tensors()
+
+   # Get input and output tensors
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
+    print("input_details",input_details)
+    print("output_details",output_details)
+
+    # Score data - tflite model can only score one data element
+    predictions = []
+    for x in data.to_numpy():
+        input_data = np.array([x])
+        interpreter.set_tensor(input_details[0]['index'], input_data)
+        interpreter.invoke()
+        p = interpreter.get_tensor(output_details[0]['index'])
+        predictions.append(p[0])
+    display(np.asarray(predictions))
+
 
 def display(predictions):
     print("predictions.shape:",predictions.shape)
@@ -86,5 +117,11 @@ if __name__ == "__main__":
     model_name = "tensorflow-model"
     if artifact_exists(run_id, model_name):
         predict_tensorflow_model(run_id, data)
+    else:
+        print(f"No model: {model_name}")
+
+    model_name = "tensorflow-lite-model"
+    if artifact_exists(run_id, model_name):
+        predict_tensorflow_lite_model(run_id, data)
     else:
         print(f"No model: {model_name}")

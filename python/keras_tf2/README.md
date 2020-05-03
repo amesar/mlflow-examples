@@ -84,6 +84,18 @@ predictions.shape: (3428, 1)
 |   -0.753219  |
 |   -0.34244   |
 +--------------+
+
+tf.lite.Interpreter - tensorflow-lite-model - 8040e72452ae4a35b860dc170e42ef8f
+model.type: <class 'bytes'>
+input_details  [{'name': 'dense_input', 'index': 1, 'shape': array([ 1, 11], dtype=int32), 'dtype': <class 'numpy.float32'>, 'quantization': (0.0, 0)}]
+output_details [{'name': 'Identity', 'index': 0, 'shape': array([1, 1], dtype=int32), 'dtype': <class 'numpy.float32'>, 'quantization': (0.0, 0)}]
+predictions.shape: (3428, 1)
++--------------+
+|   prediction |
+|--------------|
+|   -0.753219  |
+|   -0.34244   |
++--------------+
 ```
 
 ## Experiment with MNIST Data 
