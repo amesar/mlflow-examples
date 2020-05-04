@@ -1,4 +1,9 @@
 # mlflow-examples - keras_tf2
+We explore several TensorFlow model formats such as:
+* [HD5](https://www.tensorflow.org/tutorials/keras/save_and_load#hdf5_format) - Keras TensorFlow 1.x legacy format. This is used for the current MLflow Keras flavor.
+* [SavedModel[(https://www.tensorflow.org/guide/saved_model) - Standard Keras TensorFlow 2.x protobuf-based format.
+* [TensorFlow Lite] format - for mobile and edge devices.
+* [TensorFlow.js](https://www.tensorflow.org/js) - for browsers or Node.js.
 
 ## Overview
 * Keras with TensorFlow 2.x train and predict.
@@ -16,6 +21,27 @@
 
 ## Experiment with Wine Quality Data 
 
+### TensorFlow Model Serialization Formats
+
+We explore several TensorFlow model formats such as:
+
+* [HD5](https://www.tensorflow.org/tutorials/keras/save_and_load#hdf5_format) - Keras TensorFlow 1.x legacy format. This is used for the current MLflow Keras flavor.
+* [SavedModel](https://www.tensorflow.org/guide/saved_model) - Standard Keras TensorFlow 2.x protobuf-based format.
+* [TensorFlow Lite](https://www.tensorflow.org/lite) format - for mobile and edge devices.
+* [TensorFlow.js](https://www.tensorflow.org/js) - for browsers or Node.js.
+
+MLflow run model details:
+
+* MLflow load.model flavors
+  * keras-hd5-model - Keras HD5 format - default for Keras TensorFlow 1.x - `model.h5`
+  * keras-hd5-model - pyfunc
+  * onnx-model - ONNX flavor
+  * onnx-model - pyfunc - does not score correctly unlike Keras TensorFlow 1.x
+* MLflow download.artifact - formats not supported as flavors
+  * tensorflow-model - Standard TensorFlow SavedModel format - `saved_model.pb`
+  * tensorflow-lite-model - TensorFlow Lite
+  * tensorflow.js - TensorFlow JS
+
 ### Training
 
 Source: [wine_train.py](wine_train.py).
@@ -24,18 +50,8 @@ Source: [wine_train.py](wine_train.py).
 python wine_train.py --experiment_name keras_wine --epochs 3 --batch_size 128
 ```
 
-
 ### Scoring
 
-Flavors and formats supported:
-* MLflow load.model flavors
-  * keras-hd5-model - Keras HD5 format - TensorFlow 2.x legacy
-  * keras-hd5-model - pyfunc
-  * onnx-model - ONNX flavor
-  * onnx-model - pyfunc - does not score correctly unlike Keras with TensorFlow 1.x
-* MLflow download.artifact - unsupported flavors
-  * tensorflow-model - Standard TensorFlow [SavedModel](https://www.tensorflow.org/guide/saved_model) format (not HD5 format)
-  * tensorflow-lite-model - TensorFlow Lite format
 
 Note: ONNX pyfunc does not score correctly unlike Keras with TensorFlow 1.x.
 
@@ -99,6 +115,7 @@ predictions.shape: (3428, 1)
 ```
 
 ## Experiment with MNIST Data 
+
 
 ### Training
 

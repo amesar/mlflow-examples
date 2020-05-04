@@ -46,7 +46,7 @@ def train(data_path, epochs, batch_size, mlflow_log, log_as_onnx):
         import onnx_utils
         onnx_utils.log_model(model, "onnx-model")
 
-    # Save as TensorFlow savemodel format
+    # Save as TensorFlow SavedModel format
     path = "tensorflow-model"
     tf.keras.models.save_model(model, path, overwrite=True, include_optimizer=True)
     mlflow.log_artifact(path)
@@ -54,11 +54,18 @@ def train(data_path, epochs, batch_size, mlflow_log, log_as_onnx):
     # Save as TensorFlow Lite format
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
     tflite_model = converter.convert()
-    apath = "tensorflow-lite-model"
     path = "model.tflite"
     with open(path, "wb") as f:
         f.write(tflite_model)
-    mlflow.log_artifact(path,apath)
+    mlflow.log_artifact(path, "tensorflow-lite-model")
+
+    # Save as TensorFlow.js format
+    try:
+        import tensorflowjs as tfjs
+        tfjs.converters.save_keras_model(model, path)
+        mlflow.log_artifact(path, "tensorflow-js")
+    except ModuleNotFoundError as e:
+        print(f"WARNING: tensorflowjs is not installed")
 
     # Evaluate model
     estimator = KerasRegressor(build_fn=baseline_model, epochs=epochs, batch_size=batch_size, verbose=0)
