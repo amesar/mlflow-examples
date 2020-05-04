@@ -62,6 +62,7 @@ def train(data_path, epochs, batch_size, mlflow_log, log_as_onnx):
     # Save as TensorFlow.js format
     try:
         import tensorflowjs as tfjs
+        path = "model.js"
         tfjs.converters.save_keras_model(model, path)
         mlflow.log_artifact(path, "tensorflow-js")
     except ModuleNotFoundError as e:
