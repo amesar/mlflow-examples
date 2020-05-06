@@ -5,7 +5,7 @@
 * PySpark Spark ML Decision Tree Classification example
 * Saves model in SparkML and MLeap flavors - optionally also ONNX flavor.
 * Demonstrates both batch and real-time scoring.
-* Data: [../data/wine-quality-white.csv](../data/wine-quality-white.csv)
+* Data: [../../data/train/wine-quality-white.csv](../../data/train/wine-quality-white.csv)
 
 ## Train
 
@@ -18,7 +18,7 @@ To create an `onnx-model` pass the `--log_as_onnx` option.
 |---|---|---|---|
 | experiment_name | no | none | Experiment name  |   
 | model_name | no | none | Registered model name (if set) |
-| data_path | no | ../../data/wine-quality-white.csv | Path to data  |
+| data_path | no | ../../data/train/wine-quality-white.csv | Path to data  |
 | max_depth | no | 5 | Max depth  |
 | max_bins | no | 32 | Max bins  |
 | run_origin | no | none | Run tag  |
