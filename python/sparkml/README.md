@@ -158,7 +158,7 @@ In one window launch the server.
 In another window, score some data.
 ```
 curl -X POST -H "Content-Type:application/json" \
-  -d @../data/predict-wine-quality.json \
+  -d @../../data/score/wine-quality.json \
   http://localhost:5001/invocations
 ```
 ```
@@ -168,7 +168,7 @@ curl -X POST -H "Content-Type:application/json" \
 ```
 
 Data should be in `JSON-serialized Pandas DataFrames split orientation` format
-such as [predict-wine-quality.json](../data/predict-wine-quality.json).
+such as [score/wine-quality.json](../../data/predict-wine-quality.json).
 ```
 {
   "columns": [

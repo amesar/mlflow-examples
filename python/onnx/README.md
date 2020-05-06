@@ -83,7 +83,7 @@ mlflow models serve --port 5001 --model-uri runs:/7e674524514846799310c41f10d6b9
 In another window submit data for scoring.
 ```
 curl -X POST -H "Content-Type:application/json" \
-  -d @../data/predict-wine-quality-float.json \
+  -d @../../data/score/wine-quality-float.json \
   http://localhost:5001/invocations
 ```
 

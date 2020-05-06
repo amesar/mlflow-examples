@@ -14,7 +14,7 @@
   * web server
   * mlflow.load_model()
   *  UDF - invoke with the DataFrame API or SQL
-* Data: [../../data/wine-quality-white.csv](../../data/wine-quality-white.csv)
+* Data: [../../data/train/wine-quality-white.csv](../../data/train/wine-quality-white.csv)
 
 ## Training
 
@@ -31,7 +31,7 @@ There are several ways to train a model with MLflow.
 |---|---|---|---|
 | experiment_name | no | none | Experiment name  |  
 | model_name | no | none | Registered model name (if set) |  
-| data_path | no | ../../data/wine-quality-white.csv | Path to data  |  
+| data_path | no | ../../data/train/wine-quality-white.csv | Path to data  |  
 | max_depth | no | none | Max depth  |  
 | max_leaf_nodes | no | none | Max leaf nodes  |  
 | run_origin | no | none | Run tag  |  
@@ -81,7 +81,7 @@ python setup.py bdist_wheel
 databricks fs cp \
   dist/mlflow_sklearn_wine-0.0.1-py3-none-any.whl \
   dbfs:/tmp/jobs/sklearn_wine/mlflow_wine_quality-0.0.1-py3.6.whl 
-databricks fs cp data/wine-quality-white.csv dbfs:/tmp/jobs/sklearn_wine/wine-quality-white.csv
+databricks fs cp data/train/wine-quality-white.csv dbfs:/tmp/jobs/sklearn_wine/wine-quality-white.csv
 ```
 The token and tracking server URL will be picked up from your Databricks CLI ~/.databrickscfg default profile.
 
@@ -111,7 +111,7 @@ python setup.py bdist_wheel
 Upload the data file, main file and wheel to your Databricks file system.
 ```
 databricks fs cp main.py dbfs:/tmp/jobs/sklearn_wine/main.py
-databricks fs cp data/wine-quality-white.csv dbfs:/tmp/jobs/sklearn_wine/wine-quality-white.csv
+databricks fs cp data/train/wine-quality-white.csv dbfs:/tmp/jobs/sklearn_wine/wine-quality-white.csv
 databricks fs cp \
   dist/mlflow_sklearn_wine-0.0.1-py3-none-any.whl \
   dbfs:/tmp/jobs/sklearn_wine/mlflow_wine_quality-0.0.1-py3.6.whl 
@@ -213,7 +213,7 @@ predictions: [5.55109634 5.29772751 5.42757213 5.56288644 5.56288644]
 Snippet from [sklearn_predict.py](sklearn_predict.py):
 ```
 model = mlflow.sklearn.load_model(model_uri)
-df = pd.read_csv("../../data/wine-quality-white.csv")
+df = pd.read_csv("../../data/train/wine-quality-white.csv")
 predictions = model.predict(data)
 ```
 
@@ -229,7 +229,7 @@ predictions: [5.55109634 5.29772751 5.42757213 5.56288644 5.56288644]
 ```
 From [pyfunc_predict.py](pyfunc_predict.py):
 ```
-data_path = "../../data/wine-quality-white.csv"
+data_path = "../../data/train/wine-quality-white.csv"
 data = util.read_prediction_data(data_path)
 model_uri = client.get_run(run_id).info.artifact_uri + "/sklearn-model"
 model = mlflow.pyfunc.load_model(model_uri)
@@ -264,7 +264,7 @@ spark-submit --master local[2] spark_udf_predict.py \
 From [spark_udf_predict.py](spark_udf_predict.py):
 ```
 spark = SparkSession.builder.appName("App").getOrCreate()
-data = spark.read.option("inferSchema",True).option("header", True).csv("../data/wine-quality-white.csv")
+data = spark.read.option("inferSchema",True).option("header", True).csv("../data/train/wine-quality-white.csv")
 data = data.drop("quality")
 udf = mlflow.pyfunc.spark_udf(spark, model_uri)
 predictions = data.withColumn("prediction", udf(*df.columns))
@@ -295,7 +295,7 @@ In one window launch the server.
 In another window, score some data.
 ```
 curl -X POST -H "Content-Type:application/json" \
-  -d @../../data/predict-wine-quality.json \
+  -d @../../data/score/wine-quality.json \
   http://localhost:5001/invocations
 ```
 ```
@@ -305,7 +305,7 @@ curl -X POST -H "Content-Type:application/json" \
 ```
 
 Data should be in `JSON-serialized Pandas DataFrames split orientation` format
-such as [predict-wine-quality.json](../../data/predict-wine-quality.json).
+such as [score/wine-quality.json](../../data/score/wine-quality.json).
 ```
 {
   "columns": [
