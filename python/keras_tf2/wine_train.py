@@ -34,9 +34,10 @@ def train(data_path, epochs, batch_size, mlflow_log, log_as_onnx):
         return model
     model = baseline_model()
 
-    print("Logging with mlflow.log")
-    mlflow.log_param("epochs", epochs)
-    mlflow.log_param("batch_size", batch_size)
+    if mlflow_log:
+        print("Logging with mlflow.log")
+        mlflow.log_param("epochs", epochs)
+        mlflow.log_param("batch_size", batch_size)
 
     # MLflow - log Keras HD5 model
     mlflow.keras.log_model(model, "keras-hd5-model")
@@ -65,17 +66,19 @@ def train(data_path, epochs, batch_size, mlflow_log, log_as_onnx):
         path = "model.js"
         tfjs.converters.save_keras_model(model, path)
         mlflow.log_artifact(path, "tensorflow-js")
-    except ModuleNotFoundError as e:
-        print(f"WARNING: tensorflowjs is not installed")
+    except ModuleNotFoundError:
+        print("WARNING: tensorflowjs is not installed")
 
     # Evaluate model
     estimator = KerasRegressor(build_fn=baseline_model, epochs=epochs, batch_size=batch_size, verbose=0)
     kfold = KFold(n_splits=10)
     results = cross_val_score(estimator, x_train, y_train, cv=kfold)
     print(f"Baseline MSE: mean: {round(results.mean(),2)}  std: {round(results.std(),2)}")
-    mlflow.log_metric("mse_mean", results.mean())
-    mlflow.log_metric("mse_std", results.std())
+    if mlflow_log:
+        mlflow.log_metric("mse_mean", results.mean())
+        mlflow.log_metric("mse_std", results.std())
 
+    # Score
     data = x_train
     predictions = model.predict(data)
     predictions = pd.DataFrame(data=predictions, columns=["prediction"])
@@ -92,7 +95,7 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", dest="batch_size", help="Batch size", default=128, type=int)
     parser.add_argument("--mlflow_log", dest="mlflow_log", help="Log params/metrics with mlflow.log", default=False, type=bool)
     parser.add_argument("--keras_autolog", dest="keras_autolog", help="Automatically log params/ metrics with mlflow.keras.autolog", default=False, type=bool)
-    parser.add_argument("--tensorflow_autolog", dest="tensorflow_autolog", help="Automatically log params/ metrics with mlflow.keras.autolog", default=False, type=bool)
+    parser.add_argument("--tensorflow_autolog", dest="tensorflow_autolog", help="Automatically log params/ metrics with mlflow.tensorflow.autolog", default=False, type=bool)
     parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX flavor", default=False, type=bool)
     args = parser.parse_args()
     print("Arguments:")

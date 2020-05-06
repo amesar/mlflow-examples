@@ -77,7 +77,6 @@ def predict_tensorflow_lite_model(run_id, data):
         predictions.append(p[0])
     display(np.asarray(predictions))
 
-
 def display(predictions):
     print("predictions.shape:",predictions.shape)
     df = pd.DataFrame(data=predictions, columns=["prediction"])
