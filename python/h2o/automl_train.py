@@ -7,7 +7,7 @@ import mlflow.h2o
 print("MLflow version:", mlflow.__version__)
 print("h2o version:", h2o.__version__)
 h2o.init()
-default_data_path = "../../data/wine-quality-white.csv"
+default_data_path = "../../data/train/wine-quality-white.csv"
 
 def qname(clz):
     return str(clz).replace("<class '","").replace("'>","")

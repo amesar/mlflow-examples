@@ -9,7 +9,7 @@ import mlflow.pyfunc
 
 if __name__ == "__main__":
     model_uri = sys.argv[1]
-    path = sys.argv[2] if len(sys.argv) > 2 else "../../data/wine-quality-white.csv"
+    path = sys.argv[2] if len(sys.argv) > 2 else "../../data/train/wine-quality-white.csv"
     print("path:", path)
     print("model_uri:", model_uri)
     print("MLflow Version:", mlflow.__version__)

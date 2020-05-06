@@ -89,7 +89,7 @@ def artifact_exists(run_id, path):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--run_id", dest="run_id", help="run_id", required=True)
-    parser.add_argument("--data_path", dest="data_path", help="Data path", default="../../data/wine-quality-white.csv")
+    parser.add_argument("--data_path", dest="data_path", help="Data path", default="../../data/train/wine-quality-white.csv")
     parser.add_argument("--score_as_pyfunc", dest="score_as_pyfunc", help="Score as PyFunc", default=False, action='store_true')
     args = parser.parse_args()
     print("Arguments:")

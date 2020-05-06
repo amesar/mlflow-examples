@@ -66,7 +66,7 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment name", required=True)
-    parser.add_argument("--data_path", dest="data_path", help="Data path", default="../../data/wine-quality-white.csv")
+    parser.add_argument("--data_path", dest="data_path", help="Data path", default="../../data/train/wine-quality-white.csv")
     parser.add_argument("--iterations", dest="iterations", help="Iterations", default=2, type=int)
     parser.add_argument("--depth", dest="depth", help="Depth", default=2, type=int)
     parser.add_argument("--learning_rate", dest="learning_rate", help="Learning rate", default=1, type=int)

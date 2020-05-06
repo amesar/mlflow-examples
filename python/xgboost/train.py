@@ -70,7 +70,7 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument("--experiment_name", dest="experiment_name", help="experiment_name", required=True)
-    parser.add_argument("--data_path", dest="data_path", help="data_path", default="../../data/wine-quality-white.csv")
+    parser.add_argument("--data_path", dest="data_path", help="data_path", default="../../data/train/wine-quality-white.csv")
     parser.add_argument("--estimators", dest="estimators", help="estimators", default=10, type=int)
     parser.add_argument("--max_depth", dest="max_depth", help="max_depth", default=3, type=int)
     parser.add_argument("--min_child_weight", dest="min_child_weight", help="min_child_weight", default=1.5, type=float)

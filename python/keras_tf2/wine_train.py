@@ -90,7 +90,7 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment name", required=False, type=str)
-    parser.add_argument("--data_path", dest="data_path", help="Data path", default="../../data/wine-quality-white.csv")
+    parser.add_argument("--data_path", dest="data_path", help="Data path", default="../../data/train/wine-quality-white.csv")
     parser.add_argument("--epochs", dest="epochs", help="Epochs", default=5, type=int)
     parser.add_argument("--batch_size", dest="batch_size", help="Batch size", default=128, type=int)
     parser.add_argument("--mlflow_log", dest="mlflow_log", help="Log params/metrics with mlflow.log", default=False, type=bool)

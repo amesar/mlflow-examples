@@ -10,7 +10,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--host", dest="host", help="host", default="localhost")
     parser.add_argument("--port", dest="port", help="port", default=5001)
-    parser.add_argument("--data_path", dest="data_path", help="data_path", default="../../data/wine-quality-white.csv")
+    parser.add_argument("--data_path", dest="data_path", help="data_path", default="../../data/train/wine-quality-white.csv")
     parser.add_argument("--num_records", dest="num_records", help="num_records", type=int, default=None)
     parser.add_argument("--log_mod", dest="log_mod", help="log_mod", default=100, type=int)
     args = parser.parse_args()

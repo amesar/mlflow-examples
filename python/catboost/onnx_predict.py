@@ -13,7 +13,7 @@ print("MLflow Version:", mlflow.__version__)
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--model_uri", dest="model_uri", help="model_uri", required=True)
-    parser.add_argument("--data_path", dest="data_path", help="data_path", default="../../data/wine-quality-white.csv")
+    parser.add_argument("--data_path", dest="data_path", help="data_path", default="../../data/train/wine-quality-white.csv")
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):
