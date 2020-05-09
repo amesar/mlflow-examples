@@ -2,7 +2,8 @@ name: mlflow-examples
 channels:
 - conda-forge
 dependencies:
-- python=3.7.5
+- python=3.7.6
 - pip:
-    - mlflow==1.6.0
+    - mlflow==1.8.0
     - mleap==0.8.1
+    - pyspark==2.4.5
