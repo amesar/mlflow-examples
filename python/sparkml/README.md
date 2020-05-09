@@ -48,7 +48,7 @@ mlflow run . \
 
 **mlflow run github**
 ```
-mlflow run https://github.com/amesar/mlflow-fun.git#examples/sparkml \
+mlflow run https://github.com/amesar/mlflow-examples.git#python/sparkml \
    -P max_depth=3 -P max_bins=24 \
   --experiment-name=sparkml
 ```
