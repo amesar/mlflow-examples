@@ -1,9 +1,9 @@
 name: mlflow-train-sklearn-wine
 channels:
-- conda-forge
+  - conda-forge
 dependencies:
-- python=3.7.6
-- pip:
+  - python=3.7.6
+  - pip:
     - mlflow==1.8.0
     - scikit-learn==0.20.2
     - matplotlib==3.2.1
