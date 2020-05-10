@@ -2,6 +2,8 @@
 PySpark Decision Tree Regression Example.
 """
 
+import platform
+import pyspark
 from pyspark.sql import SparkSession
 from pyspark.ml import Pipeline
 from pyspark.ml.regression import DecisionTreeRegressor
@@ -13,9 +15,12 @@ from common import *
 
 spark = SparkSession.builder.appName("App").getOrCreate()
 
-print("MLflow Version:", mlflow.__version__)
-print("Spark Version:", spark.version)
-print("Tracking URI:", mlflow.tracking.get_tracking_uri())
+print("Versions:")
+print("  Operating System:",platform.version()+" - "+platform.release())
+print("  MLflow Version:", mlflow.__version__)
+print("  Spark Version:", spark.version)
+print("  PySpark Version:", pyspark.__version__)
+print("  MLflow Tracking URI:", mlflow.tracking.get_tracking_uri())
 
 metrics = ["rmse", "r2", "mae"]
 
@@ -101,7 +106,10 @@ if __name__ == "__main__":
         print("  run_id:", run.info.run_id)
         print("  experiment_id:", run.info.experiment_id)
         print("  experiment_name:", client.get_experiment(run.info.experiment_id).name)
-        mlflow.set_tag("mlflow_version", mlflow.__version__)
-        mlflow.set_tag("spark_version", spark.version)
+        mlflow.set_tag("version.mlflow", mlflow.__version__)
+        mlflow.set_tag("version.spark", spark.version)
+        mlflow.set_tag("version.pyspark", pyspark.__version__)
+        mlflow.set_tag("version.os", platform.system()+" - "+platform.release())
+
         model_name = None if args.model_name is None or args.model_name == "None" else args.model_name
         train(data, args.max_depth, args.max_bins, run.info.run_id, model_name, args.log_as_onnx)

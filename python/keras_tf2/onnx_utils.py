@@ -7,8 +7,8 @@ def log_model(model, artifact_path):
     onnx_model = onnxmltools.convert_keras(model, artifact_path)
     print("onnx_model.type:",type(onnx_model))
     mlflow.onnx.log_model(onnx_model, artifact_path)
-    mlflow.set_tag("onnx_version",onnx.__version__)
-    mlflow.set_tag("onnxtools_version",onnxmltools.__version__)
+    mlflow.set_tag("version.onnx",onnx.__version__)
+    mlflow.set_tag("version.onnxtools",onnxmltools.__version__)
 
 def score_model(model, data):
     import numpy as np

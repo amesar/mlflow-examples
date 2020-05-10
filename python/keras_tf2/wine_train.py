@@ -1,6 +1,12 @@
+"""
+Train Wine Quality ataset with KerasRegressor
+"""
+
+import platform
 import pandas as pd
 import numpy as np
 import tensorflow as tf
+import sklearn
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
@@ -11,10 +17,12 @@ import mlflow
 import mlflow.keras
 import utils
 
-print("Tracking URI:", mlflow.tracking.get_tracking_uri())
-print("MLflow Version:", mlflow.__version__)
-print("Keras version:", keras.__version__)
-print("TensorFlow version:", tf.__version__)
+print("Versions:")
+print("  Tracking URI:", mlflow.tracking.get_tracking_uri())
+print("  MLflow Version:", mlflow.__version__)
+print("  Keras version:", keras.__version__)
+print("  TensorFlow version:", tf.__version__)
+print("  Operating System:",platform.system()+" - "+platform.release())
 
 np.random.seed(42)
 tf.random.set_seed(42)
@@ -117,9 +125,13 @@ if __name__ == "__main__":
         print("MLflow:")
         print("  run_id:",run.info.run_id)
         print("  experiment_id:",run.info.experiment_id)
-        mlflow.set_tag("mlflow_version", mlflow.__version__)
-        mlflow.set_tag("keras_version", keras.__version__)
-        mlflow.set_tag("tensorflow_version", tf.__version__)
+
+        mlflow.set_tag("version.mlflow", mlflow.__version__)
+        mlflow.set_tag("version.keras", keras.__version__)
+        mlflow.set_tag("version.tensorflow", tf.__version__)
+        mlflow.set_tag("version.sklearn", sklearn.__version__)
+        mlflow.set_tag("version.os", platform.system()+" - "+platform.release())
         mlflow.set_tag("keras_autolog", args.keras_autolog)
         mlflow.set_tag("tensorflow_autolog", args.tensorflow_autolog)
+
         train(args.data_path, args.epochs, args.batch_size, args.mlflow_log, args.log_as_onnx)
