@@ -1,4 +1,4 @@
-name: mlflow_examples_keras_tf2
+name: mlflow-examples-keras_tf2
 
 conda_env: conda.yaml
 

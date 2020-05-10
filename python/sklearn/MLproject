@@ -1,4 +1,4 @@
-name: mlflow_examples_sklearn
+name: mlflow-examples-sklearn
 
 conda_env: conda.yaml
 
