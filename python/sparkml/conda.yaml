@@ -1,4 +1,4 @@
-name: mlflow-examples
+name: mlflow-examples-sparkml
 channels:
   - conda-forge
 dependencies:
