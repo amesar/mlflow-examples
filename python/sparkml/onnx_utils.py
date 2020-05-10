@@ -9,8 +9,8 @@ def log_model(spark, model, name, model_name, data_df):
     onnx_model = onnxmltools.convert_sparkml(model, name, initial_types, spark_session=spark)
     mlflow.onnx.log_model(onnx_model, "onnx-model", \
         registered_model_name=None if not model_name else f"{model_name}_onnx")
-    mlflow.set_tag("onnx_version", onnx.__version__)
-    mlflow.set_tag("onnxmltools_version", onnxmltools.__version__)
+    mlflow.set_tag("version.onnx", onnx.__version__)
+    mlflow.set_tag("version.onnxmltools", onnxmltools.__version__)
 
 def score_model(model, data_ndarray):
     import numpy as np

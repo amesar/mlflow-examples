@@ -9,8 +9,10 @@
 
 ## Train
 
-Two model artifacts are created: `spark-model` and `mleap-model`. 
-To create an `onnx-model` pass the `--log_as_onnx` option.
+The model can be logged in the following flavors:
+* spark-model - Always logged
+* mleap-model - Use the `log_as_mleap` option
+* onnx-model - Use the `log_as_onnx` option
 
 ### Arguments
 
@@ -22,18 +24,37 @@ To create an `onnx-model` pass the `--log_as_onnx` option.
 | max_depth | no | 5 | Max depth  |
 | max_bins | no | 32 | Max bins  |
 | run_origin | no | none | Run tag  |
-| log_as_onnx | no | False | Also log the model in ONNX format |
+| log_as_mleap | no | False | Log the model in MLeap flavor |
+| log_as_onnx | no | False | Log the model in ONNX flavor |
 
-### Unmanaged without mlflow run
+### Run unmanaged without `mlflow run`
+
+Install [conda.yaml](conda.yaml) environment.
 
 To run with standard main function
 ```
 spark-submit --master local[2] \
-  --packages com.databricks:spark-avro_2.11:3.0.1,ml.combust.mleap:mleap-spark_2.11:0.12.0 \
   train.py --max_depth 16 --max_bins 32 
 ```
 
-### Using mlflow run
+To log model as MLeap
+```
+spark-submit --master local[2] \
+  --packages com.databricks:spark-avro_2.11:3.0.1,ml.combust.mleap:mleap-spark_2.11:0.12.0 \
+  train.py --log_as_mleap
+```
+
+To log model as ONNX
+```
+pip install onnx==1.6.0
+pip install onnxruntime==1.2.0
+pip install onnxmltools==1.6.1
+
+spark-submit --master local[2] \
+  train.py --log_as_onnx
+```
+
+### Using `mlflow run`
 
 These runs use the [MLproject](MLproject) file. For more details see [MLflow documentation - Running Projects](https://mlflow.org/docs/latest/projects.html#running-projects).
 

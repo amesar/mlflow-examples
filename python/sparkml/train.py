@@ -22,10 +22,8 @@ print("  Spark Version:", spark.version)
 print("  PySpark Version:", pyspark.__version__)
 print("  MLflow Tracking URI:", mlflow.tracking.get_tracking_uri())
 
-metrics = ["rmse", "r2", "mae"]
-
-def train(data, max_depth, max_bins, run_id, model_name, log_as_onnx):
-    (trainingData, testData) = data.randomSplit([0.7, 0.3], 2019)
+def train(data, max_depth, max_bins, model_name, log_as_mleap, log_as_onnx):
+    (trainingData, testData) = data.randomSplit([0.7, 0.3], 42)
     print("testData.schema:")
     testData.printSchema()
 
@@ -48,6 +46,7 @@ def train(data, max_depth, max_bins, run_id, model_name, log_as_onnx):
     # MLflow - log metrics
     print("Metrics:")
     predictions = model.transform(testData)
+    metrics = ["rmse", "r2", "mae"]
     for metric_name in metrics:
         evaluator = RegressionEvaluator(labelCol=colLabel, predictionCol=colPrediction, metricName=metric_name)
         metric_value = evaluator.evaluate(predictions)
@@ -59,22 +58,24 @@ def train(data, max_depth, max_bins, run_id, model_name, log_as_onnx):
     mlflow.spark.log_model(model, "spark-model", \
         registered_model_name=None if not model_name else f"{model_name}_spark")
 
-    # MLflow - log mleap model
-    mleapData = testData.drop("quality")
-    mlflow.mleap.log_model(spark_model=model, sample_input=mleapData, artifact_path="mleap-model", \
-        registered_model_name=None if not model_name else f"{model_name}_mleap")
+    # MLflow - log as MLeap model
+    if log_as_mleap:
+        scoreData = testData.drop("quality")
+        mlflow.mleap.log_model(spark_model=model, sample_input=scoreData, artifact_path="mleap-model", \
+            registered_model_name=None if not model_name else f"{model_name}_mleap")
 
-    # Log mleap schema file for MLeap runtime deserialization
-    schema_path = "schema.json"
-    with open(schema_path, 'w') as f:
-        f.write(mleapData.schema.json())
-    print("schema_path:", schema_path)
-    mlflow.log_artifact(schema_path, "mleap-model")
+        # Log MLeap schema file for MLeap runtime deserialization
+        schema_path = "schema.json"
+        with open(schema_path, 'w') as f:
+            f.write(scoreData.schema.json())
+        print("schema_path:", schema_path)
+        mlflow.log_artifact(schema_path, "mleap-model")
 
-    # MLflow - log onnx model
+    # MLflow - log as ONNX model
     if log_as_onnx:
         import onnx_utils
-        onnx_utils.log_model(spark, model, "onnx-model", model_name, mleapData)
+        scoreData = testData.drop("quality")
+        onnx_utils.log_model(spark, model, "onnx-model", model_name, scoreData)
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
@@ -85,6 +86,7 @@ if __name__ == "__main__":
     parser.add_argument("--max_depth", dest="max_depth", help="Max depth", default=5, type=int) # per doc
     parser.add_argument("--max_bins", dest="max_bins", help="Max bins", default=32, type=int) # per doc
     parser.add_argument("--describe", dest="describe", help="Describe data", default=False, action='store_true')
+    parser.add_argument("--log_as_mleap", dest="log_as_mleap", help="Log model as MLeap", default=False, action='store_true')
     parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX", default=False, action='store_true')
     args = parser.parse_args()
     print("Arguments:")
@@ -112,4 +114,4 @@ if __name__ == "__main__":
         mlflow.set_tag("version.os", platform.system()+" - "+platform.release())
 
         model_name = None if args.model_name is None or args.model_name == "None" else args.model_name
-        train(data, args.max_depth, args.max_bins, run.info.run_id, model_name, args.log_as_onnx)
+        train(data, args.max_depth, args.max_bins, model_name, args.log_as_mleap, args.log_as_onnx)
