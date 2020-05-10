@@ -8,7 +8,7 @@ conda_env: conda.yaml
 entry_points:
   main:
     parameters:
-      data_path: {type: string, default: "../../data/wine-quality-white.csv"}
+      data_path: {type: string, default: "../../data/train/wine-quality-white.csv"}
       max_depth: int
       max_leaf_nodes: {type: int, default: 32}
       model_name: {type: string, default: None }
