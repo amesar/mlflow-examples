@@ -1,9 +1,9 @@
 name: mlflow-examples-keras2
 channels:
-- conda-forge
+  - conda-forge
 dependencies:
-- python=3.7.6
-- pip:
+  - python=3.7.6
+  - pip:
     - mlflow==1.8.0
     - tensorflow==2.1.0
     - tensorflowjs==1.7.4
