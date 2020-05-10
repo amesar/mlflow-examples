@@ -27,10 +27,10 @@ print("  Operating System:",platform.system()+" - "+platform.release())
 np.random.seed(42)
 tf.random.set_seed(42)
 
-tmp_dir = "out"
+tmp_dir = "out" # TODO
 
-def train(data_path, epochs, batch_size, mlflow_log, log_as_onnx):
-    print("mlflow_log:", mlflow_log)
+def train(data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx):
+    print("mlflow_custom_log:", mlflow_custom_log)
     x_train, _, y_train, _ = utils.build_wine_data(data_path)
 
     ncols = x_train.shape[1]
@@ -42,15 +42,15 @@ def train(data_path, epochs, batch_size, mlflow_log, log_as_onnx):
         return model
     model = baseline_model()
 
-    if mlflow_log:
+    if mlflow_custom_log:
         print("Logging with mlflow.log")
         mlflow.log_param("epochs", epochs)
         mlflow.log_param("batch_size", batch_size)
 
-    # MLflow - log Keras HD5 model
+    # MLflow - log as Keras HD5 model
     mlflow.keras.log_model(model, "keras-hd5-model", registered_model_name=args.model_name)
 
-    # MLflow - log onnx model
+    # MLflow - log as ONNX model
     if log_as_onnx:
         import onnx_utils
         onnx_utils.log_model(model, "onnx-model")
@@ -82,7 +82,7 @@ def train(data_path, epochs, batch_size, mlflow_log, log_as_onnx):
     kfold = KFold(n_splits=10)
     results = cross_val_score(estimator, x_train, y_train, cv=kfold)
     print(f"Baseline MSE: mean: {round(results.mean(),2)}  std: {round(results.std(),2)}")
-    if mlflow_log:
+    if mlflow_custom_log:
         mlflow.log_metric("mse_mean", results.mean())
         mlflow.log_metric("mse_std", results.std())
 
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     parser.add_argument("--model_name", dest="model_name", help="Registered model name", default=None)
     parser.add_argument("--epochs", dest="epochs", help="Epochs", default=5, type=int)
     parser.add_argument("--batch_size", dest="batch_size", help="Batch size", default=128, type=int)
-    parser.add_argument("--mlflow_log", dest="mlflow_log", help="Log params/metrics with mlflow.log", default=False, type=bool)
+    parser.add_argument("--mlflow_custom_log", dest="mlflow_custom_log", help="Log params/metrics with mlflow.log", default=True, type=bool)
     parser.add_argument("--keras_autolog", dest="keras_autolog", help="Automatically log params/ metrics with mlflow.keras.autolog", default=False, type=bool)
     parser.add_argument("--tensorflow_autolog", dest="tensorflow_autolog", help="Automatically log params/ metrics with mlflow.tensorflow.autolog", default=False, type=bool)
     parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX flavor", default=False, type=bool)
@@ -131,7 +131,8 @@ if __name__ == "__main__":
         mlflow.set_tag("version.tensorflow", tf.__version__)
         mlflow.set_tag("version.sklearn", sklearn.__version__)
         mlflow.set_tag("version.os", platform.system()+" - "+platform.release())
-        mlflow.set_tag("keras_autolog", args.keras_autolog)
-        mlflow.set_tag("tensorflow_autolog", args.tensorflow_autolog)
+        mlflow.set_tag("mlflow_custom_log", args.mlflow_custom_log)
+        mlflow.set_tag("mlflow_keras.autolog", args.keras_autolog)
+        mlflow.set_tag("mlflow_tensorflow.autolog", args.tensorflow_autolog)
 
-        train(args.data_path, args.epochs, args.batch_size, args.mlflow_log, args.log_as_onnx)
+        train(args.data_path, args.epochs, args.batch_size, args.mlflow_custom_log, args.log_as_onnx)
