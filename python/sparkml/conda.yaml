@@ -6,5 +6,5 @@ dependencies:
   - pip=19.0.3
   - pip:
     - mlflow==1.8.0
-    - mleap==0.8.1
+    - mleap==0.15.0
     - pyspark==2.4.5
