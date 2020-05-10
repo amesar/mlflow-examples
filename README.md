@@ -99,17 +99,24 @@ Start the MLflow tracking server.
 mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri $PWD/mlruns --default-artifact-root $PWD/mlruns
 ```
 
-#### Database-backed store
+#### Database-backed store - MySQL
 
-##### MySQL Setup
 * Install MySQL
 * Create an mlflow user with password.
 * Create a database `mlflow` 
 
-##### Start the MLflow Tracking Server
+Start the MLflow Tracking Server
 ```
 mlflow server --host 0.0.0.0 --port 5000 \
   --backend-store-uri mysql://MLFLOW_USER:MLFLOW_PASSWORD@localhost:3306/mlflow \
+  --default-artifact-root $PWD/mlruns  
+```
+
+#### Database-backed store - SQLite
+
+```
+mlflow server --host 0.0.0.0 --port 5000 \
+  --backend-store-uri sqlite:///mlflow.db \
   --default-artifact-root $PWD/mlruns  
 ```
 
