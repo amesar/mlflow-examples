@@ -21,7 +21,7 @@ MLflow examples - basic and advanced.
 * [reproduce](python/reproduce) - Reproduce an existing run.
 * [benchmarks](python/benchmarks) - Simple scoring server performance benchmark.
 
-The sklearn and Spark ML examples also showcase:
+The sklearn and Spark ML examples also demonstrate:
 * Different ways to run a project with the mlflow CLI 
 * Real-time server scoring with docker containers
 * Running a project against a Databricks cluster
@@ -36,8 +36,8 @@ The sklearn and Spark ML examples also showcase:
 * [databricks_notebooks](databricks_notebooks) - Databricks notebooks
 * [Notebook CICD](databricks_notebooks/cicd) - Lighweight CICD example with Databricks notebook
 
-**Other**
-* [docker](docker) - MLflow tracking server and MySQL database containers.
+**Docker**
+* [docker/docker-server](docker/docker-server) - MLflow tracking server and MySQL database containers.
 
 ## Setup
 
@@ -73,9 +73,9 @@ source mlflow-examples/bin/activate
 
 You can either run the MLflow tracking server directly on your laptop or with Docker.
 
-### Docker Tracking Server
+### Docker 
 
-See [docker/README](docker/README.md).
+See [docker/docker-server/README](docker/docker-server/README.md).
 
 ### Laptop Tracking Server
 
