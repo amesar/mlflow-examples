@@ -98,7 +98,7 @@ if __name__ == "__main__":
     run_id = args.run_id
 
     utils.dump(run_id)
-    data,_,_,_  = utils.build_wine_data(args.data_path)
+    data,_,_,_  = utils.build_data(args.data_path)
 
     model_uri = f"runs:/{run_id}/keras-hd5-model"
     predict_keras(model_uri, data)

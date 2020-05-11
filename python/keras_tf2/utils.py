@@ -1,10 +1,5 @@
 import pandas as pd
 
-def reshape(x, n):
-    x = x.reshape((n, 28 * 28))
-    x = x.astype('float32') / 255
-    return x
-
 def build_mnist_data():
     from tensorflow.keras.datasets import mnist
     from tensorflow.keras.utils import to_categorical
@@ -26,14 +21,7 @@ def build_mnist_data():
 
     return x_train, y_train, x_test, y_test
 
-def _build_wine_data(data_path):
-    df = pd.read_csv(data_path)
-    ncols = df.shape[1]-1
-    X = df.values[:,0:ncols]
-    Y = df.values[:,ncols]
-    return X, Y
-
-def build_wine_data(data_path):
+def build_data(data_path):
     from sklearn.model_selection import train_test_split
     colLabel = "quality"
     data = pd.read_csv(data_path)

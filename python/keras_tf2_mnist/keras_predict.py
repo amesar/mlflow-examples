@@ -17,7 +17,7 @@ if __name__ == "__main__":
     model = mlflow.keras.load_model(args.model_uri)
     print("model:", type(model))
     
-    _,_,data,_  = utils.build_mnist_data()
+    _,_,data,_  = utils.build_data()
     print("data.type:", type(data))
     print("data.shape:", data.shape)
 

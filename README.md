@@ -9,7 +9,9 @@ MLflow examples - basic and advanced.
 * [sklearn](python/sklearn) - Scikit-learn model - train and score. ONNX working too.
 * [sparkml](python/sparkml) - Spark ML model - train and score.  ONNX too.
 * Keras/Tensorflow - train and score. ONNX working too.
-  * [keras_tf2](python/keras_tf2) - Keras with TensorFlow 2.x
+  * Keras with TensorFlow 2.x
+    * [keras_tf2](python/keras_tf2) - Wine quality dataset
+    * [keras_tf2_mnist](python/keras_tf2_mnist) - MNIST dataset
   * [keras_tf1](python/keras_tf1) - Keras with TensorFlow 1.x
 * [xgboost](python/xgboost) - XGBoost (sklearn wrapper) model - train and score.
 * [catboost](python/catboost) - Catboost (using sklearn) model - train and score. ONNX working too.

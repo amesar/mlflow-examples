@@ -8,7 +8,7 @@ entry_points:
       data_path:  {type: string, default: "../../data/train/wine-quality-white.csv"}
       epochs:     {type: int, default: 5}
       batch_size: {type: int, default: 128}
-    command: "python wine_train.py
+    command: "python train.py
                 --data_path {data_path}
                 --epochs {epochs}
                 --batch_size {batch_size}"

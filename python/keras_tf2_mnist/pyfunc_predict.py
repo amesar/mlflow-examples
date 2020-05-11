@@ -1,8 +1,8 @@
 from argparse import ArgumentParser
+import pandas as pd
 import mlflow
-import mlflow.onnx
+import mlflow.pyfunc
 import utils
-import onnx_utils
 
 print("MLflow Version:", mlflow.__version__)
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
@@ -15,11 +15,14 @@ if __name__ == "__main__":
     for arg in vars(args):
         print(f"  {arg}: {getattr(args, arg)}")
 
-    _,_,data,_  = utils.build_mnist_data()
-    model = mlflow.onnx.load_model(args.model_uri)
-    print("model.type:", type(model))
+    model = mlflow.pyfunc.load_model(args.model_uri)
+    print("model:", model)
 
-    predictions = onnx_utils.score_model(model, data)
-    print("predictions.type:",type(predictions))
-    print("predictions.shape:",predictions.shape)
-    print("predictions:",predictions)
+    _,_,ndarray,_  = utils.build_data()
+    data = pd.DataFrame(ndarray)
+    print("data.shape:", data.shape)
+
+    predictions = model.predict(data)
+    print("predictions.type:", type(predictions))
+    print("predictions.shape:", predictions.shape)
+    print("predictions:", predictions)

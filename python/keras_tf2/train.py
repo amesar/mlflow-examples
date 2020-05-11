@@ -31,7 +31,7 @@ tmp_dir = "out" # TODO
 
 def train(data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx):
     print("mlflow_custom_log:", mlflow_custom_log)
-    x_train, _, y_train, _ = utils.build_wine_data(data_path)
+    x_train, _, y_train, _ = utils.build_data(data_path)
 
     ncols = x_train.shape[1]
     def baseline_model():

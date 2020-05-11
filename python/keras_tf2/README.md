@@ -1,27 +1,30 @@
-# mlflow-examples - keras_tf2
-We explore several TensorFlow model formats such as:
-* [HD5](https://www.tensorflow.org/tutorials/keras/save_and_load#hdf5_format) - Keras TensorFlow 1.x legacy format. This is used for the current MLflow Keras flavor.
-* [SavedModel[(https://www.tensorflow.org/guide/saved_model) - Standard Keras TensorFlow 2.x protobuf-based format.
-* [TensorFlow Lite] format - for mobile and edge devices.
-* [TensorFlow.js](https://www.tensorflow.org/js) - for browsers or Node.js.
+# mlflow-examples - keras_tf2 - wine quality
+
 
 ## Overview
 * Keras with TensorFlow 2.x train and predict.
-* Saves model as keras flavor.
-* Two experiments:
-  * Wine quality dataset.
-  * MNIST dataset.
-* Option to [autolog](https://mlflow.org/docs/latest/python_api/mlflow.keras.html#mlflow.keras.autolog) parameters and metrics.
-* Option to log and score model as ONNX.
-* Setup: [conda.yaml](conda.yaml).
+* Dataset: Wine quality
+* Saves model as MLflow Keras (HD5) flavor.
+* Demonstrates advanced features:
+  *  Scoring with TensorFlow Serving docker container.
+  *  Saves model in different TensorFlow model formats: HD5, SaveModel, TensorFlow Lite and TensorFlow.js.
+* Options to:
+  * [autolog](https://mlflow.org/docs/latest/python_api/mlflow.keras.html#mlflow.keras.autolog) parameters and metrics.
+  * Log and score model as ONNX.
+
+## TensorFlow Serving
+
+TensorFlow model formats:
+* [HD5](https://www.tensorflow.org/tutorials/keras/save_and_load#hdf5_format) - Keras TensorFlow 1.x legacy format. This is used for the current MLflow Keras flavor.
+* [SavedModel](https://www.tensorflow.org/guide/saved_model) - Standard Keras TensorFlow 2.x Protobuf-based format.
+* [TensorFlow Lite](https://www.tensorflow.org/lite) - for mobile and edge devices.
+* [TensorFlow.js](https://www.tensorflow.org/js) - for browsers or Node.js.
 
 ## Setup
 
 `conda env create` [conda.yaml](conda.yaml)
 
-## Experiment with Wine Quality Data 
-
-### TensorFlow Model Serialization Formats
+## TensorFlow Model Serialization Formats
 
 We explore several TensorFlow model formats such as:
 
@@ -42,22 +45,44 @@ MLflow run model details:
   * tensorflow-lite-model - TensorFlow Lite
   * tensorflow.js - TensorFlow JS
 
-### Training
+## Training
 
-Source: [wine_train.py](wine_train.py).
+Source: [train.py](train.py).
 
+### Options
+
+|Name | Required | Default | Description|
+|-----|----------|---------|------------|
+| experiment_name | no | none | Experiment name|
+| model_name | no | none | Registered model name|
+| epochs | no | 5 | Number of epochs |
+| batch_size | no | 129 | Batch size |
+| log_as_onnx | no | False | Log as ONNX |
+| keras_autolog | no | False | Automatically log params/ metrics with mlflow.keras.autolog |
+| tensorflow_autolog | no | False | Automatically log params/ metrics with mlflow.keras.autolog |
+
+
+### Run
 ```
-python wine_train.py --experiment_name keras_wine --epochs 3 --batch_size 128
+python train.py --experiment_name keras_wine --epochs 3 --batch_size 128
 ```
 
-### Scoring
-
+## Batch Scoring
 
 Note: ONNX pyfunc does not score correctly unlike Keras with TensorFlow 1.x.
 
-Source: [wine_predict.py](wine_predict.py).
+Source: [predict.py](predict.py).
+
+### Options
+
+|Name | Required | Default | Description|
+|-----|----------|---------|------------|
+| run_id | yes | none | run_id |
+| score_as_pyfunc | no | False | Score as PyFunc  |
+
+### Run
 ```
-python wine_predict.py --run_id 7e674524514846799310c41f10d6b99d
+python predict.py --run_id 7e674524514846799310c41f10d6b99d
 ```
 
 ```
@@ -114,139 +139,46 @@ predictions.shape: (3428, 1)
 +--------------+
 ```
 
-## Experiment with MNIST Data 
+## Real-time Scoring - MLflow
 
 
-### Training
+### Data
+[../../data/predict-wine-quality.json](../../data/predict-wine-quality.json)
 
-Source: [mnist_train.py](mnist_train.py).
+### Web server
 
-To run with user logging (no autologging).
+### Docker container
+
+## Real-time Scoring - TensorFlow Serving
+
+### Data
+
+[../../data/tensorflow_serving.json](../../data/tensorflow_serving.json)
 ```
-python mnist_train.py --experiment_name keras_mnist --epochs 3 --batch_size 128
-```
-
-To log a model as ONNX flavor under the artifact path `onnx-model`.
-```
-python mnist_train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --log_as_onnx
-```
-
-
-### Scoring
-
-#### Score as Keras flavor
-
-Source: [mnist_keras_predict.py](mnist_keras_predict.py).
-```
-python mnist_keras_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/keras-hd5-model
+{"instances": [ 
+  [ 7,   0.27, 0.36, 20.7, 0.045, 45, 170, 1.001,  3,    0.45,  8.8 ],
+  [ 6.3, 0.3,  0.34,  1.6, 0.049, 14, 132, 0.994,  3.3,  0.49,  9.5 ],
+  [ 8.1, 0.28, 0.4,   6.9, 0.05,  30,  97, 0.9951, 3.26, 0.44, 10.1 ]
+] }
 ```
 
-```
-predictions.type: <class 'numpy.ndarray'>
-predictions.shape: (10000,)
-predictions: [7 2 1 ... 4 5 6]
-```
-
-#### Score as Pyfunc flavor
-
-Source: [mnist_pyfunc_predict.py](mnist_pyfunc_predict.py).
-
-##### Score Keras model with Pyfunc 
+### Launch scoring server as docker container
 
 ```
-python mnist_pyfunc_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/keras-hd5-model
-```
-
-```
-predictions.type: <class 'pandas.core.frame.DataFrame'>
-predictions.shape: (10000, 10)
-
-predictions:                  0             1  ...             8             9
-0     7.356894e-07  2.184515e-09  ...  2.648242e-07  1.557131e-05
-1     3.679516e-08  5.211977e-06  ...  2.588275e-07  4.540044e-12
-...            ...           ...  ...           ...           ...
-9998  5.653655e-08  3.749759e-09  ...  1.073899e-04  1.215128e-09
-9999  2.790610e-08  2.516971e-11  ...  6.860461e-10  2.355604e-10
-```
-
-##### Score ONNX model with Pyfunc 
-
-```
-python mnist_pyfunc_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/onnx-model
-```
-```
-predictions.type: <class 'pandas.core.frame.DataFrame'>
-predictions.shape: (100000, 1)
-predictions:             dense_2
-0      7.529760e-07
-1      3.086328e-09
-...             ...
-99998  9.314070e-10
-99999  2.785560e-10
+docker run -t --rm --publish 8501 \
+--volume /opt/mlflow/mlruns/1/f48dafd70be044298f71488b0ae10df4/artifacts/tensorflow-model:/models/keras_wine\
+--env MODEL_NAME=keras_wine \
+tensorflow/serving
 ```
 
 
-#### Score as ONNX flavor
-
-Source: [mnist_onnx_predict.py](mnist_onnx_predict.py) and [onnx_utils.py](onnx_utils.py).
-```
-python mnist_onnx_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/onnx-model
-```
-```
-predictions.type: <class 'numpy.ndarray'>
-predictions.shape: (10000, 10)
-predictions: 
-[[7.5297595e-07 3.0863279e-09 2.5705955e-04 ... 9.9953580e-01 3.5329055e-07 1.3658248e-05]
- [3.7254765e-08 8.8118195e-06 9.9951375e-01 ... 2.6982589e-12 9.4671401e-07 2.8832321e-12]
- ...
- [8.6566203e-08 6.8279524e-09 1.0189680e-08 ... 1.5083194e-09 2.0773137e-04 1.7879515e-09]
- [3.8302844e-08 1.6128991e-11 1.1180904e-05 ... 4.9651490e-12 9.3140695e-10 2.7855604e-10]]
-```
-
-## Autologging
-
-There are two autologging options:
-* keras_autolog - calls mlflow.keras.autolog()
-* tensorflow_autolog - calls mlflow.tensorflow.autolog()
-
-Interestingly, they behave differently depending on the TensorFlow version.
-
-| TensorFlow Version | Autolog Method | Params | 
-|---|---|---|
-| 1x | mlflow.keras.autolog | OK | 
-| 1x | mlflow.tensorflow.autolog | none |
-| 2x | mlflow.keras.autolog | none | 
-| 2x | mlflow.tensorflow.autolog | OK |
-
+### Score 
 
 ```
-python mnist_train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --keras_autolog
+curl -d '{"instances": [12.8, 0.03, 0.48, 0.98, 6.2, 29, 1.2, 0.4, 75 ] }' \
+     -X POST http://localhost:8501/v1/models/keras_wine:predict
 ```
 
-Autologging will create a model under the name `model`.
-
-Autlogging Parameters:
 ```
-acc
-loss
-```
-Autlogging Metrics:
-```
-batch_size
-class_weight
-epochs
-epsilon
-initial_epoch
-learning_rate
-max_queue_size
-num_layers
-optimizer_name
-sample_weight
-shuffle
-steps_per_epoch
-use_multiprocessing
-validation_freq
-validation_split
-validation_steps
-workers
+{ "predictions": [[-0.70597136]] }
 ```
