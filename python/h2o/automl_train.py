@@ -20,7 +20,7 @@ def prepare_data(data_path):
     train_cols = [n for n in data.col_names if n != "quality"]
     return train_data, test_data, train_cols
 
-def train(data_path, max_models):
+def train(data_path, max_models, model_name):
     train_data, test_data, train_cols = prepare_data(args.data_path)
     test_cols = train_cols[:-1]
     test_cols = "quality"
@@ -57,13 +57,14 @@ def train(data_path, max_models):
             df.to_csv(f, index=False, header=False)
         mlflow.log_artifact("models.csv")
 
-        mlflow.h2o.log_model(model.leader, "h2o-model")
+        mlflow.h2o.log_model(model.leader, "h2o-model", registered_model_name=args.model_name)
 
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument("--experiment_name", dest="experiment_name", help="experiment_name", required=False, type=str)
+    parser.add_argument("--model_name", dest="model_name", help="Registered model name", default=None)
     parser.add_argument("--data_path", dest="data_path", help="Data path", default=default_data_path)
     parser.add_argument("--max_models", dest="max_models", help="max_models", default=5, type=int)
     args = parser.parse_args()
@@ -73,4 +74,4 @@ if __name__ == "__main__":
     client = mlflow.tracking.MlflowClient()
     if args.experiment_name:
         mlflow.set_experiment(args.experiment_name)
-    train(args.data_path, args.max_models)
+    train(args.data_path, args.max_models, args.model_name)

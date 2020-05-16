@@ -27,9 +27,7 @@ print("  Operating System:",platform.system()+" - "+platform.release())
 np.random.seed(42)
 tf.random.set_seed(42)
 
-tmp_dir = "out" # TODO
-
-def train(data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx):
+def train(data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx, model_name):
     print("mlflow_custom_log:", mlflow_custom_log)
     x_train, _, y_train, _ = utils.build_data(data_path)
 
@@ -53,7 +51,7 @@ def train(data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx):
     # MLflow - log as ONNX model
     if log_as_onnx:
         import onnx_utils
-        onnx_utils.log_model(model, "onnx-model")
+        onnx_utils.log_model(model, "onnx-model", model_name=f"{model_name}_onnx")
 
     # Save as TensorFlow SavedModel format
     path = "tensorflow-model"
@@ -135,4 +133,4 @@ if __name__ == "__main__":
         mlflow.set_tag("mlflow_keras.autolog", args.keras_autolog)
         mlflow.set_tag("mlflow_tensorflow.autolog", args.tensorflow_autolog)
 
-        train(args.data_path, args.epochs, args.batch_size, args.mlflow_custom_log, args.log_as_onnx)
+        train(args.data_path, args.epochs, args.batch_size, args.mlflow_custom_log, args.log_as_onnx, args.model_name)

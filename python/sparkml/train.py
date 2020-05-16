@@ -13,7 +13,11 @@ import mlflow
 import mlflow.spark
 from common import *
 
-spark = SparkSession.builder.appName("App").getOrCreate()
+spark = (SparkSession.builder.appName("App")
+  .config("spark.jars.packages", "org.mlflow.mlflow-spark")
+  .getOrCreate())
+#spark = SparkSession.builder.appName("App").getOrCreate()
+#SparkSession.builder.config("spark.jars.packages", "org.mlflow.mlflow-spark")
 
 print("Versions:")
 print("  Operating System:",platform.version()+" - "+platform.release())
@@ -54,9 +58,8 @@ def train(data, max_depth, max_bins, model_name, log_as_mleap, log_as_onnx):
         mlflow.log_metric(metric_name,metric_value)
 
     # MLflow - log spark model
-    #mlflow.spark.log_model(model, "spark-model", registered_model_name=f"{model_name}_spark")
     mlflow.spark.log_model(model, "spark-model", \
-        registered_model_name=None if not model_name else f"{model_name}_spark")
+        registered_model_name=None if not model_name else f"{model_name}")
 
     # MLflow - log as MLeap model
     if log_as_mleap:
@@ -88,6 +91,7 @@ if __name__ == "__main__":
     parser.add_argument("--describe", dest="describe", help="Describe data", default=False, action='store_true')
     parser.add_argument("--log_as_mleap", dest="log_as_mleap", help="Log model as MLeap", default=False, action='store_true')
     parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX", default=False, action='store_true')
+    parser.add_argument("--spark_autolog", dest="spark_autolog", help="Use spark.autolog", default=False, action='store_true')
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):
@@ -96,7 +100,8 @@ if __name__ == "__main__":
     client = mlflow.tracking.MlflowClient()
     if args.experiment_name:
         mlflow.set_experiment(args.experiment_name)
-
+    if args.spark_autolog:
+        mlflow.spark.autolog()
     data_path = args.data_path or default_data_path
     data = read_data(spark, data_path)
     if (args.describe):

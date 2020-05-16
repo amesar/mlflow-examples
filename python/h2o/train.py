@@ -17,7 +17,7 @@ def prepare_data(data_path):
     train_cols = [n for n in data.col_names if n != "quality"]
     return train_data, test_data, train_cols
 
-def train(data_path, ntrees, log_as_onnx):
+def train(data_path, ntrees, log_as_onnx, model_name):
     train_data, test_data, train_cols = prepare_data(args.data_path)
     with mlflow.start_run() as run:
         exp = client.get_experiment(run.info.experiment_id)
@@ -38,7 +38,7 @@ def train(data_path, ntrees, log_as_onnx):
         mlflow.set_tag("mlflow_version", mlflow.__version__)
         mlflow.set_tag("h2o_version", h2o.__version__)
 
-        mlflow.h2o.log_model(rf, "h2o-model")
+        mlflow.h2o.log_model(rf, "h2o-model", registered_model_name=args.model_name)
 
         if log_as_onnx:
             import onnxmltools
@@ -53,6 +53,7 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument("--experiment_name", dest="experiment_name", help="experiment_name", required=False, type=str)
+    parser.add_argument("--model_name", dest="model_name", help="Registered model name", default=None)
     parser.add_argument("--data_path", dest="data_path", help="Data path", default=default_data_path)
     parser.add_argument("--ntrees", dest="ntrees", help="ntrees", default=5, type=int)
     parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX flavor", default=False, action='store_true')
@@ -63,4 +64,4 @@ if __name__ == "__main__":
     client = mlflow.tracking.MlflowClient()
     if args.experiment_name:
         mlflow.set_experiment(args.experiment_name)
-    train(args.data_path, args.ntrees, args.log_as_onnx)
+    train(args.data_path, args.ntrees, args.log_as_onnx, args.model_name)

@@ -23,7 +23,7 @@ def build_data(data_path):
 
     return X_train, X_test, y_train, y_test 
 
-def train(data_path, max_depth, min_child_weight, estimators):
+def train(data_path, max_depth, min_child_weight, estimators, model_name):
     X_train, X_test, y_train, y_test = build_data(data_path)
     with mlflow.start_run() as run:
         run_id = run.info.run_uuid
@@ -64,12 +64,13 @@ def train(data_path, max_depth, min_child_weight, estimators):
         mlflow.log_metric("mae", mae)
 
         # Log model
-        mlflow.xgboost.log_model(model, "xgboost-model")
+        mlflow.xgboost.log_model(model, "xgboost-model", registered_model_name=model_name)
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument("--experiment_name", dest="experiment_name", help="experiment_name", required=True)
+    parser.add_argument("--model_name", dest="model_name", help="Registered model name", default=None)
     parser.add_argument("--data_path", dest="data_path", help="data_path", default="../../data/train/wine-quality-white.csv")
     parser.add_argument("--estimators", dest="estimators", help="estimators", default=10, type=int)
     parser.add_argument("--max_depth", dest="max_depth", help="max_depth", default=3, type=int)
@@ -79,4 +80,4 @@ if __name__ == "__main__":
     for arg in vars(args):
         print(f"  {arg}: {getattr(args, arg)}")
     mlflow.set_experiment(args.experiment_name)
-    train(args.data_path, args.max_depth, args.min_child_weight, args.estimators)
+    train(args.data_path, args.max_depth, args.min_child_weight, args.estimators, args.model_name)

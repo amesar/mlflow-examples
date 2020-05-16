@@ -22,7 +22,7 @@ def build_data(data_path):
     y_test = test["quality"]
     return X_train, X_test, y_train, y_test
 
-def train(data_path, iterations, learning_rate, depth, log_as_onnx):
+def train(data_path, iterations, learning_rate, depth, log_as_onnx, model_name):
     X_train, X_test, y_train, _ = build_data(data_path)
     with mlflow.start_run() as run:
         run_id = run.info.run_uuid
@@ -52,7 +52,7 @@ def train(data_path, iterations, learning_rate, depth, log_as_onnx):
         print("Predictions:",predictions)
 
         # Log catboost model
-        mlflow.sklearn.log_model(model, "catboost-model")
+        mlflow.sklearn.log_model(model, "catboost-model", registered_model_name=model_name)
 
         # Log ONNX model
         if log_as_onnx:
@@ -60,12 +60,13 @@ def train(data_path, iterations, learning_rate, depth, log_as_onnx):
             model.save_model(path, format="onnx")
             with open(path, "rb") as f:
                 onnx_model = f.read()
-            mlflow.onnx.log_model(onnx_model, "onnx-model")
+            mlflow.onnx.log_model(onnx_model, "onnx-model", registered_model_name=f"{model_name}_onnx")
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment name", required=True)
+    parser.add_argument("--model_name", dest="model_name", help="Registered model name", default=None)
     parser.add_argument("--data_path", dest="data_path", help="Data path", default="../../data/train/wine-quality-white.csv")
     parser.add_argument("--iterations", dest="iterations", help="Iterations", default=2, type=int)
     parser.add_argument("--depth", dest="depth", help="Depth", default=2, type=int)
@@ -76,4 +77,4 @@ if __name__ == "__main__":
     for arg in vars(args):
         print(f"  {arg}: {getattr(args, arg)}")
     mlflow.set_experiment(args.experiment_name)
-    train(args.data_path, args.iterations, args.learning_rate, args.depth, args.log_as_onnx)
+    train(args.data_path, args.iterations, args.learning_rate, args.depth, args.log_as_onnx, args.model_name)
