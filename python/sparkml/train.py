@@ -13,11 +13,7 @@ import mlflow
 import mlflow.spark
 from common import *
 
-spark = (SparkSession.builder.appName("App")
-  .config("spark.jars.packages", "org.mlflow.mlflow-spark")
-  .getOrCreate())
-#spark = SparkSession.builder.appName("App").getOrCreate()
-#SparkSession.builder.config("spark.jars.packages", "org.mlflow.mlflow-spark")
+spark = SparkSession.builder.appName("App").getOrCreate()
 
 print("Versions:")
 print("  Operating System:",platform.version()+" - "+platform.release())
