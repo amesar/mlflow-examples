@@ -54,12 +54,13 @@ Source: [train.py](train.py).
 |Name | Required | Default | Description|
 |-----|----------|---------|------------|
 | experiment_name | no | none | Experiment name|
-| model_name | no | none | Registered model name|
+| model_name | no | None | Registered model name|
 | epochs | no | 5 | Number of epochs |
 | batch_size | no | 129 | Batch size |
-| log_as_onnx | no | False | Log as ONNX |
+| log_as_onnx | no | False | Log as ONNX flavor |
+| mlflow_custom_log | no | True | Log params/metrics with mlflow.log |
 | keras_autolog | no | False | Automatically log params/ metrics with mlflow.keras.autolog |
-| tensorflow_autolog | no | False | Automatically log params/ metrics with mlflow.keras.autolog |
+| tensorflow_autolog | no | False | Automatically log params/ metrics with mlflow.tensorflow.autolog |
 
 
 ### Run

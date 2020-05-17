@@ -99,9 +99,9 @@ def train(data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx, model_n
 @click.option("--model_name", help="Registered model name", default=None, type=str)
 @click.option("--epochs", help="Epochs", default=5, type=int)
 @click.option("--batch_size", help="Batch size", default=128, type=int)
+@click.option("--mlflow_custom_log", help="Log params/metrics with mlflow.log", default=True, type=bool)
 @click.option("--keras_autolog", help="Automatically log params/ metrics with mlflow.keras.autolog", default=False, type=bool)
 @click.option("--tensorflow_autolog", help="Automatically log params/ metrics with mlflow.tensorflow.autolog", default=False, type=bool)
-@click.option("--mlflow_custom_log", help="Log params/metrics with mlflow.log", default=False, type=bool)
 @click.option("--log_as_onnx", help="log_as_onnx", default=False, type=bool)
 
 def main(experiment_name, data_path, model_name, epochs, batch_size, keras_autolog, tensorflow_autolog, mlflow_custom_log, log_as_onnx):
