@@ -11,6 +11,10 @@
 python train.py --experiment_name catboost --iterations 10000 --depth 5 --learning_rate 1
 ```
 
+```
+mlflow run . --experiment-name=catboost -P iterations=10000 -P depth=5 -P learning_rate=1
+```
+
 ## Catboost and Pyfunc Predictions
 
 Score with `mlflow.catboost.load_model` and `mlflow.pyfunc.load_model`.

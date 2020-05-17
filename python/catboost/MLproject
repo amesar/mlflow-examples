@@ -1,0 +1,20 @@
+name: mlflow-examples-catboost
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      model_name:    {type: string, default: None}
+      data_path:     {type: string, default: "../../data/train/wine-quality-white.csv"}
+      iterations:    {type: int, default: 2}
+      depth:         {type: int, default: 2}
+      learning_rate: {type: int, default: 1}
+      log_as_onnx:   {type: boolean, default: False}
+    command: "python train.py
+                --model_name {model_name}
+                --data_path {data_path}
+                --iterations {iterations}
+                --depth {depth}
+                --learning_rate {learning_rate}
+                --log_as_onnx {log_as_onnx}"
