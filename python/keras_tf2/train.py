@@ -1,5 +1,5 @@
 """
-Train Wine Quality ataset with KerasRegressor
+Train Wine Quality dataset with KerasRegressor
 """
 
 import platform
@@ -15,6 +15,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import KFold
 import mlflow
 import mlflow.keras
+import click
 import utils
 
 print("Versions:")
@@ -92,38 +93,35 @@ def train(data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx, model_n
     print("predictions.shape:",predictions.shape)
     print("predictions:",predictions)
 
+@click.command()
+@click.option("--experiment_name", help="Experiment name", default=None, type=str)
+@click.option("--data_path", help="Data path", default="../../data/train/wine-quality-white.csv", type=str)
+@click.option("--model_name", help="Registered model name", default=None, type=str)
+@click.option("--epochs", help="Epochs", default=5, type=int)
+@click.option("--batch_size", help="Batch size", default=128, type=int)
+@click.option("--log_as_onnx", help="Log model as ONNX flavor", default=False, type=bool)
+@click.option("--keras_autolog", help="Automatically log params/ metrics with mlflow.keras.autolog", default=False, type=bool)
+@click.option("--tensorflow_autolog", help="Automatically log params/ metrics with mlflow.tensorflow.autolog", default=False, type=bool)
+@click.option("--mlflow_custom_log", help="Log params/metrics with mlflow.log", default=False, type=bool)
+@click.option("--log_as_onnx", help="log_as_onnx", default=False, type=bool)
 
-if __name__ == "__main__":
-    from argparse import ArgumentParser
-    parser = ArgumentParser()
-    parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment name", required=False, type=str)
-    parser.add_argument("--data_path", dest="data_path", help="Data path", default="../../data/train/wine-quality-white.csv")
-    parser.add_argument("--model_name", dest="model_name", help="Registered model name", default=None)
-    parser.add_argument("--epochs", dest="epochs", help="Epochs", default=5, type=int)
-    parser.add_argument("--batch_size", dest="batch_size", help="Batch size", default=128, type=int)
-    parser.add_argument("--mlflow_custom_log", dest="mlflow_custom_log", help="Log params/metrics with mlflow.log", default=True, type=bool)
-    parser.add_argument("--keras_autolog", dest="keras_autolog", help="Automatically log params/ metrics with mlflow.keras.autolog", default=False, type=bool)
-    parser.add_argument("--tensorflow_autolog", dest="tensorflow_autolog", help="Automatically log params/ metrics with mlflow.tensorflow.autolog", default=False, type=bool)
-    parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX flavor", default=False, type=bool)
-    args = parser.parse_args()
-    print("Arguments:")
-    for arg in vars(args):
-        print(f"  {arg}: {getattr(args, arg)}")
+def main(experiment_name, data_path, model_name, epochs, batch_size, keras_autolog, tensorflow_autolog, mlflow_custom_log, log_as_onnx):
+    import mlflow
+    print("Options:")
+    for k,v in locals().items(): 
+        print(f"  {k}: {v}")
+    model_name = None if not model_name or model_name == "None" else model_name
 
-    model_name = None if not args.model_name or args.model_name == "None" else args.model_name
-    print("Processed Arguments:")
-    print(f"  model_name: {model_name} - type: {type(model_name)}")
-
-    if args.keras_autolog:
+    if keras_autolog:
         print("Logging with mlflow.keras.autolog")
         mlflow.keras.autolog()
-    if args.tensorflow_autolog:
+    if tensorflow_autolog:
         print("Logging with mlflow.tensorflow.autolog")
         import mlflow.tensorflow
         mlflow.tensorflow.autolog()
 
-    if args.experiment_name:
-        mlflow.set_experiment(args.experiment_name)
+    if experiment_name:
+        mlflow.set_experiment(experiment_name)
     with mlflow.start_run() as run:
         print("MLflow:")
         print("  run_id:",run.info.run_id)
@@ -134,8 +132,11 @@ if __name__ == "__main__":
         mlflow.set_tag("version.tensorflow", tf.__version__)
         mlflow.set_tag("version.sklearn", sklearn.__version__)
         mlflow.set_tag("version.os", platform.system()+" - "+platform.release())
-        mlflow.set_tag("mlflow_custom_log", args.mlflow_custom_log)
-        mlflow.set_tag("mlflow_keras.autolog", args.keras_autolog)
-        mlflow.set_tag("mlflow_tensorflow.autolog", args.tensorflow_autolog)
+        mlflow.set_tag("mlflow_custom_log", mlflow_custom_log)
+        mlflow.set_tag("mlflow_keras.autolog", keras_autolog)
+        mlflow.set_tag("mlflow_tensorflow.autolog", tensorflow_autolog)
 
-        train(args.data_path, args.epochs, args.batch_size, args.mlflow_custom_log, args.log_as_onnx, model_name)
+        train(data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx, model_name)
+
+if __name__ == "__main__":
+    main()
