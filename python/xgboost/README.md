@@ -10,6 +10,9 @@
 ```
 python train.py --experiment_name xgboost --estimators 20000 --max_depth 5 
 ```
+```
+mlflow run . --experiment_name xgboost -P estimators=20000 -P max_depth=5 
+```
 
 ## Predictions
 

@@ -69,15 +69,17 @@ def train(data_path, max_depth, min_child_weight, estimators, model_name):
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument("--experiment_name", dest="experiment_name", help="experiment_name", required=True)
+    parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment name", default=None)
     parser.add_argument("--model_name", dest="model_name", help="Registered model name", default=None)
-    parser.add_argument("--data_path", dest="data_path", help="data_path", default="../../data/train/wine-quality-white.csv")
-    parser.add_argument("--estimators", dest="estimators", help="estimators", default=10, type=int)
-    parser.add_argument("--max_depth", dest="max_depth", help="max_depth", default=3, type=int)
-    parser.add_argument("--min_child_weight", dest="min_child_weight", help="min_child_weight", default=1.5, type=float)
+    parser.add_argument("--data_path", dest="data_path", help="Data path", default="../../data/train/wine-quality-white.csv")
+    parser.add_argument("--estimators", dest="estimators", help="Estimators", default=10, type=int)
+    parser.add_argument("--max_depth", dest="max_depth", help="Max depth", default=3, type=int)
+    parser.add_argument("--min_child_weight", dest="min_child_weight", help="Min child weight", default=1.5, type=float)
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):
         print(f"  {arg}: {getattr(args, arg)}")
-    mlflow.set_experiment(args.experiment_name)
-    train(args.data_path, args.max_depth, args.min_child_weight, args.estimators, args.model_name)
+    if args.experiment_name:
+        mlflow.set_experiment(args.experiment_name)
+    model_name = None if not model_name or model_name == "None" else model_name
+    train(args.data_path, args.max_depth, args.min_child_weight, args.estimators, model_name)

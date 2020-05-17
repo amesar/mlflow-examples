@@ -1,0 +1,16 @@
+name: mlflow-examples-xgboost
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      model_name:  {type: string, default: None}
+      estimators: {type: int, default: 128}
+      max_depth: {type: int, default: 3}
+      min_child_weight: {type: float, default: 1.5}
+    command: "python train.py
+                --model_name {model_name}
+                --estimators {estimators}
+                --max_depth {max_depth}
+                --min_child_weight {min_child_weight}"

@@ -6,3 +6,4 @@ dependencies:
   - pip:
     - mlflow==1.8.0
     - xgboost==0.90
+    - scikit-learn==0.20.2
