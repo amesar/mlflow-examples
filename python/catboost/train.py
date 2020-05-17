@@ -5,6 +5,7 @@ import mlflow.sklearn
 import mlflow.onnx
 import catboost
 from catboost import CatBoostRegressor
+import click
 
 print("MLflow Version:", mlflow.version.VERSION)
 print("MLflow Tracking URI:", mlflow.get_tracking_uri())
@@ -60,21 +61,27 @@ def train(data_path, iterations, learning_rate, depth, log_as_onnx, model_name):
             model.save_model(path, format="onnx")
             with open(path, "rb") as f:
                 onnx_model = f.read()
-            mlflow.onnx.log_model(onnx_model, "onnx-model", registered_model_name=f"{model_name}_onnx")
+            mlflow.onnx.log_model(onnx_model, "onnx-model", 
+                registered_model_name=None if not model_name else f"{model_name}_onnx")
+
+
+@click.command()
+@click.option("--experiment_name", help="Experiment name", default=None, type=str)
+@click.option("--data_path", help="Data path", default="../../data/train/wine-quality-white.csv", type=str)
+@click.option("--model_name", help="Registered model name", default=None, type=str)
+@click.option("--log_as_onnx", help="log_as_onnx", default=False, type=bool)
+@click.option("--iterations", help="Iterations", default=2, type=int)
+@click.option("--depth", help="Depth", default=2, type=int)
+@click.option("--learning_rate", help="Learning rate", default=1, type=int)
+
+def main(experiment_name, data_path, model_name, iterations, depth, learning_rate, log_as_onnx):
+    print("Options:")
+    for k,v in locals().items():
+        print(f"  {k}: {v}")
+    model_name = None if not model_name or model_name == "None" else model_name
+    if experiment_name:
+        mlflow.set_experiment(experiment_name)
+    train(data_path, iterations, learning_rate, depth, log_as_onnx, model_name)
 
 if __name__ == "__main__":
-    from argparse import ArgumentParser
-    parser = ArgumentParser()
-    parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment name", required=True)
-    parser.add_argument("--model_name", dest="model_name", help="Registered model name", default=None)
-    parser.add_argument("--data_path", dest="data_path", help="Data path", default="../../data/train/wine-quality-white.csv")
-    parser.add_argument("--iterations", dest="iterations", help="Iterations", default=2, type=int)
-    parser.add_argument("--depth", dest="depth", help="Depth", default=2, type=int)
-    parser.add_argument("--learning_rate", dest="learning_rate", help="Learning rate", default=1, type=int)
-    parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX flavor", default=False, action='store_true')
-    args = parser.parse_args()
-    print("Arguments:")
-    for arg in vars(args):
-        print(f"  {arg}: {getattr(args, arg)}")
-    mlflow.set_experiment(args.experiment_name)
-    train(args.data_path, args.iterations, args.learning_rate, args.depth, args.log_as_onnx, args.model_name)
+    main()
