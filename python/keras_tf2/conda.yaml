@@ -8,3 +8,13 @@ dependencies:
     - tensorflow==2.1.0
     - tensorflowjs==1.7.4
     - scikit-learn==0.21.3
+    - onnx==1.6.0
+    - onnxmltools==1.6.1
+    - onnxruntime==1.2.0
+
+# pip install onnx-tf==1.5.0
+
+# pip install onnxmltools==1.6.1
+
+# pip install skl2onnx==1.6.1
+# pip pip install tf2onnx==1.5.6

@@ -46,12 +46,13 @@ def train(data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx, model_n
         mlflow.log_param("batch_size", batch_size)
 
     # MLflow - log as Keras HD5 model
-    mlflow.keras.log_model(model, "keras-hd5-model", registered_model_name=args.model_name)
+    mlflow.keras.log_model(model, "keras-hd5-model", registered_model_name=model_name)
 
     # MLflow - log as ONNX model
     if log_as_onnx:
         import onnx_utils
-        onnx_utils.log_model(model, "onnx-model", model_name=f"{model_name}_onnx")
+        mname = f"{model_name}_onnx" if model_name else None
+        onnx_utils.log_model(model, "onnx-model", model_name=mname)
 
     # Save as TensorFlow SavedModel format
     path = "tensorflow-model"
@@ -109,6 +110,10 @@ if __name__ == "__main__":
     for arg in vars(args):
         print(f"  {arg}: {getattr(args, arg)}")
 
+    model_name = None if not args.model_name or args.model_name == "None" else args.model_name
+    print("Processed Arguments:")
+    print(f"  model_name: {model_name} - type: {type(model_name)}")
+
     if args.keras_autolog:
         print("Logging with mlflow.keras.autolog")
         mlflow.keras.autolog()
@@ -133,4 +138,4 @@ if __name__ == "__main__":
         mlflow.set_tag("mlflow_keras.autolog", args.keras_autolog)
         mlflow.set_tag("mlflow_tensorflow.autolog", args.tensorflow_autolog)
 
-        train(args.data_path, args.epochs, args.batch_size, args.mlflow_custom_log, args.log_as_onnx, args.model_name)
+        train(args.data_path, args.epochs, args.batch_size, args.mlflow_custom_log, args.log_as_onnx, model_name)
