@@ -3,6 +3,7 @@ import tensorflow as tf
 import tensorflow.keras as keras
 import mlflow
 import mlflow.keras
+import click
 import utils
 
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
@@ -19,8 +20,7 @@ def build_model():
     model.add(keras.layers.Dense(10, activation='softmax'))
     return model
 
-def train(epochs, batch_size, autolog, log_as_onnx):
-    print("autolog:", autolog)
+def train(model_name, epochs, batch_size, mlflow_custom_log, log_as_onnx):
     x_train, y_train, x_test, y_test = utils.build_data()
     model = build_model()
 
@@ -35,18 +35,13 @@ def train(epochs, batch_size, autolog, log_as_onnx):
     print("test_acc:", test_acc)
     print("test_loss:", test_loss)
 
-    if not autolog:
+    if mlflow_custom_log:
         mlflow.log_param("epochs", epochs)
         mlflow.log_param("batch_size", batch_size)
 
         mlflow.log_metric("test_acc", test_acc)
         mlflow.log_metric("test_loss", test_loss)
-        mlflow.keras.log_model(model, "keras-model")
-
-        # write model as yaml file
-        with open("model.yaml", "w") as f:
-            f.write(model.to_yaml())
-        mlflow.log_artifact("model.yaml")
+        mlflow.keras.log_model(model, "keras-model", registered_model_name=model_name)
 
         # write model summary
         summary = []
@@ -56,47 +51,59 @@ def train(epochs, batch_size, autolog, log_as_onnx):
             f.write(summary)
         mlflow.log_artifact("model_summary.txt")
 
-        # MLflow - log onnx model
-        if log_as_onnx:
-            import onnx_utils
-            onnx_utils.log_model(model, "onnx-model")
+    # write model as yaml file
+    with open("model.yaml", "w") as f:
+        f.write(model.to_yaml())
+    mlflow.log_artifact("model.yaml")
+
+    # MLflow - log onnx model
+    if log_as_onnx:
+        import onnx_utils
+        onnx_utils.log_model(model, "onnx-model")
 
     predictions = model.predict_classes(x_test)
     print("predictions:", predictions)
 
-if __name__ == "__main__":
-    from argparse import ArgumentParser
-    parser = ArgumentParser()
-    parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment name", required=False, type=str)
-    parser.add_argument("--epochs", dest="epochs", help="Epochs", default=5, type=int)
-    parser.add_argument("--batch_size", dest="batch_size", help="Batch size", default=128, type=int)
-    parser.add_argument("--repeats", dest="repeats", help="Repeats", default=1, type=int)
-    parser.add_argument("--keras_autolog", dest="keras_autolog", help="Automatically log params and metrics with mlflow.keras.autolog", default=False, action='store_true')
-    parser.add_argument("--tensorflow_autolog", dest="tensorflow_autolog", help="Automatically log params and metrics with mlflow.keras.autolog", default=False, action='store_true')
-    parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX flavor", default=False, action='store_true')
-    args = parser.parse_args()
-    print("Arguments:")
-    for arg in vars(args):
-        print(f"  {arg}: {getattr(args, arg)}")
+@click.command()
+@click.option("--experiment_name", help="Experiment name", default=None, type=str)
+@click.option("--model_name", help="Registered model name", default=None, type=str)
+@click.option("--epochs", help="Epochs", default=5, type=int)
+@click.option("--batch_size", help="Batch size", default=128, type=int)
+@click.option("--repeats", help="Repeats", default=1, type=int)
+@click.option("--mlflow_custom_log", help="Log params/metrics with mlflow.log", default=True, type=bool)
+@click.option("--keras_autolog", help="Automatically log params/ metrics with mlflow.keras.autolog", default=False, type=bool)
+@click.option("--tensorflow_autolog", help="Automatically log params/ metrics with mlflow.tensorflow.autolog", default=False, type=bool)
+@click.option("--log_as_onnx", help="log_as_onnx", default=False, type=bool)
 
-    if args.keras_autolog:
+def main(experiment_name, model_name, epochs, batch_size, repeats, keras_autolog, tensorflow_autolog, mlflow_custom_log, log_as_onnx):
+    import mlflow
+    print("Options:")
+    for k,v in locals().items():
+        print(f"  {k}: {v}")
+    model_name = None if not model_name or model_name == "None" else model_name
+
+    if keras_autolog:
         mlflow.keras.autolog()
-    if args.tensorflow_autolog:
+    if tensorflow_autolog:
         import mlflow.tensorflow
         mlflow.tensorflow.autolog()
 
-    if args.experiment_name:
-        mlflow.set_experiment(args.experiment_name)
-    for i in range(0,args.repeats):
+    if experiment_name:
+        mlflow.set_experiment(experiment_name)
+
+    for i in range(0,repeats):
         with mlflow.start_run() as run:
-            print(f"******** {i}/{args.repeats}")
+            print(f"******** {i}/{repeats}")
             print("MLflow:")
             print("  run_id:",run.info.run_id)
             print("  experiment_id:",run.info.experiment_id)
-            mlflow.set_tag("mlflow_version", mlflow.__version__)
-            mlflow.set_tag("keras_version", keras.__version__)
-            mlflow.set_tag("tensorflow_version", tf.__version__)
-            mlflow.set_tag("keras_autolog", args.keras_autolog)
-            mlflow.set_tag("tensorflow_autolog", args.tensorflow_autolog)
-            autolog = args.keras_autolog or args.tensorflow_autolog
-            train(args.epochs, args.batch_size, autolog, args.log_as_onnx)
+            mlflow.set_tag("version.mlflow", mlflow.__version__)
+            mlflow.set_tag("version.keras", keras.__version__)
+            mlflow.set_tag("version.tensorflow", tf.__version__)
+            mlflow.set_tag("keras_autolog", keras_autolog)
+            mlflow.set_tag("tensorflow_autolog", tensorflow_autolog)
+            mlflow.set_tag("mlflow_custom_log", mlflow_custom_log)
+            train(model_name, epochs, batch_size, mlflow_custom_log, log_as_onnx)
+
+if __name__ == "__main__":
+    main()
