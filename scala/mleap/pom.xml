@@ -9,9 +9,9 @@
   <properties>
     <scala.version>2.11.8</scala.version>
     <scala.binary.version>2.11</scala.binary.version>
-    <mlflow.version>1.5.0</mlflow.version>
-    <mleap.version>0.12.0</mleap.version>
-    <jcommander.version>1.72</jcommander.version>
+    <mlflow.version>1.8.0</mlflow.version>
+    <mleap.version>0.15.0</mleap.version>
+    <jcommander.version>1.78</jcommander.version>
   </properties>
 
   <dependencies>

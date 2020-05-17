@@ -4,7 +4,7 @@ Example shows how to download an MLeap model from MLflow and score it with MLeap
 
 ## Setup and Build
 
-* Install Python MLflow library: `pip install mlflow==1.5.0`
+* Install Python MLflow library: `pip install mlflow==1.8.0`
 * Build the jar: `mvn clean package`
 
 ## Assumptions
@@ -26,7 +26,7 @@ The expected run artifacts hierarchy is shown below and is produced by the `pyth
 ```
 scala -cp target/mlflow-mleap-examples-1.0-SNAPSHOT.jar \
   org.andre.mlflow.examples.wine.PredictWine \
-  --dataPath ../data/wine-quality-white.csv \
+  --dataPath ../../data/train/wine-quality-white.csv \
   --runId 7b951173284249f7a3b27746450ac7b0
 ```
 
