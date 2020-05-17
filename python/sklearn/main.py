@@ -9,7 +9,7 @@ if __name__ == "__main__":
     parser.add_argument("--max_depth", dest="max_depth", help="max_depth", default=None, type=int)
     parser.add_argument("--max_leaf_nodes", dest="max_leaf_nodes", help="max_leaf_nodes", default=32, type=int)
     parser.add_argument("--run_origin", dest="run_origin", help="run_origin", default="none")
-    parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX flavor", default=False, action='store_true')
+    parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX flavor", default=False, type=bool)
     parser.add_argument("--output_path", dest="output_path", help="Output path containing run ID", default=None)
     args = parser.parse_args()
     print("Arguments:")
