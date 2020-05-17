@@ -3,7 +3,7 @@
 ## Overview
 * XBGoost with sklearn train and predict.
 * Saves model in xgboost format.
-* Wine quality dataset [../data/wine-quality-white.csv](../data/wine-quality-white.csv).
+* Wine quality dataset [train/wine-quality-white.csv](../../data/train/wine-quality-white.csv).
 
 ## Training
 
