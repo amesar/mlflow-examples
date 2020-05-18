@@ -1,4 +1,5 @@
 import pandas as pd
+import mlflow
 
 def reshape(x, n):
     x = x.reshape((n, 28 * 28))
@@ -26,3 +27,10 @@ def build_data():
 
     return x_train, y_train, x_test, y_test
 
+def register_model(run, model_name, client = mlflow.tracking.MlflowClient()):
+    try:
+        client.create_registered_model(model_name)
+    except Exception:
+        pass
+    source = f"{run.info.artifact_uri}/model"
+    client.create_model_version(model_name, source, run.info.run_id)

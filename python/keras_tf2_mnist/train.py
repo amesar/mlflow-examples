@@ -20,7 +20,7 @@ def build_model():
     model.add(keras.layers.Dense(10, activation='softmax'))
     return model
 
-def train(model_name, epochs, batch_size, mlflow_custom_log, log_as_onnx):
+def train(run, model_name, epochs, batch_size, mlflow_custom_log, log_as_onnx):
     x_train, y_train, x_test, y_test = utils.build_data()
     model = build_model()
 
@@ -50,6 +50,8 @@ def train(model_name, epochs, batch_size, mlflow_custom_log, log_as_onnx):
         with open("model_summary.txt", "w") as f:
             f.write(summary)
         mlflow.log_artifact("model_summary.txt")
+    else:
+        utils.register_model(run, model_name)
 
     # write model as yaml file
     with open("model.yaml", "w") as f:
@@ -59,7 +61,8 @@ def train(model_name, epochs, batch_size, mlflow_custom_log, log_as_onnx):
     # MLflow - log onnx model
     if log_as_onnx:
         import onnx_utils
-        onnx_utils.log_model(model, "onnx-model")
+        mname = f"{model_name}_onnx" if model_name else None
+        onnx_utils.log_model(model, "onnx-model", mname)
 
     predictions = model.predict_classes(x_test)
     print("predictions:", predictions)
@@ -103,7 +106,7 @@ def main(experiment_name, model_name, epochs, batch_size, repeats, keras_autolog
             mlflow.set_tag("keras_autolog", keras_autolog)
             mlflow.set_tag("tensorflow_autolog", tensorflow_autolog)
             mlflow.set_tag("mlflow_custom_log", mlflow_custom_log)
-            train(model_name, epochs, batch_size, mlflow_custom_log, log_as_onnx)
+            train(run, model_name, epochs, batch_size, mlflow_custom_log, log_as_onnx)
 
 if __name__ == "__main__":
     main()

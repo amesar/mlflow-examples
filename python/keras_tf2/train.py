@@ -28,7 +28,7 @@ print("  Operating System:",platform.system()+" - "+platform.release())
 np.random.seed(42)
 tf.random.set_seed(42)
 
-def train(data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx, model_name):
+def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx):
     print("mlflow_custom_log:", mlflow_custom_log)
     x_train, _, y_train, _ = utils.build_data(data_path)
 
@@ -45,9 +45,10 @@ def train(data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx, model_n
         print("Logging with mlflow.log")
         mlflow.log_param("epochs", epochs)
         mlflow.log_param("batch_size", batch_size)
-
-    # MLflow - log as Keras HD5 model
-    mlflow.keras.log_model(model, "keras-hd5-model", registered_model_name=model_name)
+        # MLflow - log as Keras HD5 model
+        mlflow.keras.log_model(model, "keras-hd5-model", registered_model_name=model_name)
+    else:
+        utils.register_model(run, model_name)
 
     # MLflow - log as ONNX model
     if log_as_onnx:
@@ -135,7 +136,7 @@ def main(experiment_name, data_path, model_name, epochs, batch_size, keras_autol
         mlflow.set_tag("mlflow_keras.autolog", keras_autolog)
         mlflow.set_tag("mlflow_tensorflow.autolog", tensorflow_autolog)
 
-        train(data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx, model_name)
+        train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx)
 
 if __name__ == "__main__":
     main()

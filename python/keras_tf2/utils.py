@@ -1,4 +1,5 @@
 import pandas as pd
+import mlflow
 
 def build_mnist_data():
     from tensorflow.keras.datasets import mnist
@@ -35,10 +36,8 @@ def build_data(data_path):
 
     return X_train, X_test, y_train, y_test
 
-import mlflow
-client = mlflow.tracking.MlflowClient()
 
-def dump(run_id):
+def dump(run_id, client = mlflow.tracking.MlflowClient()):
     #toks = model_uri.split("/")
     #run_id = toks[1]
     print("  run_id:",run_id)
@@ -49,3 +48,11 @@ def dump(run_id):
     print("  run_id:",run_id)
     print("  experiment_id:",exp.experiment_id)
     print("  experiment_name:",exp.name)
+
+def register_model(run, model_name, client = mlflow.tracking.MlflowClient()):
+    try:
+        client.create_registered_model(model_name)
+    except Exception:
+        pass
+    source = f"{run.info.artifact_uri}/model"
+    client.create_model_version(model_name, source, run.info.run_id)
