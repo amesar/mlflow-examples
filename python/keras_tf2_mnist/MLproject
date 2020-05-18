@@ -1,0 +1,22 @@
+name: mlflow-examples-keras_tf2_mnist
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      epochs:     {type: int, default: 5}
+      batch_size: {type: int, default: 128}
+      model_name:  {type: string, default: None}
+      log_as_onnx:        {type: boolean, default: False}
+      mlflow_custom_log:  {type: boolean, default: True}
+      keras_autolog:      {type: boolean, default: False}
+      tensorflow_autolog: {type: boolean, default: False}
+    command: "python train.py
+                --epochs {epochs}
+                --batch_size {batch_size}
+                --model_name {model_name}
+                --log_as_onnx {log_as_onnx}
+                --mlflow_custom_log {mlflow_custom_log}
+                --keras_autolog {keras_autolog}
+                --tensorflow_autolog {tensorflow_autolog}"
