@@ -18,10 +18,13 @@ To run with user logging (no autologging).
 ```
 python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128
 ```
+```
+mlflow run . --experiment-name keras_mnist -P epochs=3 -P batch_size=128
+```
 
 To log a model as ONNX flavor under the artifact path `onnx-model`.
 ```
-python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --log_as_onnx
+mlflow run . --experiment-name keras_mnist -P epochs=3 -P batch_size=128 -P log_as_onnx=True
 ```
 
 ## Batch Scoring
@@ -107,12 +110,12 @@ Interestingly, they behave differently depending on the TensorFlow version.
 |---|---|---|
 | 1x | mlflow.keras.autolog | OK | 
 | 1x | mlflow.tensorflow.autolog | none |
-| 2x | mlflow.keras.autolog | none | 
+| 2x | mlflow.keras.autolog | ModuleNotFoundError: No module named 'keras' | 
 | 2x | mlflow.tensorflow.autolog | OK |
 
 
 ```
-python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --keras_autolog
+python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --keras_autolog True
 ```
 
 Autologging will create a model under the name `model`.
