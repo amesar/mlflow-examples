@@ -34,3 +34,13 @@ def register_model(run, model_name, client = mlflow.tracking.MlflowClient()):
         pass
     source = f"{run.info.artifact_uri}/model"
     client.create_model_version(model_name, source, run.info.run_id)
+
+def predict_pyfunc(model_uri, data):
+    print("\n**** mlflow.pyfunc.load_model\n")
+    model = mlflow.pyfunc.load_model(model_uri)
+    print("model.type:", type(model))
+    data = pd.DataFrame(data)
+    predictions = model.predict(data)
+    print("predictions.type:", type(predictions))
+    print("predictions.shape:", predictions.shape)
+    print("predictions:", predictions)

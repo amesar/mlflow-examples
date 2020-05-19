@@ -18,6 +18,7 @@ To run with user logging (no autologging).
 ```
 python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128
 ```
+or
 ```
 mlflow run . --experiment-name keras_mnist -P epochs=3 -P batch_size=128
 ```
@@ -29,17 +30,28 @@ mlflow run . --experiment-name keras_mnist -P epochs=3 -P batch_size=128 -P log_
 
 ## Batch Scoring
 
-### Score as Keras flavor
+### Score as Keras and PyFunc flavor 
 
+Score as Keras or Keras/PyFunc flavor.
 Source: [keras_predict.py](keras_predict.py).
+
 ```
 python keras_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/keras-model
 ```
 
 ```
+**** mlflow.keras.load_model
 predictions.type: <class 'numpy.ndarray'>
 predictions.shape: (10000,)
 predictions: [7 2 1 ... 4 5 6]
+
+**** mlflow.pyfunc.load_model
+model.type: <class 'mlflow.keras._KerasModelWrapper'>
+predictions.type: <class 'pandas.core.frame.DataFrame'>
+predictions.shape: (10000, 10)
+predictions:                  0             1  ...             8             9
+0     1.263480e-06  6.968530e-08  ...  2.910662e-06  3.157784e-05
+. . .
 ```
 
 ### Score as Pyfunc flavor
