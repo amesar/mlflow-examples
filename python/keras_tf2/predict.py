@@ -91,6 +91,7 @@ if __name__ == "__main__":
     parser.add_argument("--run_id", dest="run_id", help="run_id", required=True)
     parser.add_argument("--data_path", dest="data_path", help="Data path", default="../../data/train/wine-quality-white.csv")
     parser.add_argument("--score_as_pyfunc", dest="score_as_pyfunc", help="Score as PyFunc", default=False, action='store_true')
+    parser.add_argument("--score_as_tensorflow_lite", dest="score_as_tensorflow_lite", help="Score as TensorFlow Lite", default=False, action='store_true')
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):
@@ -119,8 +120,9 @@ if __name__ == "__main__":
     else:
         print(f"No model: {model_name}")
 
-    model_name = "tensorflow-lite-model"
-    if artifact_exists(run_id, model_name):
-        predict_tensorflow_lite_model(run_id, data)
-    else:
-        print(f"No model: {model_name}")
+    if args.score_as_tensorflow_lite:
+        model_name = "tensorflow-lite-model"
+        if artifact_exists(run_id, model_name):
+            predict_tensorflow_lite_model(run_id, data)
+        else:
+            print(f"No model: {model_name}")
