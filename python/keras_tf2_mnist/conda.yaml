@@ -1,4 +1,4 @@
-name: mlflow-examples-keras2-mnist
+name: mlflow-examples-keras_tf2_mnist
 channels:
   - conda-forge
 dependencies:
@@ -7,5 +7,6 @@ dependencies:
     - mlflow==1.8.0
     - tensorflow==2.2.0
     - onnx==1.6.0
+#   - onnx==1.7.0 # Fails:  [libprotobuf ERROR google/protobuf/descriptor_database.cc:394] Invalid file descriptor data passed to EncodedDescriptorDatabase::Add()
     - onnxmltools==1.6.1
-    - onnxruntime==1.2.0
+    - onnxruntime==1.3.0
