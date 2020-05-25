@@ -21,3 +21,15 @@ entry_points:
                 --model_name {model_name}
                 --log_as_onnx {log_as_onnx}
                 --run_origin {run_origin}"
+  sklearn_predict:
+    parameters:
+      model_uri: string
+    command: "python sklearn_predict.py {model_uri}"
+  pyfunc_predict:
+    parameters:
+      model_uri: string
+    command: "python pyfunc_predict.py {model_uri}"
+  onnx_predict:
+    parameters:
+      model_uri: string
+    command: "python onnx_predict.py {model_uri}"

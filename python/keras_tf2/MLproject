@@ -22,3 +22,13 @@ entry_points:
                 --mlflow_custom_log {mlflow_custom_log}
                 --keras_autolog {keras_autolog}
                 --tensorflow_autolog {tensorflow_autolog}"
+  predict:
+    parameters:
+      run_id: string
+    command: "python predict.py
+                --run_id {run_id}"
+  onnx_predict:
+    parameters:
+      run_id: string
+    command: "python onnx_predict.py
+                --run_id {run_id}"

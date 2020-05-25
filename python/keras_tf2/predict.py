@@ -1,5 +1,5 @@
 import os
-from argparse import ArgumentParser
+import click
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -86,24 +86,23 @@ def display(predictions):
 def artifact_exists(run_id, path):
     return len(client.list_artifacts(run_id, path)) > 0
 
-if __name__ == "__main__":
-    parser = ArgumentParser()
-    parser.add_argument("--run_id", dest="run_id", help="run_id", required=True)
-    parser.add_argument("--data_path", dest="data_path", help="Data path", default="../../data/train/wine-quality-white.csv")
-    parser.add_argument("--score_as_pyfunc", dest="score_as_pyfunc", help="Score as PyFunc", default=False, action='store_true')
-    parser.add_argument("--score_as_tensorflow_lite", dest="score_as_tensorflow_lite", help="Score as TensorFlow Lite", default=False, action='store_true')
-    args = parser.parse_args()
-    print("Arguments:")
-    for arg in vars(args):
-        print(f"  {arg}: {getattr(args, arg)}")
-    run_id = args.run_id
+@click.command()
+@click.option("--run_id", help="RunID", default=None, type=str)
+@click.option("--data_path", help="Data path", default="../../data/train/wine-quality-white.csv", type=str)
+@click.option("--score_as_pyfunc", help="Score as PyFunc", default=True, type=bool)
+@click.option("--score_as_tensorflow_lite", help="Score as TensorFlow Lite", default=True, type=bool)
+
+def main(run_id, data_path, score_as_pyfunc, score_as_tensorflow_lite):
+    print("Options:")
+    for k,v in locals().items():
+        print(f"  {k}: {v}")
 
     utils.dump(run_id)
-    data,_,_,_  = utils.build_data(args.data_path)
+    data,_,_,_  = utils.build_data(data_path)
 
     model_uri = f"runs:/{run_id}/keras-hd5-model"
     predict_keras(model_uri, data)
-    if args.score_as_pyfunc:
+    if score_as_pyfunc:
         predict_pyfunc(model_uri, data)
 
     model_name = "onnx-model"
@@ -120,9 +119,12 @@ if __name__ == "__main__":
     else:
         print(f"No model: {model_name}")
 
-    if args.score_as_tensorflow_lite:
+    if score_as_tensorflow_lite:
         model_name = "tensorflow-lite-model"
         if artifact_exists(run_id, model_name):
             predict_tensorflow_lite_model(run_id, data)
         else:
             print(f"No model: {model_name}")
+
+if __name__ == "__main__":
+    main()
