@@ -8,6 +8,3 @@ dependencies:
     - mlflow==1.8.0
     - mleap==0.15.0
     - pyspark==2.4.5
-    - onnx==1.7.0
-    - onnxruntime==1.2.0
-    - onnxmltools==1.6.1
