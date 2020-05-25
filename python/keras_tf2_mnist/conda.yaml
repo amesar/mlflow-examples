@@ -6,7 +6,6 @@ dependencies:
   - pip:
     - mlflow==1.8.0
     - tensorflow==2.2.0
-    - onnx==1.6.0
-#   - onnx==1.7.0 # Fails:  [libprotobuf ERROR google/protobuf/descriptor_database.cc:394] Invalid file descriptor data passed to EncodedDescriptorDatabase::Add()
+    - onnx==1.7.0
     - onnxmltools==1.6.1
     - onnxruntime==1.3.0
