@@ -25,7 +25,6 @@ def main(model_uri):
 
     utils.predict_pyfunc(model_uri, data)
 
-def foo():
     print("\n**** mlflow.pyfunc.load_model\n")
     model = mlflow.pyfunc.load_model(model_uri)
     print("model.type:", type(model))
