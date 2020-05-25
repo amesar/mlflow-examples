@@ -3,6 +3,7 @@ PySpark Decision Tree Regression Example.
 """
 
 import platform
+import click
 import pyspark
 from pyspark.sql import SparkSession
 from pyspark.ml import Pipeline
@@ -76,8 +77,7 @@ def train(data, max_depth, max_bins, model_name, log_as_mleap, log_as_onnx):
         scoreData = testData.drop("quality")
         onnx_utils.log_model(spark, model, "onnx-model", model_name, scoreData)
 
-if __name__ == "__main__":
-    from argparse import ArgumentParser
+def foo():
     parser = ArgumentParser()
     parser.add_argument("--experiment_name", dest="experiment_name", help="experiment_name", required=False, type=str)
     parser.add_argument("--model_name", dest="model_name", help="Registered model name", default=None)
@@ -93,14 +93,30 @@ if __name__ == "__main__":
     for arg in vars(args):
         print(f"  {arg}: {getattr(args, arg)}")
 
+@click.command()
+@click.option("--experiment_name", help="Experiment name", default=None, type=str)
+@click.option("--data_path", help="Data path", default="../../data/train/wine-quality-white.csv", type=str)
+@click.option("--model_name", help="Registered model name", default=None, type=str)
+@click.option("--max_depth", help="Max depth", default=5, type=int) # per doc
+@click.option("--max_bins", help="Max bins", default=32, type=int) # per doc
+@click.option("--describe", help="Describe data", default=False, type=bool)
+@click.option("--log_as_mleap", help="Score as MLeap", default=False, type=bool)
+@click.option("--log_as_onnx", help="Log model as ONNX flavor", default=False, type=bool)
+@click.option("--spark_autolog", help="Use spark.autolog", default=False, type=bool)
+
+def main(experiment_name, model_name, data_path, max_depth, max_bins, describe, log_as_mleap, log_as_onnx, spark_autolog):
+    print("Options:")
+    for k,v in locals().items():
+        print(f"  {k}: {v}")
+
     client = mlflow.tracking.MlflowClient()
-    if args.experiment_name:
-        mlflow.set_experiment(args.experiment_name)
-    if args.spark_autolog:
+    if experiment_name:
+        mlflow.set_experiment(experiment_name)
+    if spark_autolog:
         mlflow.spark.autolog()
-    data_path = args.data_path or default_data_path
+    data_path = data_path or default_data_path
     data = read_data(spark, data_path)
-    if (args.describe):
+    if (describe):
         print("==== Data")
         data.describe().show()
 
@@ -114,5 +130,8 @@ if __name__ == "__main__":
         mlflow.set_tag("version.pyspark", pyspark.__version__)
         mlflow.set_tag("version.os", platform.system()+" - "+platform.release())
 
-        model_name = None if args.model_name is None or args.model_name == "None" else args.model_name
-        train(data, args.max_depth, args.max_bins, model_name, args.log_as_mleap, args.log_as_onnx)
+        model_name = None if model_name is None or model_name == "None" else model_name
+        train(data, max_depth, max_bins, model_name, log_as_mleap, log_as_onnx)
+
+if __name__ == "__main__":
+    main()

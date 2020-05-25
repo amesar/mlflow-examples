@@ -1,4 +1,4 @@
-from argparse import ArgumentParser
+import click
 import pandas as pd
 import mlflow
 import mlflow.onnx
@@ -7,21 +7,24 @@ import onnx_utils
 print("MLflow Version:", mlflow.__version__)
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 
-if __name__ == "__main__":
-    parser = ArgumentParser()
-    parser.add_argument("--model_uri", dest="model_uri", help="Model URI", required=True)
-    parser.add_argument("--data_path", dest="data_path", help="Data path", default="../../data/train/wine-quality-white.csv")
-    args = parser.parse_args()
-    print("Arguments:")
-    for arg in vars(args):
-        print(f"  {arg}: {getattr(args, arg)}")
+@click.command()
+@click.option("--model_uri", help="Model URI", default=None, type=str)
+@click.option("--data_path", help="Data path", default="../../data/train/wine-quality-white.csv", type=str)
 
-    data = pd.read_csv(args.data_path).to_numpy()
+def main(model_uri, data_path):
+    print("Options:")
+    for k,v in locals().items():
+        print(f"  {k}: {v}")
 
-    model = mlflow.onnx.load_model(args.model_uri)
+    data = pd.read_csv(data_path).to_numpy()
+
+    model = mlflow.onnx.load_model(model_uri)
     print("model.type:", type(model))
 
     predictions = onnx_utils.score_model(model, data)
     print("predictions.type:",type(predictions))
     print("predictions.shape:",predictions.shape)
     print("predictions:",predictions)
+
+if __name__ == "__main__":
+    main()

@@ -41,7 +41,7 @@ To log model as MLeap
 ```
 spark-submit --master local[2] \
   --packages com.databricks:spark-avro_2.11:3.0.1,ml.combust.mleap:mleap-spark_2.11:0.12.0 \
-  train.py --log_as_mleap
+  train.py --log_as_mleap True
 ```
 
 To log model as ONNX
@@ -51,7 +51,7 @@ pip install onnxruntime==1.2.0
 pip install onnxmltools==1.6.1
 
 spark-submit --master local[2] \
-  train.py --log_as_onnx
+  train.py --log_as_onnx True
 ```
 
 ### Using `mlflow run`
