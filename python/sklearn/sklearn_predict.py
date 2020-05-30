@@ -3,7 +3,7 @@
 import sys
 import mlflow
 import mlflow.sklearn
-import utils
+import predict_utils
 
 if __name__ == "__main__":
     if len(sys.argv) < 1:
@@ -18,6 +18,6 @@ if __name__ == "__main__":
     model = mlflow.sklearn.load_model(model_uri)
     print("model:", model)
 
-    data = utils.read_prediction_data(data_path)
+    data = predict_utils.read_prediction_data(data_path)
     predictions = model.predict(data)
     print("predictions:", predictions)
