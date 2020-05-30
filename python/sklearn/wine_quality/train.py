@@ -17,7 +17,9 @@ print("Versions:")
 print("  MLflow Version:", mlflow.__version__)
 print("  Sklearn Version:", sklearn.__version__)
 print("  MLflow Tracking URI:", mlflow.get_tracking_uri())
-print("  Operating System:",platform.system()+" - "+platform.release())
+print("  Python Version:", platform.python_version())
+print("  Operating System:", platform.system()+" - "+platform.release())
+print("  Platform:", platform.platform())
 
 client = mlflow.tracking.MlflowClient()
 
@@ -88,7 +90,9 @@ class Trainer():
             mlflow.set_tag("run_origin", self.run_origin)
             mlflow.set_tag("version.mlflow", mlflow.__version__)
             mlflow.set_tag("version.sklearn", sklearn.__version__)
-            mlflow.set_tag("version.os", platform.system()+" - "+platform.release())
+            #mlflow.set_tag("version.os", platform.system()+" - "+platform.release())
+            mlflow.set_tag("version.platform", platform.platform())
+            mlflow.set_tag("version.python", platform.python_version())
 
             # MLflow log model
             mlflow.sklearn.log_model(dt, "sklearn-model", registered_model_name=model_name)
