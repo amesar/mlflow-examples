@@ -1,8 +1,11 @@
-FROM python:3.7.6
+FROM continuumio/miniconda3
 
-RUN pip install mlflow>=1.8.0 \
-    && pip install scikit-learn==0.20.2 \
-    && pip install matplotlib==3.2.1 \
-    && pip install pyarrow==0.12.1
+RUN apt-get update
 
-CMD ["/bin/bash"]
+RUN pip install mlflow==1.8.0
+RUN pip install scikit-learn==0.20.2
+RUN pip install matplotlib==3.2.1
+RUN pip install pyarrow==0.12.1
+RUN pip install onnx==1.7.0
+RUN pip install onnxmltools==1.6.1
+RUN pip install onnxruntime==1.3.0
