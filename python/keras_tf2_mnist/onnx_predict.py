@@ -6,14 +6,13 @@ import mlflow.onnx
 import utils
 import onnx_utils
 
-print("MLflow Version:", mlflow.__version__)
-print("Tracking URI:", mlflow.tracking.get_tracking_uri())
+utils.display_versions()
 
 @click.command()
 @click.option("--model_uri", help="Model URI", required=True, type=str)
 def main(model_uri):
     print("model_uri:", model_uri)
-    _,_,data,_  = utils.build_data()
+    data = utils.get_prediction_data()
 
     print("\n**** mlflow.onnx.load_model\n")
     model = mlflow.onnx.load_model(model_uri)

@@ -5,8 +5,7 @@ import mlflow
 import mlflow.pyfunc
 import utils
 
-print("MLflow Version:", mlflow.__version__)
-print("Tracking URI:", mlflow.tracking.get_tracking_uri())
+utils.display_versions()
 
 @click.command()
 @click.option("--model_uri", help="Model URI", required=True, type=str)
@@ -14,7 +13,7 @@ def main(model_uri):
     model = mlflow.pyfunc.load_model(model_uri)
     print("model:", model)
 
-    _,_,ndarray,_  = utils.build_data()
+    ndarray = utils.get_prediction_data()
     data = pd.DataFrame(ndarray)
     print("data.shape:", data.shape)
 

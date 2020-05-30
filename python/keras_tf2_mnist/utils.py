@@ -27,6 +27,10 @@ def build_data():
 
     return x_train, y_train, x_test, y_test
 
+def get_prediction_data():
+    _,_,data,_  = build_data()
+    return data
+
 def register_model(run, model_name, client = mlflow.tracking.MlflowClient()):
     try:
         client.create_registered_model(model_name)
@@ -44,3 +48,12 @@ def predict_pyfunc(model_uri, data):
     print("predictions.type:", type(predictions))
     print("predictions.shape:", predictions.shape)
     print("predictions:", predictions)
+
+def display_versions():
+    import tensorflow as tf
+    import tensorflow.keras as keras
+    print("MLflow Version:", mlflow.__version__)
+    print("Keras version:", keras.__version__)
+    print("TensorFlow version:", tf.__version__)
+    print("Tracking URI:", mlflow.tracking.get_tracking_uri())
+
