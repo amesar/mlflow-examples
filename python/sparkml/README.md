@@ -26,33 +26,42 @@ The model can be logged in the following flavors:
 | run_origin | no | none | Run tag  |
 | log_as_mleap | no | False | Log the model in MLeap flavor |
 | log_as_onnx | no | False | Log the model in ONNX flavor |
+| spark_autolog | no | False | [Spark autologging](https://www.mlflow.org/docs/latest/tracking.html#spark-experimental) with Spark 3.x |
 
 ### Run unmanaged without `mlflow run`
 
 Install [conda.yaml](conda.yaml) environment.
 
-To run with standard main function
+To run with standard main function.
 ```
 spark-submit --master local[2] \
   train.py --max_depth 16 --max_bins 32 
 ```
 
-To log model as MLeap
+To log model as MLeap.
 ```
 spark-submit --master local[2] \
   --packages com.databricks:spark-avro_2.11:3.0.1,ml.combust.mleap:mleap-spark_2.11:0.12.0 \
   train.py --log_as_mleap True
 ```
 
-To log model as ONNX
+To log model as ONNX.
 ```
-pip install onnx==1.6.0
-pip install onnxruntime==1.2.0
-pip install onnxmltools==1.6.1
-
 spark-submit --master local[2] \
   train.py --log_as_onnx True
 ```
+
+Spark autologging works only with Spark 3.x and Scala 2.12.
+It logs the data source in the tag `sparkDatasourceInfo`.
+```
+spark-submit --master local[2] \
+  --packages org.mlflow:mlflow-spark:1.8.0 \
+  train.py --spark_autolog True
+```
+
+Resulting tag:
+* Tag name: `sparkDatasourceInfo`
+* Value: `path=file:/var/folders/rp/88lfxw2n4lvgkdk9xl0lkqjr0000gp/T/DecisionTreeRegressionModel_1590801461.6367931/data,format=parquet`
 
 ### Using `mlflow run`
 

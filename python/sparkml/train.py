@@ -1,5 +1,5 @@
 """
-PySpark Decision Tree Regression Example.
+PySpark Decision Tree Regression example.
 """
 
 import platform
@@ -76,22 +76,6 @@ def train(data, max_depth, max_bins, model_name, log_as_mleap, log_as_onnx):
         import onnx_utils
         scoreData = testData.drop("quality")
         onnx_utils.log_model(spark, model, "onnx-model", model_name, scoreData)
-
-def foo():
-    parser = ArgumentParser()
-    parser.add_argument("--experiment_name", dest="experiment_name", help="experiment_name", required=False, type=str)
-    parser.add_argument("--model_name", dest="model_name", help="Registered model name", default=None)
-    parser.add_argument("--data_path", dest="data_path", help="Data path", default=default_data_path)
-    parser.add_argument("--max_depth", dest="max_depth", help="Max depth", default=5, type=int) # per doc
-    parser.add_argument("--max_bins", dest="max_bins", help="Max bins", default=32, type=int) # per doc
-    parser.add_argument("--describe", dest="describe", help="Describe data", default=False, action='store_true')
-    parser.add_argument("--log_as_mleap", dest="log_as_mleap", help="Log model as MLeap", default=False, action='store_true')
-    parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX", default=False, action='store_true')
-    parser.add_argument("--spark_autolog", dest="spark_autolog", help="Use spark.autolog", default=False, action='store_true')
-    args = parser.parse_args()
-    print("Arguments:")
-    for arg in vars(args):
-        print(f"  {arg}: {getattr(args, arg)}")
 
 @click.command()
 @click.option("--experiment_name", help="Experiment name", default=None, type=str)
