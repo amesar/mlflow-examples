@@ -15,21 +15,21 @@ client = mlflow.tracking.MlflowClient()
 tmp_dir = "out" # TODO 
 
 def predict_keras(model_uri, data):
-    print(f"\nmlflow.keras.load_model - {model_uri}")
+    print(f"\nmlflow.keras.load_model\nModel URI: {model_uri}")
     model = mlflow.keras.load_model(model_uri)
     print("model.type:", type(model))
     predictions = model.predict(data)
     display(predictions)
 
-def predict_pyfunc(model_uri, data):
-    print(f"\nmlflow.pyfunc.load_model - {model_uri}")
+def predict_pyfunc(model_uri, data, msg):
+    print(f"\nmlflow.pyfunc.load_model - {msg}\nModel URI: {model_uri}")
     model = mlflow.pyfunc.load_model(model_uri)
     print("model.type:", type(model))
     predictions = model.predict(data)
     display(predictions)
 
 def predict_onnx(model_uri, data):
-    print(f"\nmlflow.onnx.load_model - {model_uri}")
+    print(f"\nmlflow.onnx.load_model\nModel URI: {model_uri}")
     import mlflow.onnx
     import onnx_utils
     model = mlflow.onnx.load_model(model_uri)
@@ -40,7 +40,7 @@ def predict_onnx(model_uri, data):
 
 def predict_tensorflow_model(run_id, data):
     model_name = "tensorflow-model"
-    print(f"\nkeras.models.load_model - {model_name} - {run_id}")
+    print(f"\nkeras.models.load_model\nModel name:{model_name}\nRun ID:{run_id}")
     client.download_artifacts(run_id, model_name, tmp_dir)
     model = keras.models.load_model(os.path.join(tmp_dir, model_name))
     print("model.type:",type(model))
@@ -50,7 +50,7 @@ def predict_tensorflow_model(run_id, data):
 def predict_tensorflow_lite_model(run_id, data):
    # Get model from MLflow
     model_name = "tensorflow-lite-model"
-    print(f"\ntf.lite.Interpreter - {model_name} - {run_id}")
+    print(f"\ntf.lite.Interpreter\nModel name:{model_name}\nRun ID:{run_id}")
     client.download_artifacts(run_id, model_name, tmp_dir)
     path = os.path.join(tmp_dir, model_name, "model.tflite")
     with open(path, "rb") as f:
@@ -80,7 +80,7 @@ def predict_tensorflow_lite_model(run_id, data):
 def display(predictions):
     print("predictions.shape:",predictions.shape)
     df = pd.DataFrame(data=predictions, columns=["prediction"])
-    df = df.head(10)
+    df = df.head(2)
     print(tabulate(df, headers="keys", tablefmt="psql", showindex=False))
 
 def artifact_exists(run_id, path):
@@ -90,7 +90,7 @@ def artifact_exists(run_id, path):
 @click.option("--run_id", help="RunID", default=None, type=str)
 @click.option("--data_path", help="Data path", default="../../data/train/wine-quality-white.csv", type=str)
 @click.option("--score_as_pyfunc", help="Score as PyFunc", default=True, type=bool)
-@click.option("--score_as_tensorflow_lite", help="Score as TensorFlow Lite", default=True, type=bool)
+@click.option("--score_as_tensorflow_lite", help="Score as TensorFlow Lite", default=False, type=bool)
 
 def main(run_id, data_path, score_as_pyfunc, score_as_tensorflow_lite):
     print("Options:")
@@ -103,15 +103,7 @@ def main(run_id, data_path, score_as_pyfunc, score_as_tensorflow_lite):
     model_uri = f"runs:/{run_id}/keras-hd5-model"
     predict_keras(model_uri, data)
     if score_as_pyfunc:
-        predict_pyfunc(model_uri, data)
-
-    model_name = "onnx-model"
-    if artifact_exists(run_id, model_name):
-        model_uri = f"runs:/{run_id}/{model_name}"
-        predict_onnx(model_uri, data)
-        predict_pyfunc(model_uri, data)
-    else:
-        print(f"No model: {model_name}")
+        predict_pyfunc(model_uri, data,"keras-hd5-model")
 
     model_name = "tensorflow-model"
     if artifact_exists(run_id, model_name):
@@ -125,6 +117,15 @@ def main(run_id, data_path, score_as_pyfunc, score_as_tensorflow_lite):
             predict_tensorflow_lite_model(run_id, data)
         else:
             print(f"No model: {model_name}")
+
+    model_name = "onnx-model"
+    if artifact_exists(run_id, model_name):
+        model_uri = f"runs:/{run_id}/{model_name}"
+        predict_onnx(model_uri, data)
+        predict_pyfunc(model_uri, data, "onnx-model")
+    else:
+        print(f"No model: {model_name}")
+
 
 if __name__ == "__main__":
     main()
