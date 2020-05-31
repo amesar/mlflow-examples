@@ -6,7 +6,7 @@ def reshape(x, n):
     x = x.astype('float32') / 255
     return x
 
-def build_data():
+def get_train_data():
     from tensorflow.keras.datasets import mnist
     from tensorflow.keras.utils import to_categorical
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -28,8 +28,8 @@ def build_data():
     return x_train, y_train, x_test, y_test
 
 def get_prediction_data():
-    _,_,data,_  = build_data()
-    return data
+    _,_,x_test,_  = get_train_data()
+    return x_test
 
 def register_model(run, model_name, client = mlflow.tracking.MlflowClient()):
     try:

@@ -21,7 +21,7 @@ def build_model():
     return model
 
 def train(run, model_name, epochs, batch_size, mlflow_custom_log, log_as_onnx):
-    x_train, y_train, x_test, y_test = utils.build_data()
+    x_train, y_train, x_test, y_test = utils.get_train_data()
     model = build_model()
 
     model.compile(
