@@ -13,17 +13,12 @@ from pyspark.ml.feature import VectorAssembler
 import mlflow
 import mlflow.spark
 from common import *
+from pyspark_udf_workaround import log_udf_model
 
 spark = SparkSession.builder.appName("App").getOrCreate()
+show_versions(spark)
 
-print("Versions:")
-print("  Operating System:",platform.version()+" - "+platform.release())
-print("  MLflow Version:", mlflow.__version__)
-print("  Spark Version:", spark.version)
-print("  PySpark Version:", pyspark.__version__)
-print("  MLflow Tracking URI:", mlflow.tracking.get_tracking_uri())
-
-def train(data, max_depth, max_bins, model_name, log_as_mleap, log_as_onnx):
+def train(run_id, data, max_depth, max_bins, model_name, log_as_mleap, log_as_onnx):
     (trainingData, testData) = data.randomSplit([0.7, 0.3], 42)
     print("testData.schema:")
     testData.printSchema()
@@ -58,6 +53,9 @@ def train(data, max_depth, max_bins, model_name, log_as_mleap, log_as_onnx):
     mlflow.spark.log_model(model, "spark-model", \
         registered_model_name=None if not model_name else f"{model_name}")
 
+    # MLflow - log Spark model with UDF wrapper for workaround
+    log_udf_model(run_id, "spark-model", data.columns, model_name)
+
     # MLflow - log as MLeap model
     if log_as_mleap:
         scoreData = testData.drop("quality")
@@ -79,7 +77,7 @@ def train(data, max_depth, max_bins, model_name, log_as_mleap, log_as_onnx):
 
 @click.command()
 @click.option("--experiment_name", help="Experiment name", default=None, type=str)
-@click.option("--data_path", help="Data path", default="../../data/train/wine-quality-white.csv", type=str)
+@click.option("--data_path", help="Data path", default=default_data_path, type=str)
 @click.option("--model_name", help="Registered model name", default=None, type=str)
 @click.option("--max_depth", help="Max depth", default=5, type=int) # per doc
 @click.option("--max_bins", help="Max bins", default=32, type=int) # per doc
@@ -115,7 +113,7 @@ def main(experiment_name, model_name, data_path, max_depth, max_bins, describe, 
         mlflow.set_tag("version.os", platform.system()+" - "+platform.release())
 
         model_name = None if model_name is None or model_name == "None" else model_name
-        train(data, max_depth, max_bins, model_name, log_as_mleap, log_as_onnx)
+        train(run.info.run_id, data, max_depth, max_bins, model_name, log_as_mleap, log_as_onnx)
 
 if __name__ == "__main__":
     main()

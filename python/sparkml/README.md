@@ -3,8 +3,8 @@
 ## Overview
 
 * PySpark Spark ML Decision Tree Classification example
-* Saves model in SparkML and MLeap flavors - optionally also ONNX flavor.
-* Demonstrates both batch and real-time scoring.
+* Logs model in SparkML, custom UDF, MLeap and ONNX flavor.
+* Demonstrates both batch (UDF) and real-time scoring.
 * Data: [../../data/train/wine-quality-white.csv](../../data/train/wine-quality-white.csv)
 
 ## Train
@@ -87,24 +87,33 @@ mlflow run https://github.com/amesar/mlflow-examples.git#python/sparkml \
 
 You can make predictions in two ways:
 * Batch predictions 
-* Real-time predictions - use MLflow's scoring server to score individual requests.
+* Real-time predictions - use MLflow's scoring server
 
 
 ### Batch Predictions
 
-#### Predict with Spark using SparkML and MLeap flavors
+Flavors:
+* Spark ML
+* UDF
+* MLeap
+* ONNX
+* PyFunc
+  * PyFunc - SparkML
+  * PyFunc - ONNX
 
+#### Predict as SparkML flavor
+
+Predict as Spark ML flavor with `spark-model`.
 See [spark_predict.py](spark_predict.py).
-Predict with Spark using the `spark-model` and `mleap-model` (using MLeap's SparkBundle).
 
 ```
 spark-submit --master local[2] spark_predict.py \
-  --run_id ffd36a96dd204ac38a58a00c94390649
+  --model_uri runs:/ffd36a96dd204ac38a58a00c94390649/spark-model
 ```
 
 ```
-model_uri: runs:/ffd36a96dd204ac38a58a00c94390649/spark-model
-Spark ML predictions
+model.type: <class 'pyspark.ml.pipeline.PipelineModel'>
+predictions.type: <class 'pyspark.sql.dataframe.DataFrame'>
 +-----------------+-------+--------------------------------------------------------+
 |prediction       |quality|features                                                |
 +-----------------+-------+--------------------------------------------------------+
@@ -112,9 +121,53 @@ Spark ML predictions
 |5.470588235294118|6      |[6.3,0.3,0.34,1.6,0.049,14.0,132.0,0.994,3.3,0.49,9.5]  |
 . . .
 +-----------------+-------+--------------------------------------------------------+
+```
 
+#### Predict as UDF
+
+Predict as Spark ML UDF with `udf-spark-model`.
+See [udf_predict.py](udf_predict.py).
+
+There is a bug with loading a Spark ML model as a UDF. If you try to load `spark-model` you will get:
+```
+java.lang.IllegalArgumentException: Field "fixed acidity" does not exist.
+Available fields: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+```
+
+You need to log the Spark ML model as `udf-spark-model` which uses a custom PythonModel that handles the column numeric problem.
+See [pyspark_udf_workaround.py](pyspark_udf_workaround.py).
+
+```
+spark-submit --master local[2] udf_predict.py \
+  --model_uri runs:/ffd36a96dd204ac38a58a00c94390649/udf-spark-model
+```
+
+```
+predictions.type: <class 'pyspark.sql.dataframe.DataFrame'>
++-------+------------------+
+|quality|prediction        |
++-------+------------------+
+|6      |5.4586894586894585|
+|6      |5.011627906976744 |
++-------+------------------+
+```
+
+Note: [pyarrow version](conda.yaml) must be 0.13.0 (or lower) for UDF prediction. Otherwise you get the following misleading error.
+```
+ImportError: PyArrow >= 0.8.0 must be installed; however, it was not found.
+```
+
+#### Predict as MLeap flavor
+
+Predict as MLeap flavor using MLeap's SparkBundle with `mleap-model`.
+See [mleap_predict.py](mleap_predict.py).
+```
+spark-submit --master local[2] mleap_predict.py \
+  --run_id ffd36a96dd204ac38a58a00c94390649
+```
+
+```
 model_uri: runs:/ffd36a96dd204ac38a58a00c94390649/mleap-model
-MLeap predictions
 +-----------------+-------+--------------------------------------------------------+
 |prediction       |quality|features                                                |
 +-----------------+-------+--------------------------------------------------------+
@@ -134,10 +187,10 @@ spark-submit --master local[2] pyfunc_predict.py \
 ```
 
 ```
-model: <mlflow.spark._PyFuncModelWrapper object at 0x115f30b70>
-data.shape: (4898, 12)
-predictions: [5.470588235294118, 5.470588235294118, 5.769607843137255, 5.877049180327869, 5.877049180327869]
+model.type: <mlflow.spark._PyFuncModelWrapper object at 0x115f30b70>
+predictions.type: <class 'list'>
 predictions.len: 4898
+predictions: [5.470588235294118, 5.470588235294118, 5.769607843137255, 5.877049180327869, 5.877049180327869]
 ```
 
 #### Predict as Pyfunc/ONNX flavor
@@ -292,6 +345,3 @@ Make predictions with curl as described above.
 #### 4. Azure docker container
 
 See [Deploy a python_function model on Microsoft Azure ML](https://mlflow.org/docs/latest/models.html#deploy-a-python-function-model-on-microsoft-azure-ml) documentation.
-
-TODO.
-

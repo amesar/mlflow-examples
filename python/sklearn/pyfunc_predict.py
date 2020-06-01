@@ -15,10 +15,10 @@ if __name__ == "__main__":
     print("data_path:", data_path)
     print("model_uri:", model_uri)
 
-    client = mlflow.tracking.MlflowClient()
     model = mlflow.pyfunc.load_model(model_uri)
     print("model:", model)
 
     data = predict_utils.read_prediction_data(data_path)
     predictions = model.predict(data)
+    print("predictions.type:", type(predictions))
     print("predictions:", predictions)

@@ -33,13 +33,18 @@ entry_points:
         --log_as_onnx {log_as_onnx}"
   spark_predict: 
     parameters:
-      run_id: string
+      model_uri: string
     command: "spark-submit --master local[2] 
-      spark_predict.py --run_id {run_id}"
+      spark_predict.py --model_uri {model_uri}"
   pyfunc_predict:
     parameters:
       model_uri: string
     command: "python pyfunc_predict.py --model_uri {model_uri}"
+  udf_predict: 
+    parameters:
+      model_uri: string
+    command: "spark-submit --master local[2] 
+      spark_predict.py --model_uri {model_uri}"
   onnx_predict:
     parameters:
       model_uri: string

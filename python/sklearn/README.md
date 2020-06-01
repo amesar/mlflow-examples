@@ -239,7 +239,7 @@ predictions = model.predict(data)
 
 #### 3. Predict with Spark UDF (user-defined function)
 
-See [Export a python_function model as an Apache Spark UDF]((https://mlflow.org/docs/latest/models.html#export-a-python-function-model-as-an-apache-spark-udf) documentation.
+See [Export a python_function model as an Apache Spark UDF](https://mlflow.org/docs/latest/models.html#export-a-python-function-model-as-an-apache-spark-udf) documentation.
 
 We show how to invoke a UDF with both the DataFrame API and SQL.
 

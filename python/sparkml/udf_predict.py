@@ -15,19 +15,15 @@ def main(model_uri, data_path):
     print("Options:")
     for k,v in locals().items():
         print(f"  {k}: {v}")
-
-    data_path = data_path or default_data_path
     data = read_data(spark, data_path)
-    print("Data Schema:")
-    data.printSchema()
 
-    print("model_uri:", model_uri)
-    model = mlflow.spark.load_model(model_uri)
-    print("model.type:", type(model))
-    predictions = model.transform(data)
+    print("model_uri:",model_uri)
+    udf = mlflow.pyfunc.spark_udf(spark, model_uri)
+    print("==== UDF - workaround")
+    predictions = data.withColumn("prediction", udf(*data.columns))
     print("predictions.type:", type(predictions))
-    df = predictions.select(colPrediction, colLabel, colFeatures)
-    df.show(5, False)
+    df = predictions.select(colLabel, colPrediction)
+    df.show(5,False)
 
 if __name__ == "__main__":
     main()
