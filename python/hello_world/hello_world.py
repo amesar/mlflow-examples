@@ -11,24 +11,24 @@ client = mlflow.tracking.MlflowClient()
 def run(alpha, run_origin):
     with mlflow.start_run(run_name=run_origin) as run:
         print("runId:",run.info.run_uuid)
-        print("experiment_id:",run.info.experiment_id)
-        print("experiment_name:",client.get_experiment(run.info.experiment_id).name)
-        print("artifact_uri:",mlflow.get_artifact_uri())
-        print("alpha:",alpha)
-        print("run_origin:",run_origin)
+        print("experiment_id:", run.info.experiment_id)
+        print("experiment_name:", client.get_experiment(run.info.experiment_id).name)
+        print("artifact_uri:", mlflow.get_artifact_uri())
+        print("alpha:", alpha)
+        print("run_origin:", run_origin)
         mlflow.log_param("alpha", alpha)
         mlflow.log_metric("rmse", 0.789)
         mlflow.set_tag("run_origin", run_origin)
-        mlflow.set_tag("mlflow_version", mlflow.__version__)
-        mlflow.set_tag("python_version", platform.python_version())
-        mlflow.set_tag("platform", platform.system())
+        mlflow.set_tag("version.mlflow", mlflow.__version__)
+        mlflow.set_tag("version.python", platform.python_version())
+        mlflow.set_tag("version.platform", platform.system())
         with open("info.txt", "w") as f:
             f.write("Hi artifact")
         mlflow.log_artifact("info.txt")
         params = [ Param("p1","0.1"), Param("p2","0.2") ]
         now = round(time.time())
         metrics = [ Metric("m1",0.1,now,0), Metric("m2",0.2,now,0) ]
-        tags = [ RunTag("t1","hi1"), RunTag("t2","hi2") ]
+        tags = [ RunTag("tag1","hi1"), RunTag("tag2","hi2") ]
         client.log_batch(run.info.run_uuid, metrics, params, tags)
 
 if __name__ == "__main__":
