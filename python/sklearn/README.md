@@ -46,9 +46,9 @@ python main.py --experiment_name sklearn --max_depth 2 --max_leaf_nodes 32
 
 ### 2. MLflow CLI - `mlflow run`
 
-These runs use the [MLproject](MLproject) file. For more details see [MLflow documentation - Running Projects](https://mlflow.org/docs/latest/projects.html#running-projects).
+Use the [MLproject](MLproject) file. For more details see [MLflow documentation - Running Projects](https://mlflow.org/docs/latest/projects.html#running-projects).
 
-Note that `mlflow` CLI run ignores the `set_experiment()` so you must specify the experiment with the  `--experiment-sklearn` argument.
+Note that the `mlflow` CLI run ignores the `set_experiment()` so you must specify the experiment with the  `--experiment-sklearn` argument.
 
 #### mlflow run local
 ```
@@ -68,7 +68,7 @@ mlflow run https://github.com/amesar/mlflow-examples.git#python/sklearn \
 
 Run against a Databricks cluster.
 You will need a cluster spec file such as [mlflow_run_cluster.json](mlflow_run_cluster.json).
-See MLflow [Remote Execution on Databricks](https://mlflow.org/docs/latest/projects.html#run-an-mlflow-project-on-databricks) page 
+See MLflow [Remote Execution on Databricks](https://mlflow.org/docs/latest/projects.html#run-an-mlflow-project-on-databricks).
 
 Setup - set MLFLOW_TRACKING_URI.
 ```
@@ -85,7 +85,6 @@ databricks fs cp data/train/wine-quality-white.csv dbfs:/tmp/jobs/sklearn_wine/w
 ```
 The token and tracking server URL will be picked up from your Databricks CLI ~/.databrickscfg default profile.
 
-Now run the model.
 ```
 mlflow run https://github.com/amesar/mlflow-examples.git#python/sklearn \
   -P max_depth=2 -P max_leaf_nodes=32 -P run_origin=gitRun \
@@ -373,6 +372,13 @@ To test locally, launch the server as a docker container.
 ```
 mlflow sagemaker run-local \
   --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model \
+  --port 5001 --image sm-wine-sklearn
+```
+
+You can also launch an ONNX-based model server.
+```
+mlflow sagemaker run-local \
+  --model-uri runs:/7e674524514846799310c41f10d6b99d/onnx-model \
   --port 5001 --image sm-wine-sklearn
 ```
 
