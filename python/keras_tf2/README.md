@@ -2,15 +2,21 @@
 
 
 ## Overview
-* Keras with TensorFlow 2.x train and predict.
-* Dataset: Wine quality
-* Saves model as MLflow Keras (HD5) flavor.
-* Demonstrates advanced features:
-  *  Scoring with TensorFlow Serving docker container.
+* Summary
+  * Keras with TensorFlow 2.x train and predict.
+  * Algorithm: KerasRegressor
+  * Dataset: Wine quality
+  * Saves MLflow model as MLflow Keras (HD5) flavor.
+* Focus on TensorFlow advanced features:
   *  Saves model in different TensorFlow model formats: HD5, SaveModel, TensorFlow Lite and TensorFlow.js.
-* Options to:
-  * [autolog](https://mlflow.org/docs/latest/python_api/mlflow.keras.html#mlflow.keras.autolog) parameters and metrics.
+  *  Scoring an MLflow model with TensorFlow Serving docker container.
+* Options:
+  * autolog parameters and metrics - [keras.autolog](https://mlflow.org/docs/latest/python_api/mlflow.keras.html#mlflow.keras.autolog) - [tensorflow.autolog](https://mlflow.org/docs/latest/python_api/mlflow.tensorflow.html#mlflow.tensorflow.autolog).
   * Log and score model as ONNX.
+
+## Setup
+
+`conda env create` [conda.yaml](conda.yaml)
 
 ## TensorFlow Serving
 
@@ -20,11 +26,8 @@ TensorFlow model formats:
 * [TensorFlow Lite](https://www.tensorflow.org/lite) - for mobile and edge devices.
 * [TensorFlow.js](https://www.tensorflow.org/js) - for browsers or Node.js.
 
-## Setup
 
-`conda env create` [conda.yaml](conda.yaml)
-
-## TensorFlow Model Serialization Formats
+### TensorFlow Model Serialization Formats
 
 We explore several TensorFlow model formats such as:
 
@@ -56,14 +59,18 @@ Source: [train.py](train.py).
 | experiment_name | no | none | Experiment name|
 | model_name | no | None | Registered model name|
 | epochs | no | 5 | Number of epochs |
-| batch_size | no | 129 | Batch size |
+| batch_size | no | 128 | Batch size |
+| mlflow_custom_log | no | True | Explicitly log params and metrics with mlflow.log |
+| keras_autolog | no | False | Automatically log params and metrics with mlflow.keras.autolog |
+| tensorflow_autolog | no | False | Automatically log params and metrics with mlflow.tensorflow.autolog |
 | log_as_onnx | no | False | Log as ONNX flavor |
-| mlflow_custom_log | no | True | Log params/metrics with mlflow.log |
-| keras_autolog | no | False | Automatically log params/ metrics with mlflow.keras.autolog |
-| tensorflow_autolog | no | False | Automatically log params/ metrics with mlflow.tensorflow.autolog |
 
 
 ### Run
+```
+mlflow run -P experiment_name=keras_wine -P epochs3 -P batch_size=128
+```
+or
 ```
 python train.py --experiment_name keras_wine --epochs 3 --batch_size 128
 ```
@@ -79,11 +86,12 @@ Source: [predict.py](predict.py).
 |Name | Required | Default | Description|
 |-----|----------|---------|------------|
 | run_id | yes | none | run_id |
-| score_as_pyfunc | no | False | Score as PyFunc  |
+| score_as_pyfunc | no | True | Score as PyFunc  |
+| score_as_tensorflow_lite | no | False | Score as TensorFlow Lite  |
 
 ### Run
 ```
-python predict.py --run_id 7e674524514846799310c41f10d6b99d
+python predict.py --run_id 7e674524514846799310c41f10d6b99d --score_as_tensorflow_lite True
 ```
 
 ```
@@ -142,44 +150,85 @@ predictions.shape: (3428, 1)
 
 ## Real-time Scoring - MLflow
 
-
 ### Data
-[../../data/predict-wine-quality.json](../../data/predict-wine-quality.json)
+[../../data/score/wine-quality.json](../../data/score/wine-quality.json)
 
 ### Web server
 
+Launch the web server.
+```
+mlflow pyfunc serve -port 5001 \
+  -model-uri runs:/7e674524514846799310c41f10d6b99d/keras-hd5-model
+```
+
 ### Docker container
+
+You can use the SageMaker container on your local machine without SageMaker dependencies.
+
+First build the docker image.
+```
+mlflow sagemaker build-and-push-container --build --no-push --container sm-wine-keras
+```
+
+To test locally, launch the server as a docker container.
+```
+mlflow sagemaker run-local \
+  --model-uri runs:/7e674524514846799310c41f10d6b99d/keras-hd5-model \
+  --port 5001 --image sm-wine-keras
+```
+
+### Score 
+```
+curl -X POST -H "Content-Type:application/json" \
+  -d @../../data/score/wine-quality.json \
+  http://localhost:5001/invocations
+```
+```
+[
+  [5.470588235294118,5.470588235294118,5.769607843137255]
+]
+```
+
 
 ## Real-time Scoring - TensorFlow Serving
 
+
+### Launch scoring server as docker container
+
+```
+docker run -t --rm --publish 8502 \
+--volume /opt/mlflow/mlruns/1/f48dafd70be044298f71488b0ae10df4/artifacts/tensorflow-model:/models/keras_wine\
+--env MODEL_NAME=keras_wine \
+tensorflow/serving
+```
+
+### Score 
+
+```
+curl http://localhost:8502/v1/models/keras_wine:predict -X POST \
+  -d '{"instances":  [[ 7, 0.27, 0.36, 20.7, 0.045, 45, 170, 1.001, 3, 0.45, 8.8 ]] }' 
+```
+```
+{ "predictions": [[-0.70597136]] }
+```
+or
+```
+curl http://localhost:8502/v1/models/keras_wine:predict -X POST \
+  -d @../../data/score/tf-serving-wine-quality.json 
+```
+```
+{
+    "predictions": [[-0.70597136], [-0.518047869], [-0.380209982] ]
+}
+```
+
 ### Data
 
-[../../data/tensorflow_serving.json](../../data/tensorflow_serving.json)
+[../../data/score/tf-serving-wine-quality.json](../../data/score/tf-serving-wine-quality.json)
 ```
 {"instances": [ 
   [ 7,   0.27, 0.36, 20.7, 0.045, 45, 170, 1.001,  3,    0.45,  8.8 ],
   [ 6.3, 0.3,  0.34,  1.6, 0.049, 14, 132, 0.994,  3.3,  0.49,  9.5 ],
   [ 8.1, 0.28, 0.4,   6.9, 0.05,  30,  97, 0.9951, 3.26, 0.44, 10.1 ]
 ] }
-```
-
-### Launch scoring server as docker container
-
-```
-docker run -t --rm --publish 8501 \
---volume /opt/mlflow/mlruns/1/f48dafd70be044298f71488b0ae10df4/artifacts/tensorflow-model:/models/keras_wine\
---env MODEL_NAME=keras_wine \
-tensorflow/serving
-```
-
-
-### Score 
-
-```
-curl -d '{"instances": [12.8, 0.03, 0.48, 0.98, 6.2, 29, 1.2, 0.4, 75 ] }' \
-     -X POST http://localhost:8501/v1/models/keras_wine:predict
-```
-
-```
-{ "predictions": [[-0.70597136]] }
 ```

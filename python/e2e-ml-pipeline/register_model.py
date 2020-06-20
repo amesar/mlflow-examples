@@ -23,7 +23,7 @@ def init(model_name):
         print(f"Found {len(versions)} versions for model '{model_name}'")
         for v in versions:
             print(f"  version={v.version} status={v.status} stage={v.current_stage} run_id={v.run_id}")
-            client.update_model_version(model_name, v.version, stage="Archived", description="to archived")
+            client.transition_model_version_stage (model_name, v.version, "Archived")
             client.delete_model_version(model_name, v.version)
     except RestException as e:
         print(f"INFO: {e}")
@@ -69,7 +69,7 @@ def run(experiment_name, data_path, model_name):
     show_version(version)
 
     # Promote version to production stage
-    client.update_model_version(model_name, version_id, stage="Production", description="My prod version")
+    client.transition_model_version_stage (model_name, version_id, "Production")
     version = client.get_model_version(model_name, version_id)
     show_version(version)
 
