@@ -8,7 +8,7 @@ dependencies:
     - mlflow==1.9.0
     - mleap==0.15.0
     - pyspark==2.4.5
-    - pyarrow==0.13.0 # fails for 0.14.0 for UDF prediction: "PyArrow >= 0.8.0 must be installed; however, it was not found (!!)
+    - pyarrow==0.17.1
     - onnx==1.7.0
     - onnxruntime==1.2.0
     - onnxmltools==1.6.1
