@@ -33,7 +33,7 @@
   </profiles>
 
   <properties>
-    <mleap.version>0.15.0</mleap.version>
+    <mleap.version>0.16.0</mleap.version>
     <mlflow.version>1.9.0</mlflow.version>
     <jcommander.version>1.72</jcommander.version>
   </properties>
@@ -137,6 +137,11 @@
               </excludes>
             </filter>
           </filters>
+          <transformers>
+            <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+              <resource>reference.conf</resource>
+            </transformer>
+          </transformers>
         </configuration>
         <executions>
           <execution>
