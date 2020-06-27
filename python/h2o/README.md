@@ -11,7 +11,8 @@
 ## Setup
 
 ```
-pip install h2o
+conda env create --file conda.yaml
+conda activate mlflow-examples-h2o
 ```
 
 ## Train
@@ -69,7 +70,7 @@ XGBoost_3_AutoML_20200412_231704                                     0.451612  0
 
 Score with `mlflow.h2o.load_model` and `mlflow.pyfunc.load_model`.
 
-####  mlflow.h2o.load_model
+###  mlflow.h2o.load_model
 
 Source: [h2o_predict.py](h2o_predict.py).
 
@@ -85,7 +86,7 @@ predictions:
 2     5.915790
 ```
 
-####  mlflow.pyfunc.load_model
+###  mlflow.pyfunc.load_model
 Source: [pyfunc_predict.py](pyfunc_predict.py).
 ```
 python pyfunc_predict.py runs:/7e674524514846799310c41f10d6b99d/h2o-model
@@ -97,6 +98,4 @@ predictions:
 0     6.000000
 1     6.000000
 2     5.915790
-
 ```
-

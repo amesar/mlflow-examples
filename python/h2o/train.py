@@ -22,10 +22,10 @@ def train(data_path, ntrees, log_as_onnx, model_name):
     with mlflow.start_run() as run:
         exp = client.get_experiment(run.info.experiment_id)
         print("MLflow:")
-        print("  run id:", run.info.run_id)
-        print("  experiment id:", run.info.experiment_id)
-        print("  experiment name:", exp.name)
-        print("  experiment artifact_location:", exp.artifact_location)
+        print("  run_id:", run.info.run_id)
+        print("  experiment_id:", run.info.experiment_id)
+        print("  experiment_name:", exp.name)
+        print("  experiment_artifact_location:", exp.artifact_location)
         rf = H2ORandomForestEstimator(ntrees=ntrees)
         rf.train(train_cols, "quality", training_frame=train_data, validation_frame=test_data)
 
