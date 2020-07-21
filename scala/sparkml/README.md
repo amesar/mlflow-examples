@@ -18,7 +18,7 @@ The Maven pom.xml two profiles are:
   * Spark 2.4.5 
 * spark-3x
   * Scala 2.12
-  * Spark 3.0.0-preview2
+  * Spark 3.0.0
 
 ## Build
 
