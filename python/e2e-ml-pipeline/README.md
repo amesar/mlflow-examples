@@ -17,10 +17,11 @@ Basis of subsequent CI/CD pipeline.
 
 
 ## Setup
+
+See [conda.yaml](conda.yaml).
 ```
-pip install psutil
-pip install pytest
-pip install pytest-ordering
+conda env create --file conda.yaml
+conda activate mlflow-examples-e2e-ml-pipeline
 ```
 
 ## Run
