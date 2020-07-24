@@ -1,14 +1,14 @@
-name: mlflow-examples-keras2
+name: mlflow-examples-keras2_tf2
 channels:
   - conda-forge
 dependencies:
   - python=3.7.6
   - pip:
     - mlflow==1.10.0
-    - tensorflow==2.1.0
+    - tensorflow==2.2.0
     - tensorflowjs==1.7.4
     - scikit-learn==0.21.3
     - onnx==1.7.0
-    - onnxmltools==1.6.1
-    - onnxruntime==1.3.0
+    - onnxmltools==1.7.0
+    - onnxruntime==1.4.0
     - keras2onnx==1.7.0
