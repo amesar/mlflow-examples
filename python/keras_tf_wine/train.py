@@ -28,7 +28,7 @@ print("  Operating System:",platform.system()+" - "+platform.release())
 np.random.seed(42)
 tf.random.set_seed(42)
 
-def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx):
+def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx, log_as_tensorflow_lite, log_as_tensorflow_js):
     print("mlflow_custom_log:", mlflow_custom_log)
     x_train, _, y_train, _ = utils.build_data(data_path)
 
@@ -62,21 +62,20 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
     mlflow.log_artifact(path)
 
     # Save as TensorFlow Lite format
-    converter = tf.lite.TFLiteConverter.from_keras_model(model)
-    tflite_model = converter.convert()
-    path = "model.tflite"
-    with open(path, "wb") as f:
-        f.write(tflite_model)
-    mlflow.log_artifact(path, "tensorflow-lite-model")
+    if log_as_tensorflow_lite:
+        converter = tf.lite.TFLiteConverter.from_keras_model(model)
+        tflite_model = converter.convert()
+        path = "model.tflite"
+        with open(path, "wb") as f:
+            f.write(tflite_model)
+        mlflow.log_artifact(path, "tensorflow-lite-model")
 
     # Save as TensorFlow.js format
-    try:
+    if log_as_tensorflow_js:
         import tensorflowjs as tfjs
-        path = "model.js"
+        path = "model.tfjs"
         tfjs.converters.save_keras_model(model, path)
-        mlflow.log_artifact(path, "tensorflow-js")
-    except ModuleNotFoundError:
-        print("WARNING: tensorflowjs is not installed")
+        mlflow.log_artifact(path, "tensorflow-js-model")
 
     # Evaluate model
     estimator = KerasRegressor(build_fn=baseline_model, epochs=epochs, batch_size=batch_size, verbose=0)
@@ -104,8 +103,10 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
 @click.option("--keras_autolog", help="Automatically log params/ metrics with mlflow.keras.autolog", default=False, type=bool)
 @click.option("--tensorflow_autolog", help="Automatically log params/ metrics with mlflow.tensorflow.autolog", default=False, type=bool)
 @click.option("--log_as_onnx", help="log_as_onnx", default=False, type=bool)
+@click.option("--log_as_tensorflow_lite", help="log_as_tensorflow_lite", default=False, type=bool)
+@click.option("--log_as_tensorflow_js", help="log_as_tensorflow_js", default=False, type=bool)
 
-def main(experiment_name, data_path, model_name, epochs, batch_size, keras_autolog, tensorflow_autolog, mlflow_custom_log, log_as_onnx):
+def main(experiment_name, data_path, model_name, epochs, batch_size, keras_autolog, tensorflow_autolog, mlflow_custom_log, log_as_onnx, log_as_tensorflow_lite, log_as_tensorflow_js):
     import mlflow
     print("Options:")
     for k,v in locals().items(): 
@@ -136,7 +137,7 @@ def main(experiment_name, data_path, model_name, epochs, batch_size, keras_autol
         mlflow.set_tag("mlflow_keras.autolog", keras_autolog)
         mlflow.set_tag("mlflow_tensorflow.autolog", tensorflow_autolog)
 
-        train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx)
+        train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx, log_as_tensorflow_lite, log_as_tensorflow_js)
 
 if __name__ == "__main__":
     main()
