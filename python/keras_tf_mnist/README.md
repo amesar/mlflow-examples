@@ -1,4 +1,4 @@
-# mlflow-examples - keras_tf2 - MNIST
+# mlflow-examples - Keras/TensorFlow 2 - MNIST
 
 
 ## Overview
@@ -8,6 +8,12 @@
 * Options to:
   * [autolog](https://mlflow.org/docs/latest/python_api/mlflow.keras.html#mlflow.keras.autolog) parameters and metrics.
   * log and score model as ONNX.
+
+## Setup
+
+`conda env create` [conda.yaml](conda.yaml)
+
+`conda activate mlflow-examples-keras_tf_mnist`
 
 
 ## Training

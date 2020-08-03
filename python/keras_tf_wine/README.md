@@ -1,4 +1,4 @@
-# mlflow-examples - keras_tf2 - wine quality
+# mlflow-examples - Keras/TensorFlow 2 - Wine Quality
 
 
 ## Overview
@@ -17,6 +17,8 @@
 ## Setup
 
 `conda env create` [conda.yaml](conda.yaml)
+
+`conda activate mlflow-examples-keras_tf_wine`
 
 ## TensorFlow Serving
 

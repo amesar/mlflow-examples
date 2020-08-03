@@ -1,4 +1,4 @@
-name: mlflow-examples-keras_tf2_mnist
+name: mlflow-examples-keras_tf_wine
 channels:
   - conda-forge
 dependencies:
@@ -6,6 +6,9 @@ dependencies:
   - pip:
     - mlflow==1.10.0
     - tensorflow==2.2.0
+    - tensorflowjs==1.7.4
+    - scikit-learn==0.21.3
     - onnx==1.7.0
     - onnxmltools==1.7.0
     - onnxruntime==1.4.0
+    - keras2onnx==1.7.0
