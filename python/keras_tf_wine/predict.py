@@ -1,5 +1,6 @@
 import os
 import click
+import platform
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -12,6 +13,7 @@ import utils
 print("MLflow Version:", mlflow.__version__)
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 client = mlflow.tracking.MlflowClient()
+print("Operating System:",platform.system()+" - "+platform.release())
 tmp_dir = "out" # TODO 
 
 def predict_keras(model_uri, data):
@@ -109,22 +111,22 @@ def main(run_id, data_path, score_as_pyfunc, score_as_tensorflow_lite):
     if artifact_exists(run_id, model_name):
         predict_tensorflow_model(run_id, data)
     else:
-        print(f"No model: {model_name}")
+        print(f"WARNING: no model '{model_name}'")
 
     if score_as_tensorflow_lite:
         model_name = "tensorflow-lite-model"
         if artifact_exists(run_id, model_name):
             predict_tensorflow_lite_model(run_id, data)
         else:
-            print(f"No model: {model_name}")
+            print(f"WARNING: no model '{model_name}'")
 
     model_name = "onnx-model"
     if artifact_exists(run_id, model_name):
-        model_uri = f"runs:/{run_id}/{model_name}"
+        model_uri = f"runs:/{run_id}/'{model_name}'"
         predict_onnx(model_uri, data)
         predict_pyfunc(model_uri, data, "onnx-model")
     else:
-        print(f"No model: {model_name}")
+        print(f"WARNING: no model '{model_name}'")
 
 
 if __name__ == "__main__":
