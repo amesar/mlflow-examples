@@ -6,8 +6,6 @@ dependencies:
   - pip:
     - mlflow==1.10.0
     - tensorflow==2.3.0
-    #- tensorflowjs==1.7.4
-    #- tensorflowjs==2.0.1.post1
     - tensorflowjs
     - scikit-learn==0.21.3
     - onnx==1.7.0
