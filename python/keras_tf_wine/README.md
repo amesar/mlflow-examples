@@ -1,54 +1,26 @@
-# mlflow-examples - Keras/TensorFlow 2 - Wine Quality
+# mlflow-examples - Keras/TensorFlow - Wine Quality
 
 
 ## Overview
-* Summary
-  * Keras with TensorFlow 2.x train and predict.
-  * Algorithm: KerasRegressor
-  * Dataset: Wine quality
-  * Saves MLflow model as MLflow Keras (HD5) flavor.
-* Focus on TensorFlow advanced features:
-  *  Saves model in different TensorFlow model formats: HD5, SaveModel, TensorFlow Lite and TensorFlow.js.
-  *  Scoring an MLflow model with TensorFlow Serving docker container.
-* Options:
-  * autolog parameters and metrics - [keras.autolog](https://mlflow.org/docs/latest/python_api/mlflow.keras.html#mlflow.keras.autolog) - [tensorflow.autolog](https://mlflow.org/docs/latest/python_api/mlflow.tensorflow.html#mlflow.tensorflow.autolog).
-  * Log and score model as ONNX.
+
+* Keras TensorFlow 2.x 
+* Train and predict with a number of model flavors and formats
+* Algorithm: KerasRegressor
+* Dataset: Wine quality
+* Model flavors and formats
+  * Logs model as MLflow Keras (HD5) flavor 
+  * Saves model in a number of other TensorFlow formats (non-flavors) such as SavedModel, TensorFlow Lite and TensorFlow.js
+  * Logs and scores model as ONNX flavor.
+* Real-time scoring
+ * Launches an MLflow scoring server either as a local web server or a docker container.
+ * Launches a [TensorFlow Serving](https://www.tensorflow.org/tfx/guide/serving) docker container
+* Autolog parameters and metrics - [keras.autolog](https://mlflow.org/docs/latest/python_api/mlflow.keras.html#mlflow.keras.autolog) - [tensorflow.autolog](https://mlflow.org/docs/latest/python_api/mlflow.tensorflow.html#mlflow.tensorflow.autolog).
 
 ## Setup
 
 `conda env create` [conda.yaml](conda.yaml)
 
 `conda activate mlflow-examples-keras_tf_wine`
-
-## TensorFlow Serving
-
-TensorFlow model formats:
-* [HD5](https://www.tensorflow.org/tutorials/keras/save_and_load#hdf5_format) - Keras TensorFlow 1.x legacy format. This is used for the current MLflow Keras flavor.
-* [SavedModel](https://www.tensorflow.org/guide/saved_model) - Standard Keras TensorFlow 2.x Protobuf-based format.
-* [TensorFlow Lite](https://www.tensorflow.org/lite) - for mobile and edge devices.
-* [TensorFlow.js](https://www.tensorflow.org/js) - for browsers or Node.js.
-
-
-### TensorFlow Model Serialization Formats
-
-We explore several TensorFlow model formats such as:
-
-* [HD5](https://www.tensorflow.org/tutorials/keras/save_and_load#hdf5_format) - Keras TensorFlow 1.x legacy format. This is used for the current MLflow Keras flavor.
-* [SavedModel](https://www.tensorflow.org/guide/saved_model) - Standard Keras TensorFlow 2.x protobuf-based format.
-* [TensorFlow Lite](https://www.tensorflow.org/lite) format - for mobile and edge devices.
-* [TensorFlow.js](https://www.tensorflow.org/js) - for browsers or Node.js.
-
-MLflow run model details:
-
-* MLflow load.model flavors
-  * keras-hd5-model - Keras HD5 format - default for Keras TensorFlow 1.x - `model.h5`
-  * keras-hd5-model - pyfunc
-  * onnx-model - ONNX flavor
-  * onnx-model - pyfunc - does not score correctly unlike Keras TensorFlow 1.x
-* MLflow download.artifact - formats not supported as flavors
-  * tensorflow-model - Standard TensorFlow SavedModel format - `saved_model.pb`
-  * tensorflow-lite-model - TensorFlow Lite
-  * tensorflow.js - TensorFlow JS
 
 ## Training
 
@@ -66,6 +38,8 @@ Source: [train.py](train.py).
 | keras_autolog | no | False | Automatically log params and metrics with mlflow.keras.autolog |
 | tensorflow_autolog | no | False | Automatically log params and metrics with mlflow.tensorflow.autolog |
 | log_as_onnx | no | False | Log as ONNX flavor |
+| log_as_tensorflow_lite | no | False | Log as TensorFlow Lite |
+| log_as_tensorflow_js | no | False | Log as TensorFlow JS |
 
 
 ### Run
@@ -152,6 +126,8 @@ predictions.shape: (3428, 1)
 
 ## Real-time Scoring - MLflow
 
+Launch the MLflow scoring server either as a local web server or inside a docker container.
+
 ### Data
 [../../data/score/wine-quality.json](../../data/score/wine-quality.json)
 
@@ -194,8 +170,17 @@ curl -X POST -H "Content-Type:application/json" \
 
 ## Real-time Scoring - TensorFlow Serving
 
+A number of TensorFlow model formats are saved with the run.
+Note that `keras-hd5-model` is the only official MLflow flavor. Other model formats are mere artifacts.
 
-### Launch scoring server as docker container
+* keras-hd5-model - [HD5](https://www.tensorflow.org/tutorials/keras/save_and_load#hdf5_format). Keras TensorFlow 1.x legacy format. This is used for the current MLflow Keras flavor.
+* tensorflow-model - TensorFlow [SavedModel](https://www.tensorflow.org/guide/saved_model). Standard Keras TensorFlow 2.x Protobuf-based format.
+* tensorflow-lite - [TensorFlow Lite](https://www.tensorflow.org/lite). For mobile and edge devices.
+* tensorflow-js - [TensorFlow.js](https://www.tensorflow.org/js). For browsers or Node.js.
+
+### Launch TensorFlow scoring server as docker container
+
+See [TensorFlow Serving with Docker](https://www.tensorflow.org/tfx/serving/docker).
 
 ```
 docker run -t --rm --publish 8502 \
