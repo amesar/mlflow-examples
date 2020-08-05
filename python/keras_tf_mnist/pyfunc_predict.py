@@ -9,11 +9,14 @@ utils.display_versions()
 
 @click.command()
 @click.option("--model_uri", help="Model URI", required=True, type=str)
-def main(model_uri):
+@click.option("--data_path", help="Data path", default=None, type=str)
+def main(model_uri, data_path):
+    print("Options:")
+    for k,v in locals().items(): print(f"  {k}: {v}")
     model = mlflow.pyfunc.load_model(model_uri)
     print("model:", model)
 
-    ndarray = utils.get_prediction_data()
+    ndarray = utils.get_prediction_data(data_path)
     data = pd.DataFrame(ndarray)
     print("data.shape:", data.shape)
 

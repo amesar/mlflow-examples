@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import mlflow
 
 def reshape(x, n):
@@ -27,8 +28,17 @@ def get_train_data():
 
     return x_train, y_train, x_test, y_test
 
-def get_prediction_data():
-    _,_,x_test,_  = get_train_data()
+def get_prediction_data(data_path=None):
+    if not data_path:
+        _,_,x_test,_  = get_train_data()
+    elif data_path.endswith(".csv"):
+        x_test = pd.read_csv(data_path)
+    elif data_path.endswith(".npz"):
+        with np.load(data_path) as data:
+            x_test = data["x_test"]
+        x_test = reshape(x_test, 10000)
+    else:
+       raise Exception(f"Unknown file extension '{data_path}'")
     return x_test
 
 def register_model(run, model_name, client = mlflow.tracking.MlflowClient()):
@@ -52,8 +62,12 @@ def predict_pyfunc(model_uri, data):
 def display_versions():
     import tensorflow as tf
     import tensorflow.keras as keras
-    print("MLflow Version:", mlflow.__version__)
-    print("Keras version:", keras.__version__)
-    print("TensorFlow version:", tf.__version__)
-    print("Tracking URI:", mlflow.tracking.get_tracking_uri())
+    import platform
+    print("Versions:")
+    print("  MLflow Version:", mlflow.__version__)
+    print("  TensorFlow version:", tf.__version__)
+    print("  Keras version:", keras.__version__)
+    print("  Python Version:", platform.python_version())
+    print("  Operating System:", platform.system()+" - "+platform.release())
+    print("  Tracking URI:", mlflow.tracking.get_tracking_uri())
 
