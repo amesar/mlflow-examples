@@ -7,10 +7,13 @@ def reshape(x, n):
     x = x.astype('float32') / 255
     return x
 
-def get_train_data():
+def get_train_data(data_path):
     from tensorflow.keras.datasets import mnist
     from tensorflow.keras.utils import to_categorical
-    (x_train, y_train), (x_test, y_test) = mnist.load_data()
+    if data_path:
+        raise NotImplementedError(f"Custom data file yet supported: {data_path}")
+    else:
+        (x_train, y_train), (x_test, y_test) = mnist.load_data()
     print("Data:")
     print("  x_train.shape:", x_train.shape)
     print("  y_train.shape:", y_train.shape)

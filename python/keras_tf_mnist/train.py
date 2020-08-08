@@ -3,6 +3,7 @@ import tensorflow as tf
 import tensorflow.keras as keras
 import mlflow
 import mlflow.keras
+import mlflow.tensorflow
 import click
 import utils
 
@@ -20,8 +21,8 @@ def build_model():
     model.add(keras.layers.Dense(10, activation='softmax'))
     return model
 
-def train(run, model_name, epochs, batch_size, mlflow_custom_log, log_as_onnx):
-    x_train, y_train, x_test, y_test = utils.get_train_data()
+def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx):
+    x_train, y_train, x_test, y_test = utils.get_train_data(data_path)
     model = build_model()
 
     model.compile(
@@ -70,6 +71,7 @@ def train(run, model_name, epochs, batch_size, mlflow_custom_log, log_as_onnx):
 @click.command()
 @click.option("--experiment_name", help="Experiment name", default=None, type=str)
 @click.option("--model_name", help="Registered model name", default=None, type=str)
+@click.option("--data_path", help="Data path", default=None, type=str)
 @click.option("--epochs", help="Epochs", default=5, type=int)
 @click.option("--batch_size", help="Batch size", default=128, type=int)
 @click.option("--repeats", help="Repeats", default=1, type=int)
@@ -78,7 +80,7 @@ def train(run, model_name, epochs, batch_size, mlflow_custom_log, log_as_onnx):
 @click.option("--tensorflow_autolog", help="Automatically log params/ metrics with mlflow.tensorflow.autolog", default=False, type=bool)
 @click.option("--log_as_onnx", help="log_as_onnx", default=False, type=bool)
 
-def main(experiment_name, model_name, epochs, batch_size, repeats, keras_autolog, tensorflow_autolog, mlflow_custom_log, log_as_onnx):
+def main(experiment_name, model_name, data_path, epochs, batch_size, repeats, keras_autolog, tensorflow_autolog, mlflow_custom_log, log_as_onnx):
     import mlflow
     print("Options:")
     for k,v in locals().items():
@@ -106,7 +108,7 @@ def main(experiment_name, model_name, epochs, batch_size, repeats, keras_autolog
             mlflow.set_tag("keras_autolog", keras_autolog)
             mlflow.set_tag("tensorflow_autolog", tensorflow_autolog)
             mlflow.set_tag("mlflow_custom_log", mlflow_custom_log)
-            train(run, model_name, epochs, batch_size, mlflow_custom_log, log_as_onnx)
+            train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx)
 
 if __name__ == "__main__":
     main()
