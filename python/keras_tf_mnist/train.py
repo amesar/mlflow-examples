@@ -51,6 +51,11 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
         with open("model_summary.txt", "w") as f:
             f.write(summary)
         mlflow.log_artifact("model_summary.txt")
+
+        # Save as TensorFlow SavedModel format
+        path = "tensorflow-model"
+        tf.keras.models.save_model(model, path, overwrite=True, include_optimizer=True)
+        mlflow.log_artifact(path)
     else:
         utils.register_model(run, model_name)
 
