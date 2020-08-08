@@ -7,7 +7,7 @@ def reshape(x, n):
     x = x.astype('float32') / 255
     return x
 
-def get_train_data(data_path):
+def get_train_data(data_path=None):
     from tensorflow.keras.datasets import mnist
     from tensorflow.keras.utils import to_categorical
     if data_path:
