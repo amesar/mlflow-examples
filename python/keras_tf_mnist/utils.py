@@ -60,7 +60,14 @@ def predict_pyfunc(model_uri, data):
     predictions = model.predict(data)
     print("predictions.type:", type(predictions))
     print("predictions.shape:", predictions.shape)
-    print("predictions:", predictions)
+    #print("predictions:", predictions)
+    display_predictions(predictions)
+
+
+def display_predictions(data):
+    from tabulate import tabulate
+    df = pd.DataFrame(data).head(10)
+    print(tabulate(df, headers="keys", tablefmt="psql", showindex=False))
 
 def display_versions():
     import tensorflow as tf
