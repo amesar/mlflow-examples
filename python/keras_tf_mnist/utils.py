@@ -20,12 +20,14 @@ def get_train_data(data_path=None):
     print("  x_test.shape:", x_test.shape)
     print("  y_test.shape:", y_test.shape)
 
-    x_train = reshape(x_train, 60000)
-    x_test = reshape(x_test, 10000)
+    x_train = reshape(x_train, x_train.shape[0])
+    x_test = reshape(x_test, x_test.shape[0])
     y_train = to_categorical(y_train)
     y_test = to_categorical(y_test)
 
     print("Data after reshape:")
+    print("  x_train.shape:", x_train.shape)
+    print("  y_train.shape:", y_train.shape)
     print("  x_test.shape:", x_test.shape)
     print("  y_test.shape:", y_test.shape)
 
@@ -34,6 +36,10 @@ def get_train_data(data_path=None):
 def get_prediction_data(data_path=None):
     if not data_path:
         _,_,x_test,_  = get_train_data()
+    elif data_path.endswith(".json"):
+        import json
+        with open(data_path, "r") as f:
+            x_test = pd.read_json(data_path, orient="split")
     elif data_path.endswith(".csv"):
         x_test = pd.read_csv(data_path)
     elif data_path.endswith(".npz"):
