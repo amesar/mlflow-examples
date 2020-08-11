@@ -12,12 +12,14 @@ import torch.optim as optim
 from torch.autograd import Variable
 import utils
 
+
 def init(args):
     enable_cuda_flag = True if args.enable_cuda == "True" else False
     args.cuda = enable_cuda_flag and torch.cuda.is_available()
     torch.manual_seed(args.seed)
     if args.cuda:
         torch.cuda.manual_seed(args.seed)
+
 
 class Net(nn.Module):
     def __init__(self):
@@ -110,7 +112,8 @@ def do_train(args):
     train_loader = utils.get_data(True, args.batch_size)
     test_loader = utils.get_data(False, args.batch_size)
 
-    with mlflow.start_run():
+    with mlflow.start_run() as run:
+        print("run_id:",run.info.run_id)
         # Log parameters into mlflow
         for key, value in vars(args).items():
             mlflow.log_param(key, value)
@@ -164,7 +167,7 @@ def create_args():
         metavar="N",
         help="how many batches to wait before logging training status",
     )
-    parser.add_argument("--experiment_name", dest="experiment_name", help="experiment_name", default="pytorch_mnist")
+    parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment name", default=None)
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):

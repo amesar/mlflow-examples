@@ -56,12 +56,13 @@ def run(epochs, log_as_onnx):
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument("--experiment_name", dest="experiment_name", help="experiment_name", default="mnist_keras")
+    parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment name", default=None, type=str)
     parser.add_argument("--epochs", dest="epochs", help="epochs", default=2, type=int)
     parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX", default=False, action='store_true')
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):
         print(f"  {arg}: {getattr(args, arg)}")
-    mlflow.set_experiment(args.experiment_name)
+    if args.experiment_name:
+        mlflow.set_experiment(args.experiment_name)
     run(args.epochs, args.log_as_onnx)
