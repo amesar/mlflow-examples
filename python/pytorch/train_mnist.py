@@ -123,8 +123,17 @@ def do_train(args):
             train(model, optimizer, epoch, args, train_loader)
             test(model, epoch, args, train_loader, test_loader)
 
-        # Log model
+        # Log model as pytorch
         mlflow.pytorch.log_model(model, "pytorch-model")
+
+        # Log model as ONNX
+        if args.log_as_onnx:
+            import onnx_utils
+            import onnx
+            print("ONNX Version:", onnx.__version__)
+            dataiter = iter(test_loader)
+            images, labels = dataiter.next()
+            onnx_utils.log_model(model, "onnx-model", images)
 
 
 def create_args():
@@ -168,6 +177,7 @@ def create_args():
         help="how many batches to wait before logging training status",
     )
     parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment name", default=None)
+    parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX", default=False, action='store_true')
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):

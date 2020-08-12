@@ -1,13 +1,17 @@
 # mlflow-examples - pytorch
 
 ## Overview
-* Pytorch train and predict examples.
-* Two example models:
-  * MNIST Model
-    * Saves model as pytorch flavor
-  * Simple Model
-    * Simple synthetic dataset
-    * Saves model as pytorch and ONNX flavor (optional).
+
+Pytorch train and predict examples.
+
+**MNIST Model**
+* Saves model as pytorch flavor and ONNX flavor. 
+* Pyfunc and ONNX scoring are not working yet.
+
+**Simple Model**
+* Simple synthetic dataset.
+* Saves model as pytorch and ONNX flavor. 
+* Pyfunc and ONNX scoring work.
 
 ##  MNIST Model
 
@@ -34,8 +38,20 @@ Test set: Average loss: 2.2248, Accuracy: 9240/10000 (92%)
 
 Source: [predict_mnist.py](predict_mnist.py).
 
+TODO: pyfunc and ONNX scoring.
+
 ```
-python -u predict_mnist 
+usage: predict_mnist.py --run_id RUN_ID [--score_as_pyfunc]
+                        [--score_as_onnx]
+
+optional arguments:
+  --run_id RUN_ID    Run ID
+  --score_as_pyfunc  Score as Pyfunc
+  --score_as_onnx    Score as ONNX
+```
+
+```
+python -u predict_mnist --run_id 5bd65b5fcf264e0b814c4bad7863b8e3
 ```
 
 ```
