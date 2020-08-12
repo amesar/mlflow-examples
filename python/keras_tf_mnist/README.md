@@ -1,10 +1,15 @@
-# mlflow-examples - Keras/TensorFlow 2 - MNIST
+# mlflow-examples - Keras/TensorFlow - MNIST
 
 
 ## Overview
 * Keras with TensorFlow 2.x train and predict.
 * Dataset: MNIST dataset.
-* Saves model as MLflow Keras (HD5) flavor.
+* Demonstrates how to serve model with:
+  * MLflow scoring server
+  * TensorFlow Serving
+* Saves model as:
+  *  MLflow Keras HD5 flavor 
+  *  TensorFlow 2.0 SavedModel format as artifact for TensorFlow Serving
 * Options to:
   * [autolog](https://mlflow.org/docs/latest/python_api/mlflow.keras.html#mlflow.keras.autolog) parameters and metrics.
   * log and score model as ONNX.
@@ -20,6 +25,8 @@
 
 Source: [train.py](train.py).
 
+### Autologging
+
 To run with user logging (no autologging).
 ```
 python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128
@@ -28,6 +35,8 @@ or
 ```
 mlflow run . --experiment-name keras_mnist -P epochs=3 -P batch_size=128
 ```
+
+### ONNX
 
 To log a model as ONNX flavor under the artifact path `onnx-model`.
 ```
@@ -38,7 +47,7 @@ mlflow run . --experiment-name keras_mnist -P epochs=3 -P batch_size=128 -P log_
 
 ### Score as Keras and PyFunc flavor 
 
-Score as Keras or Keras/PyFunc flavor.
+Score as Keras and Keras/PyFunc flavor.
 Source: [keras_predict.py](keras_predict.py).
 
 ```
@@ -116,7 +125,145 @@ predictions:
  [3.8302844e-08 1.6128991e-11 1.1180904e-05 ... 4.9651490e-12 9.3140695e-10 2.7855604e-10]]
 ```
 
-# Autologging
+## Real-time Scoring
+
+Two real-time scoring server options are demonstrated here:
+* MLflow scoring server
+* TensorFlow Servering scoring server
+
+### Real-time Scoring Data
+
+Corresponding request data:
+* MLflow scoring server - [../../data/score/mnist/mnist-mlflow.json](../../data/score/mnist/mnist-mlflow.json)
+* TensorFlow Serving - [../../data/score/mnist/mnist-tf-serving.json](../../data/score/mnist/mnist-tf-serving.json).
+
+
+The above request data is generated from a JSON dump of reshaped MNIST data. 
+For details see [create_scoring_datafiles.py](create_scoring_datafiles.py).
+
+### Real-time Scoring - MLflow
+
+You can launch the the MLflow scoring server either as:
+* Local web server 
+* Docker container
+
+#### Data
+
+[../../data/score/mnist/mnist-mlflow.json](../../data/score/mnist/mnist-mlflow.json)
+
+#### 1. Local Web server
+
+```
+mlflow pyfunc serve -port 5001 \
+  -model-uri runs:/7e674524514846799310c41f10d6b99d/keras-hd5-model
+```
+
+#### 2. Docker container
+
+You can use the run SageMaker container on your local machine.
+
+First build the docker image.
+```
+mlflow sagemaker build-and-push-container --build --no-push --container sm-mnist-keras
+```
+
+Then launch the server in a docker container.
+```
+mlflow sagemaker run-local \
+  --model-uri runs:/7e674524514846799310c41f10d6b99d/keras-hd5-model \
+  --port 5001 --image sm-mnist-keras
+```
+
+#### Score
+```
+curl -X POST -H "Content-Type:application/json" \
+  -d @../../data/score/mnist/mnist-mlflow.json \
+  http://localhost:5001/invocations
+```
+```
+[
+  {
+    "0": 3.122993575743749e-06,
+    "1": 2.6079169401782565e-07,
+    "2": 0.0003998146567028016,
+    "3": 0.0005760430940426886,
+    "4": 3.3105706620517594e-08,
+    "5": 1.1231797543587163e-05,
+    "6": 1.5745946768674912e-09,
+    "7": 0.9989859461784363,
+    "8": 9.801864507608116e-06,
+    "9": 1.3647688319906592e-05
+  },
+. . .
+]
+```
+
+
+### TensorFlow Serving Real-time Scoring
+
+Here we demonstrate how to serve a TensorFlow/Keras MLflow  model with TensorFlow Serving.
+
+#### Launch TensorFlow scoring server as docker container
+
+##### Generic
+
+See [TensorFlow Serving with Docker](https://www.tensorflow.org/tfx/serving/docker).
+
+```
+docker run -t --rm --publish 8502 \
+--volume /opt/mlflow/mlruns/1/f48dafd70be044298f71488b0ae10df4/artifacts/tensorflow-model:/models/keras_mnist\
+--env MODEL_NAME=keras_mnist \
+tensorflow/serving
+```
+
+##### Custom image
+
+See [Creating your own serving image](https://www.tensorflow.org/tfx/serving/docker#creating_your_own_serving_image).
+
+```
+HOST_PORT=8502
+MODEL=keras_mnist
+CONTAINER=tfs_serving_custom_$MODEL
+BASE_CONTAINER=tfs_serving_base
+
+HOST_MODEL_PATH=$PWD/tensorflow_serving_models/keras_mnist
+DOCKER_MODEL_PATH=/models/$MODEL
+
+docker run -d --name $BASE_CONTAINER tensorflow/serving
+docker cp $HOST_MODEL_PATH $BASE_CONTAINER:/models/$MODEL
+docker commit --change "ENV MODEL_NAME $MODEL" $BASE_CONTAINER $CONTAINER
+docker rm -f $BASE_CONTAINER
+docker run -d --name $CONTAINER -p $HOST_PORT:8501 $CONTAINER
+```
+
+#### Score
+
+See [../../data/score/mnist/mnist-tf-serving.json](../../data/score/mnist/mnist-tf-serving.json).
+
+```
+curl http://localhost:8502/v1/models/keras_mnist:predict -X POST \
+  -d @../../data/score/mnist/mnist-tf-serving.json 
+```
+```
+{
+  "predictions": [
+    [
+      3.12299653e-06,
+      2.60791438e-07,
+      0.000399814453,
+      0.000576042803,
+      3.31057066e-08,
+      1.12317866e-05,
+      1.57459468e-09,
+      0.998985946,
+      9.80186451e-06,
+      1.3647702e-05
+    ],
+. . .
+}
+```
+
+## Autologging
 
 There are two autologging options:
 * keras_autolog - calls mlflow.keras.autolog()
