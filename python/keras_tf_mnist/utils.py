@@ -4,8 +4,7 @@ import mlflow
 
 def reshape(x, n):
     x = x.reshape((n, 28 * 28))
-    x = x.astype('float32') / 255
-    return x
+    return x.astype('float32') / 255
 
 def get_train_data(data_path=None):
     from tensorflow.keras.datasets import mnist
@@ -37,9 +36,7 @@ def get_prediction_data(data_path=None):
     if not data_path:
         _,_,x_test,_  = get_train_data()
     elif data_path.endswith(".json"):
-        import json
-        with open(data_path, "r") as f:
-            x_test = pd.read_json(data_path, orient="split")
+        x_test = pd.read_json(data_path, orient="split")
     elif data_path.endswith(".csv"):
         x_test = pd.read_csv(data_path)
     elif data_path.endswith(".npz"):
@@ -47,13 +44,13 @@ def get_prediction_data(data_path=None):
             x_test = data["x_test"]
         x_test = reshape(x_test, 10000)
     else:
-       raise Exception(f"Unknown file extension '{data_path}'")
+        raise Exception(f"Unknown file extension '{data_path}'")
     return x_test
 
 def register_model(run, model_name, client = mlflow.tracking.MlflowClient()):
     try:
         client.create_registered_model(model_name)
-    except Exception:
+    except mlflow.exceptions.RestException: # RESOURCE_ALREADY_EXISTS
         pass
     source = f"{run.info.artifact_uri}/model"
     client.create_model_version(model_name, source, run.info.run_id)
@@ -68,7 +65,6 @@ def predict_pyfunc(model_uri, data):
     print("predictions.shape:", predictions.shape)
     #print("predictions:", predictions)
     display_predictions(predictions)
-
 
 def display_predictions(data):
     from tabulate import tabulate

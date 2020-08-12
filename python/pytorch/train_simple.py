@@ -15,12 +15,12 @@ y_data = torch.Tensor([[2.0], [4.0], [6.0]])
 test_data =  [4.0, 5.0, 6.0]
 
 class Model(torch.nn.Module):
-   def __init__(self):
-      super(Model, self).__init__()
-      self.linear = torch.nn.Linear(1, 1)
-   def forward(self, x):
-       y_pred = self.linear(x)
-       return y_pred
+    def __init__(self):
+        super(Model, self).__init__()
+        self.linear = torch.nn.Linear(1, 1)
+    def forward(self, x):
+        y_pred = self.linear(x)
+        return y_pred
 
 def run(epochs, log_as_onnx):
     model = Model()
@@ -30,12 +30,12 @@ def run(epochs, log_as_onnx):
 
     print("Train:")
     for epoch in range(epochs):
-         y_pred = model(x_data)
-         loss = criterion(y_pred, y_data)
-         print(f"  Epoch: {epoch}  Loss: {loss.data.item()}")
-         optimizer.zero_grad()
-         loss.backward()
-         optimizer.step()
+        y_pred = model(x_data)
+        loss = criterion(y_pred, y_data)
+        print(f"  Epoch: {epoch}  Loss: {loss.data.item()}")
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
     
     print("Predictions:")
     for v in test_data:
@@ -47,7 +47,7 @@ def run(epochs, log_as_onnx):
         print("run_id:",run.info.run_id)
         mlflow.log_param("epochs", epochs)
         mlflow.pytorch.log_model(model, "pytorch-model")
-        if args.log_as_onnx:
+        if log_as_onnx:
             import onnx_utils
             import onnx
             print("ONNX Version:", onnx.__version__)

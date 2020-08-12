@@ -1,5 +1,4 @@
 from argparse import ArgumentParser
-import pandas as pd
 import torch
 import mlflow
 import mlflow.pyfunc
@@ -34,6 +33,4 @@ if __name__ == "__main__":
     print("outputs.type:", type(outputs))
     outputs = outputs.detach().numpy()
     print("outputs.shape:",outputs.shape)
-    #outputs = pd.DataFrame(outputs)
-    #print("outputs:\n", outputs)
     utils.display_predictions(outputs)

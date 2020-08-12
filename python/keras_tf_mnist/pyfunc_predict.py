@@ -1,4 +1,3 @@
-from argparse import ArgumentParser
 import pandas as pd
 import click
 import mlflow

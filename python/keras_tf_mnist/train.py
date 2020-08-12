@@ -7,18 +7,15 @@ import mlflow.tensorflow
 import click
 import utils
 
-print("Tracking URI:", mlflow.tracking.get_tracking_uri())
-print("MLflow Version:", mlflow.__version__)
-print("Keras version:", keras.__version__)
-print("TensorFlow version:", tf.__version__)
+utils.display_versions()
 
 np.random.seed(42)
 tf.random.set_seed(42)
 
 def build_model():
     model = keras.models.Sequential()
-    model.add(keras.layers.Dense(512, activation='relu', input_shape=(28 * 28,)))
-    model.add(keras.layers.Dense(10, activation='softmax'))
+    model.add(keras.layers.Dense(512, activation="relu", input_shape=(28 * 28,)))
+    model.add(keras.layers.Dense(10, activation="softmax"))
     return model
 
 def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx):
@@ -26,9 +23,9 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
     model = build_model()
 
     model.compile(
-        optimizer='rmsprop',
-        loss='categorical_crossentropy',
-        metrics=['accuracy'])
+        optimizer="rmsprop",
+        loss="categorical_crossentropy",
+        metrics=["accuracy"])
     model.summary()
     model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, verbose=0)
 
@@ -47,7 +44,7 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
         # write model summary
         summary = []
         model.summary(print_fn=summary.append)
-        summary = '\n'.join(summary)
+        summary = "\n".join(summary)
         with open("model_summary.txt", "w") as f:
             f.write(summary)
         mlflow.log_artifact("model_summary.txt")
@@ -86,7 +83,6 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
 @click.option("--log_as_onnx", help="log_as_onnx", default=False, type=bool)
 
 def main(experiment_name, model_name, data_path, epochs, batch_size, repeats, keras_autolog, tensorflow_autolog, mlflow_custom_log, log_as_onnx):
-    import mlflow
     print("Options:")
     for k,v in locals().items():
         print(f"  {k}: {v}")
@@ -95,7 +91,6 @@ def main(experiment_name, model_name, data_path, epochs, batch_size, repeats, ke
     if keras_autolog:
         mlflow.keras.autolog()
     if tensorflow_autolog:
-        import mlflow.tensorflow
         mlflow.tensorflow.autolog()
 
     if experiment_name:

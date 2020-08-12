@@ -1,5 +1,4 @@
 import click
-import pandas as pd
 import mlflow
 import mlflow.keras
 import utils
