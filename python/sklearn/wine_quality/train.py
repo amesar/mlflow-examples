@@ -93,6 +93,7 @@ class Trainer():
             #mlflow.set_tag("version.os", platform.system()+" - "+platform.release())
             mlflow.set_tag("version.platform", platform.platform())
             mlflow.set_tag("version.python", platform.python_version())
+            mlflow.set_tag("model_name",model_name)
 
             # MLflow log model
             mlflow.sklearn.log_model(dt, "sklearn-model", registered_model_name=model_name)
