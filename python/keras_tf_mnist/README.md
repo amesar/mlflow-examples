@@ -127,50 +127,46 @@ predictions:
 
 ## Real-time Scoring
 
-Two real-time scoring server options are demonstrated here:
+Two real-time scoring server solutions are shown here:
 * MLflow scoring server
 * TensorFlow Servering scoring server
 
 ### Real-time Scoring Data
 
-Corresponding request data:
+Scoring request data is generated from the reshaped MNIST data saved as JSON data per each scoring server's format.
+For details see [create_scoring_datafiles.py](create_scoring_datafiles.py).
 * MLflow scoring server - [../../data/score/mnist/mnist-mlflow.json](../../data/score/mnist/mnist-mlflow.json)
 * TensorFlow Serving - [../../data/score/mnist/mnist-tf-serving.json](../../data/score/mnist/mnist-tf-serving.json).
 
 
-The above request data is generated from a JSON dump of reshaped MNIST data. 
-For details see [create_scoring_datafiles.py](create_scoring_datafiles.py).
-
 ### Real-time Scoring - MLflow
 
-You can launch the the MLflow scoring server either as:
+You can launch the the MLflow scoring server in the following ways:
 * Local web server 
 * Docker container
 
-#### Data
-
-[../../data/score/mnist/mnist-mlflow.json](../../data/score/mnist/mnist-mlflow.json)
+Data: [../../data/score/mnist/mnist-mlflow.json](../../data/score/mnist/mnist-mlflow.json)
 
 #### 1. Local Web server
 
 ```
 mlflow pyfunc serve -port 5001 \
-  -model-uri runs:/7e674524514846799310c41f10d6b99d/keras-hd5-model
+  -model-uri runs:/7e674524514846799310c41f10d6b99d/keras-model
 ```
 
 #### 2. Docker container
 
-You can use the run SageMaker container on your local machine.
+You can run MLflow's SageMaker container on your local machine.
 
-First build the docker image.
+See MLflow documentation: [Deploy a python_function model on Amazon SageMaker](https://www.mlflow.org/docs/latest/models.html#deploy-a-python-function-model-on-amazon-sagemaker).
+
 ```
 mlflow sagemaker build-and-push-container --build --no-push --container sm-mnist-keras
 ```
 
-Then launch the server in a docker container.
 ```
 mlflow sagemaker run-local \
-  --model-uri runs:/7e674524514846799310c41f10d6b99d/keras-hd5-model \
+  --model-uri runs:/7e674524514846799310c41f10d6b99d/keras-model \
   --port 5001 --image sm-mnist-keras
 ```
 
@@ -198,39 +194,80 @@ curl -X POST -H "Content-Type:application/json" \
 ]
 ```
 
-
 ### TensorFlow Serving Real-time Scoring
 
-Here we demonstrate how to serve a TensorFlow/Keras MLflow  model with TensorFlow Serving.
+Overview:
 
-#### Launch TensorFlow scoring server as docker container
+* Serve an MLflow Keras/TensorFlow model with [TensorFlow Serving](https://www.tensorflow.org/tfx/guide/serving).
+* TensorFlow Serving expects models in the [SavedModel](https://www.tensorflow.org/guide/saved_model) format. 
+  * SavedModel (Protobuf based) is the default model format for Keras/TensorFlow 2x. 
+  * TensorFlow Serving cannot serve models stored in the legacy HD5 format of Keras/TensorFlow 1x.
+* MLflow currently can only log a Keras model in the HD5 format. It cannot log a model as a SavedModel flavor.
+  * See MLflow git issues [3224](https://github.com/mlflow/mlflow/issues/3224) and [3226](https://github.com/mlflow/mlflow/issues/3226) that address this problem.
 
-##### Generic
+In order to serve an MLflow model with TensorFlow Serving you need to convert it to the SavedModel format.
+There are two options:
+  * Save the model as an artifact in the SavedModel format.
+  * Log model as MLflow Keras flavor (HD5) and then convert it to SavedModel format before deploying to TensorFlow Serving.
 
-See [TensorFlow Serving with Docker](https://www.tensorflow.org/tfx/serving/docker).
+In this example, we opt for the former as it imposes less of a burden on the downstream MLOps CI/CD deployment pipeline.
+
+Save the model in SavedModel format:
+```
+  import tensorflow as tf
+  tf.keras.models.save_model(model, "tensorflow-model", overwrite=True, include_optimizer=True)
+  mlflow.log_artifact("tensorflow-model")
+```
+
+You will now use this directory to load the model into TensorFlow Serving.
+```
+/opt/mlflow/mlruns/1/7e674524514846799310c41f10d6b99d/artifacts/tensorflow-model
+
+ +-variables/
+      | +-variables.data-00000-of-00001
+      +-saved_model.pb
+      +-assets
+```
+
+
+#### Launch TensorFlow Serving as docker container
+
+Set following convenience environment variables and get path to the MLflow model artifact.
+```
+HOST_PORT=8502
+MODEL=keras_mnist
+CONTAINER=tfs_serving_$MODEL
+DOCKER_MODEL_PATH=/models/$MODEL/01
+
+RUN_ID=7e674524514846799310c41f10d6b99d
+HOST_MODEL_PATH=`mlflow artifacts download --run-id $RUN_ID --artifact-path tensorflow-model`
+```
+
+##### Generic Image with Mounted Volume
+
+You need to mount the model directory as a container volume.
+
+See TensorFlow documentation: [TensorFlow Serving with Docker](https://www.tensorflow.org/tfx/serving/docker).
 
 ```
-docker run -t --rm --publish 8502 \
---volume /opt/mlflow/mlruns/1/f48dafd70be044298f71488b0ae10df4/artifacts/tensorflow-model:/models/keras_mnist\
---env MODEL_NAME=keras_mnist \
-tensorflow/serving
+docker run -t --rm --publish $HOST_PORT=8501 \
+  --volume $HOST_MODEL_PATH:$DOCKER_MODEL_PATH \
+  --env MODEL_NAME=$MODEL \
+  tensorflow/serving
 ```
 
 ##### Custom image
 
-See [Creating your own serving image](https://www.tensorflow.org/tfx/serving/docker#creating_your_own_serving_image).
+With a custom image, you bake the model into the container itself with no external mounted volumes.
+
+See TensorFlow documentation: [Creating your own serving image](https://www.tensorflow.org/tfx/serving/docker#creating_your_own_serving_image).
 
 ```
-HOST_PORT=8502
-MODEL=keras_mnist
-CONTAINER=tfs_serving_custom_$MODEL
 BASE_CONTAINER=tfs_serving_base
-
-HOST_MODEL_PATH=$PWD/tensorflow_serving_models/keras_mnist
-DOCKER_MODEL_PATH=/models/$MODEL
-
 docker run -d --name $BASE_CONTAINER tensorflow/serving
-docker cp $HOST_MODEL_PATH $BASE_CONTAINER:/models/$MODEL
+docker cp $HOST_MODEL_PATH/ $BASE_CONTAINER:/tmp
+docker exec -d $BASE_CONTAINER mkdir -p /models/$MODEL
+docker exec -d $BASE_CONTAINER mv /tmp/tensorflow-model /models/$MODEL/01
 docker commit --change "ENV MODEL_NAME $MODEL" $BASE_CONTAINER $CONTAINER
 docker rm -f $BASE_CONTAINER
 docker run -d --name $CONTAINER -p $HOST_PORT:8501 $CONTAINER
@@ -238,7 +275,7 @@ docker run -d --name $CONTAINER -p $HOST_PORT:8501 $CONTAINER
 
 #### Score
 
-See [../../data/score/mnist/mnist-tf-serving.json](../../data/score/mnist/mnist-tf-serving.json).
+Data: [../../data/score/mnist/mnist-tf-serving.json](../../data/score/mnist/mnist-tf-serving.json).
 
 ```
 curl http://localhost:8502/v1/models/keras_mnist:predict -X POST \
