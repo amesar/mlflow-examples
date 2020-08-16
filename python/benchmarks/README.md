@@ -53,13 +53,15 @@ Results (seconds):
 
 Launches a number of threads that concurrently call the scoring server.
 ```
-python -u threaded_benchmark.py --host localhost --port 5001 --num_threads 10
+python -u threaded_benchmark.py --uri http://localhost:5001/invocations --num_threads 5
 ```
 ```
 Summary
-  Mean  Max   Min
-  0.269 0.339 0.062
-  0.272 0.351 0.116
-  . . . 
-  0.278 0.338 0.230
+  Thread Mean  Max   Min
+       0 0.028 0.032 0.025
+       1 0.027 0.033 0.016
+       2 0.027 0.033 0.021
+       3 0.028 0.036 0.025
+       4 0.027 0.032 0.025
+  Total  0.0275 0.036 0.016
 ```
