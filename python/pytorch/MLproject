@@ -1,0 +1,16 @@
+name: mlflow-examples-pytorch
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      epochs:      {type: int, default: 2}
+    command: "python train_simple.py
+                --epochs {epochs}"
+  mnist:
+    parameters:
+      epochs:      {type: int, default: 2}
+    command: "python train_mnist.py
+                --epochs {epochs}"
+
