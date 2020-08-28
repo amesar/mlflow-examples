@@ -45,6 +45,21 @@ mlflow run . --experiment-name keras_mnist -P epochs=3 -P batch_size=128 -P log_
 
 ## Batch Scoring
 
+### Data
+
+By default the prediction scripts get their data from `tensorflow.keras.datasets.mnist.load_data()`.
+To specify another file, use the `data_path` option. 
+See get_prediction_data() in [utils.py](utils.py) for details.
+
+The following formats are supported:
+
+* json - standard MLflow [JSON-serialized pandas DataFrames](https://mlflow.org/docs/latest/models.html#local-model-deployment) format.
+See example [mnist-mlflow.json](../../data/score/mnist/mnist-mlflow.json).
+* csv - CSV version of above. See example [mnist-mlflow.csv](../../data/score/mnist/mnist-mlflow.csv).
+* npz - Compressed Numpy format.
+* png - Raw PNG image.
+
+
 ### Score as Keras and PyFunc flavor 
 
 Score as Keras and Keras/PyFunc flavor.
@@ -56,17 +71,32 @@ python keras_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/keras
 
 ```
 **** mlflow.keras.load_model
+
+model.type: <class 'tensorflow.python.keras.engine.sequential.Sequential'>
 predictions.type: <class 'numpy.ndarray'>
-predictions.shape: (10000,)
-predictions: [7 2 1 ... 4 5 6]
+predictions.shape: (10000, 10)
++-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+
+|           0 |           1 |           2 |           3 |           4 |           5 |           6 |           7 |           8 |           9 |
+|-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------|
+| 3.123e-06   | 2.60792e-07 | 0.000399815 | 0.000576044 | 3.31058e-08 | 1.12318e-05 | 1.5746e-09  | 0.998986    | 9.80188e-06 | 1.36477e-05 |
+| 1.27407e-06 | 5.95377e-05 | 0.999922    | 3.0263e-06  | 6.65168e-13 | 6.7665e-06  | 6.27953e-06 | 1.63278e-11 | 1.39965e-06 | 4.86269e-12 |
+.  . .
+| 4.17418e-07 | 6.36174e-09 | 8.52869e-07 | 1.0931e-05  | 0.0288905   | 2.07351e-06 | 6.78868e-08 | 0.000951144 | 0.00079286  | 0.969351    |
++-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+
 
 **** mlflow.pyfunc.load_model
-model.type: <class 'mlflow.keras._KerasModelWrapper'>
+
+model.type: <class 'mlflow.pyfunc.PyFuncModel'>
 predictions.type: <class 'pandas.core.frame.DataFrame'>
 predictions.shape: (10000, 10)
-predictions:                  0             1  ...             8             9
-0     1.263480e-06  6.968530e-08  ...  2.910662e-06  3.157784e-05
-. . .
++-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+
+|           0 |           1 |           2 |           3 |           4 |           5 |           6 |           7 |           8 |           9 |
+|-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------|
+| 3.123e-06   | 2.60792e-07 | 0.000399815 | 0.000576044 | 3.31058e-08 | 1.12318e-05 | 1.5746e-09  | 0.998986    | 9.80188e-06 | 1.36477e-05 |
+| 1.27407e-06 | 5.95377e-05 | 0.999922    | 3.0263e-06  | 6.65168e-13 | 6.7665e-06  | 6.27953e-06 | 1.63278e-11 | 1.39965e-06 | 4.86269e-12 |
+.  . .
+| 4.17418e-07 | 6.36174e-09 | 8.52869e-07 | 1.0931e-05  | 0.0288905   | 2.07351e-06 | 6.78868e-08 | 0.000951144 | 0.00079286  | 0.969351    |
++-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+
 ```
 
 ### Score as Pyfunc flavor
@@ -81,14 +111,11 @@ python pyfunc_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/kera
 
 ```
 predictions.type: <class 'pandas.core.frame.DataFrame'>
-predictions.shape: (10000, 10)
-
-predictions:                  0             1  ...             8             9
-0     7.356894e-07  2.184515e-09  ...  2.648242e-07  1.557131e-05
-1     3.679516e-08  5.211977e-06  ...  2.588275e-07  4.540044e-12
-...            ...           ...  ...           ...           ...
-9998  5.653655e-08  3.749759e-09  ...  1.073899e-04  1.215128e-09
-9999  2.790610e-08  2.516971e-11  ...  6.860461e-10  2.355604e-10
+predictions.shape: (9, 10)
+predictions:               0             1  ...             8             9
+0  1.274071e-06  5.953768e-05  ...  1.399654e-06  4.862691e-12
+1  4.793732e-06  9.923353e-01  ...  1.608626e-03  1.575307e-04
+8  4.174167e-07  6.361756e-09  ...  7.928589e-04  9.693512e-01
 ```
 
 #### Score ONNX model with Pyfunc 
