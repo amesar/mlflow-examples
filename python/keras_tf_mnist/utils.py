@@ -43,6 +43,10 @@ def get_prediction_data(data_path=None):
         with np.load(data_path) as data:
             x_test = data["x_test"]
         x_test = reshape(x_test, 10000)
+    elif data_path.endswith(".png"):
+        from PIL import Image
+        nparray = np.asarray(Image.open(data_path))
+        x_test = nparray.reshape((1, 28 * 28))
     else:
         raise Exception(f"Unknown file extension '{data_path}'")
     return x_test
