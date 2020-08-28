@@ -9,3 +9,4 @@ dependencies:
     - onnx==1.7.0
     - onnxmltools==1.7.0
     - onnxruntime==1.4.0
+    - Pillow==2.2.2
