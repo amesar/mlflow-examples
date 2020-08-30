@@ -35,21 +35,22 @@ def get_train_data(data_path=None):
 def get_prediction_data(data_path=None):
     if not data_path:
         _,_,x_test,_  = get_train_data()
+        data = x_test
     elif data_path.endswith(".json"):
-        x_test = pd.read_json(data_path, orient="split")
+        data = pd.read_json(data_path, orient="split")
     elif data_path.endswith(".csv"):
-        x_test = pd.read_csv(data_path)
+        data = pd.read_csv(data_path)
     elif data_path.endswith(".npz"):
         with np.load(data_path) as data:
-            x_test = data["x_test"]
-        x_test = reshape(x_test, 10000)
+            data = data["x_test"]
+        data = reshape(data, 10000)
     elif data_path.endswith(".png"):
         from PIL import Image
         nparray = np.asarray(Image.open(data_path))
-        x_test = nparray.reshape((1, 28 * 28))
+        data = nparray.reshape((1, 28 * 28))
     else:
         raise Exception(f"Unknown file extension '{data_path}'")
-    return x_test
+    return data
 
 def register_model(run, model_name, client = mlflow.tracking.MlflowClient()):
     try:
