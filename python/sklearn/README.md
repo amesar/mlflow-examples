@@ -1,7 +1,7 @@
 # mlflow-examples - sklearn 
 
 ## Overview
-* Wine Quality Decision Tree Example
+* Wine Quality DecisionTreeRegressor Example
 * Is a well-formed Python project that generates a wheel
 * This example demonstrates all features of MLflow training and prediction.
 * Saves model in pickle format
@@ -21,34 +21,51 @@
 Source: [main.py](main.py) and [wine_quality/train.py](wine_quality/train.py).
 
 There are several ways to train a model with MLflow.
-  1. Unmanaged without MLflow CLI
   1. MLflow CLI `run` command
+  1. Unmanaged without MLflow CLI
   1. Databricks REST API
 
-### Arguments
+### Options
 
-|Name | Required | Default | Description| 
-|---|---|---|---|
-| experiment_name | no | none | Experiment name  |  
-| model_name | no | none | Registered model name (if set) |  
-| data_path | no | ../../data/train/wine-quality-white.csv | Path to data  |  
-| max_depth | no | none | Max depth  |  
-| max_leaf_nodes | no | none | Max leaf nodes  |  
-| run_origin | no | none | Run tag  |  
-| log_as_onnx | no | False | Also log the model in ONNX format |  
-
-### 1. Unmanaged without MLflow CLI
-
-Run the standard main function from the command-line.
 ```
-python main.py --experiment_name sklearn --max_depth 2 --max_leaf_nodes 32
+python main.py --help
+
+Options:
+  --experiment_name TEXT    Experiment name.
+  --data_path TEXT          Data path.
+  --model_name TEXT         Registered model name.
+  --max_depth INTEGER       Max depth parameter.
+  --max_leaf_nodes INTEGER  Max leaf nodes parameter.
+  --output_path TEXT        Output file containing run ID.
+  --log_as_onnx BOOLEAN     Log model as ONNX flavor. Default is false.
+  --run_origin TEXT         Run origin.
+  --autolog BOOLEAN         Autolog parameters and metrics. Default is False.
 ```
 
-### 2. MLflow CLI - `mlflow run`
+#### Autolog
+
+If you set the `autolog` option to True, the [mlflow.sklearn.autolog()](https://mlflow.org/docs/latest/python_api/mlflow.sklearn.html#mlflow.sklearn.autolog) will be called. Manually set parameters will not be recorded.
+
+Here's the list of parameters for DecisionTreeRegressor:
+* criterion       
+* max_depth       
+* max_features    
+* max_leaf_nodes  
+* min_impurity_decrease   
+* min_impurity_split      
+* min_samples_leaf        
+* min_samples_split       
+* min_weight_fraction_leaf        
+* presort 
+* random_state    
+* splitter
+
+
+### 1. MLflow CLI - `mlflow run`
 
 Use the [MLproject](MLproject) file. For more details see [MLflow documentation - Running Projects](https://mlflow.org/docs/latest/projects.html#running-projects).
 
-Note that the `mlflow` CLI run ignores the `set_experiment()` so you must specify the experiment with the  `--experiment-sklearn` argument.
+Note that the `mlflow` CLI run ignores the `mlflow.set_experiment()` so you must specify the experiment with the  `--experiment-name` argument.
 
 #### mlflow run local
 ```
@@ -70,12 +87,12 @@ Run against a Databricks cluster.
 You will need a cluster spec file such as [mlflow_run_cluster.json](mlflow_run_cluster.json).
 See MLflow [Remote Execution on Databricks](https://mlflow.org/docs/latest/projects.html#run-an-mlflow-project-on-databricks).
 
-Setup - set MLFLOW_TRACKING_URI.
+Setup: set MLFLOW_TRACKING_URI.
 ```
 export MLFLOW_TRACKING_URI=databricks
 ```
 
-Setup - build the wheel and push it to the Databricks file system.
+Setup: build the wheel and push it to the Databricks file system.
 ```
 python setup.py bdist_wheel
 databricks fs cp \
@@ -91,6 +108,13 @@ mlflow run https://github.com/amesar/mlflow-examples.git#python/sklearn \
   -P data_path=/dbfs/tmp/data/wine-quality-white.csv \
   --experiment-name=/Users/juan.doe@acme.com/sklearn_wine \
   --backend databricks --backend-config mlflow_run_cluster.json
+```
+
+### 2. Unmanaged without MLflow CLI
+
+Run the standard main function from the command-line.
+```
+python main.py --experiment_name sklearn --max_depth 2 --max_leaf_nodes 32
 ```
 
 ### 3. Databricks REST API
