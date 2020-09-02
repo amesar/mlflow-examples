@@ -53,6 +53,7 @@ class Trainer():
         with mlflow.start_run(run_name=self.run_origin) as run:  # NOTE: mlflow CLI ignores run_name
             if self.autolog:
                 mlflow.sklearn.autolog()
+
             run_id = run.info.run_uuid
             experiment_id = run.info.experiment_id
             print("MLflow:")
@@ -60,36 +61,6 @@ class Trainer():
             print("  experiment_id:", experiment_id)
             print("  experiment_name:", client.get_experiment(experiment_id).name)
 
-            # Create model
-            dt = DecisionTreeRegressor(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)
-            print("Model:\n ", dt)
-
-            # Fit and predict
-            dt.fit(self.X_train, self.y_train)
-            predictions = dt.predict(self.X_test)
-
-
-            # MLflow params
-            print("Parameters:")
-            print("  max_depth:", max_depth)
-            print("  max_leaf_nodes:", max_leaf_nodes)
-            if not self.autolog:
-                mlflow.log_param("max_depth", max_depth)
-                mlflow.log_param("max_leaf_nodes", max_leaf_nodes)
-
-            # MLflow metrics
-            if not self.autolog:
-                rmse = np.sqrt(mean_squared_error(self.y_test, predictions))
-                mae = mean_absolute_error(self.y_test, predictions)
-                r2 = r2_score(self.y_test, predictions)
-                print("Metrics:")
-                print("  rmse:", rmse)
-                print("  mae:", mae)
-                print("  r2:", r2)
-                mlflow.log_metric("rmse", rmse)
-                mlflow.log_metric("r2", r2)
-                mlflow.log_metric("mae", mae)
-            
             # MLflow tags
             mlflow.set_tag("autolog",self.autolog)
             mlflow.set_tag("mlflow.runName", self.run_origin) # mlflow CLI picks this up
@@ -101,8 +72,36 @@ class Trainer():
             mlflow.set_tag("version.python", platform.python_version())
             mlflow.set_tag("model_name",model_name)
 
-            # MLflow log model
-            mlflow.sklearn.log_model(dt, "sklearn-model", registered_model_name=model_name)
+            # Create model
+            dt = DecisionTreeRegressor(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)
+            print("Model:\n ", dt)
+
+            # Fit and predict
+            dt.fit(self.X_train, self.y_train)
+            predictions = dt.predict(self.X_test)
+
+            # MLflow params
+            print("Parameters:")
+            print("  max_depth:", max_depth)
+            print("  max_leaf_nodes:", max_leaf_nodes)
+            if not self.autolog:
+                mlflow.log_param("max_depth", max_depth)
+                mlflow.log_param("max_leaf_nodes", max_leaf_nodes)
+
+                # MLflow metrics
+                rmse = np.sqrt(mean_squared_error(self.y_test, predictions))
+                mae = mean_absolute_error(self.y_test, predictions)
+                r2 = r2_score(self.y_test, predictions)
+                print("Metrics:")
+                print("  rmse:", rmse)
+                print("  mae:", mae)
+                print("  r2:", r2)
+                mlflow.log_metric("rmse", rmse)
+                mlflow.log_metric("r2", r2)
+                mlflow.log_metric("mae", mae)
+            
+                # MLflow log model -  autolog creates a model called "model"
+                mlflow.sklearn.log_model(dt, "sklearn-model", registered_model_name=model_name)
 
             # Convert sklearn model to ONNX and log model
             if self.log_as_onnx:

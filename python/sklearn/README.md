@@ -45,6 +45,8 @@ Options:
 #### Autolog
 
 If you set the `autolog` option to True, the [mlflow.sklearn.autolog()](https://mlflow.org/docs/latest/python_api/mlflow.sklearn.html#mlflow.sklearn.autolog) will be called. Manually set parameters will not be recorded.
+Note that the model artifact path is simply `model`.
+
 
 Here's the list of parameters for DecisionTreeRegressor:
 * criterion       
