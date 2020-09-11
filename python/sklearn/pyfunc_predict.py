@@ -12,10 +12,12 @@ if __name__ == "__main__":
     print("MLflow Version:", mlflow.__version__)
     model_uri = sys.argv[1]
     data_path = sys.argv[2] if len(sys.argv) > 2 else "../../data/train/wine-quality-white.csv"
-    print("data_path:", data_path)
-    print("model_uri:", model_uri)
+    print("Arguments:")
+    print("  data_path:", data_path)
+    print("  model_uri:", model_uri)
 
     model = mlflow.pyfunc.load_model(model_uri)
+    print("model.type:", type(model))
     print("model:", model)
 
     data = predict_utils.read_prediction_data(data_path)

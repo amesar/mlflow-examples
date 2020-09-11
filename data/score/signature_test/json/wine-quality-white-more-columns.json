@@ -1,0 +1,60 @@
+{
+  "columns": [
+    "fixed acidity",
+    "volatile acidity",
+    "citric acid",
+    "residual sugar",
+    "chlorides",
+    "free sulfur dioxide",
+    "total sulfur dioxide",
+    "density",
+    "pH",
+    "sulphates",
+    "alcohol",
+    "water"
+  ],
+  "data": [
+    [
+      7.0,
+      0.27,
+      0.36,
+      20.7,
+      0.045,
+      45.0,
+      170.0,
+      1.001,
+      3.0,
+      0.45,
+      8.8,
+      90.1
+    ],
+    [
+      6.3,
+      0.3,
+      0.34,
+      1.6,
+      0.049,
+      14.0,
+      132.0,
+      0.994,
+      3.3,
+      0.49,
+      9.5,
+      90.1
+    ],
+    [
+      8.1,
+      0.28,
+      0.4,
+      6.9,
+      0.05,
+      30.0,
+      97.0,
+      0.9951,
+      3.26,
+      0.44,
+      10.1,
+      90.1
+    ]
+  ]
+}

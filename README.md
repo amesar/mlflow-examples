@@ -6,8 +6,8 @@ MLflow examples - basic and advanced.
 
 **Python examples**
 * [hello_world](python/hello_world) - Hello World - no training or scoring.
-* [sklearn](python/sklearn) - Scikit-learn model - train and score. ONNX working too.
-* [sparkml](python/sparkml) - Spark ML model - train and score.  ONNX too.
+* [sklearn](python/sklearn) - Scikit-learn model - train and score. Options to log ONNX model, autolog and save model signature.
+* [sparkml](python/sparkml) - Spark ML model - train and score. ONNX too.
 * Keras/Tensorflow - train and score. ONNX working too.
   * Keras with TensorFlow 2.x
     * [keras_tf_wine](python/keras_tf_wine) - Wine quality dataset

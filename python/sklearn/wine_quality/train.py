@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
 import mlflow
 import mlflow.sklearn
+from mlflow.models.signature import infer_signature
 from wine_quality import plot_utils
 
 print("Versions:")
@@ -26,12 +27,13 @@ client = mlflow.tracking.MlflowClient()
 colLabel = "quality"
 
 class Trainer():
-    def __init__(self, experiment_name, data_path, log_as_onnx, autolog, run_origin="none"):
+    def __init__(self, experiment_name, data_path, log_as_onnx, autolog, save_signature, run_origin="none"):
         self.experiment_name = experiment_name
         self.data_path = data_path
         self.run_origin = run_origin
         self.log_as_onnx = log_as_onnx
         self.autolog = autolog
+        self.save_signature = save_signature
         self.X_train, self.X_test, self.y_train, self.y_test = self.build_data(data_path)
 
         if self.experiment_name:
@@ -39,7 +41,7 @@ class Trainer():
 
     def build_data(self, data_path):
         data = pd.read_csv(data_path)
-        train, test = train_test_split(data, test_size=0.30, random_state=2019)
+        train, test = train_test_split(data, test_size=0.30, random_state=42)
     
         # The predicted column is "quality" which is a scalar from [3, 9]
         X_train = train.drop([colLabel], axis=1)
@@ -63,6 +65,7 @@ class Trainer():
 
             # MLflow tags
             mlflow.set_tag("autolog",self.autolog)
+            mlflow.set_tag("save_signature",self.save_signature)
             mlflow.set_tag("mlflow.runName", self.run_origin) # mlflow CLI picks this up
             mlflow.set_tag("data_path", self.data_path)
             mlflow.set_tag("run_origin", self.run_origin)
@@ -79,6 +82,8 @@ class Trainer():
             # Fit and predict
             dt.fit(self.X_train, self.y_train)
             predictions = dt.predict(self.X_test)
+            signature = infer_signature(self.X_train, predictions) if self.save_signature else None
+            print("signature:",signature)
 
             # MLflow params
             print("Parameters:")
@@ -101,7 +106,7 @@ class Trainer():
                 mlflow.log_metric("mae", mae)
             
                 # MLflow log model -  autolog creates a model called "model"
-                mlflow.sklearn.log_model(dt, "sklearn-model", registered_model_name=model_name)
+                mlflow.sklearn.log_model(dt, "sklearn-model", registered_model_name=model_name, signature=signature)
 
             # Convert sklearn model to ONNX and log model
             if self.log_as_onnx:

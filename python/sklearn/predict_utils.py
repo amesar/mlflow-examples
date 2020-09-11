@@ -4,8 +4,13 @@ from tabulate import tabulate
 
 def read_prediction_data(data_path):
     df = pd.read_csv(data_path) if data_path.endswith(".csv") else pd.read_json(data_path)
-    if 'quality' in df:
-         df = df.drop(['quality'], axis=1)
+    if "quality" in df:
+         df = df.drop(["quality"], axis=1)
+    print("Data:")
+    print("  shape:",df.shape)
+    print("  dtypes:")
+    for x in zip(df.columns,df.dtypes):
+        print(f"    {x[0]}: {x[1]}")
     return df
 
 def display_predictions(predictions):

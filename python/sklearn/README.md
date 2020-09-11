@@ -40,13 +40,15 @@ Options:
   --log_as_onnx BOOLEAN     Log model as ONNX flavor. Default is false.
   --run_origin TEXT         Run origin.
   --autolog BOOLEAN         Autolog parameters and metrics. Default is False.
+  --save_signature BOOLEAN  Save model signature. Default is False.
 ```
 
 #### Autolog
 
-If you set the `autolog` option to True, the [mlflow.sklearn.autolog()](https://mlflow.org/docs/latest/python_api/mlflow.sklearn.html#mlflow.sklearn.autolog) will be called. Manually set parameters will not be recorded.
-Note that the model artifact path is simply `model`.
+If you set the `autolog` option to True, [mlflow.sklearn.autolog()](https://mlflow.org/docs/latest/python_api/mlflow.sklearn.html#mlflow.sklearn.autolog) will be called and manually set parameters will not be recorded. Note that the model artifact path is simply model.
 
+If you set the `autolog`  option, mannually set parameters will not be recorded.
+Note that the model artifact path is simply `model`.
 
 Here's the list of parameters for DecisionTreeRegressor:
 * criterion       
@@ -61,6 +63,36 @@ Here's the list of parameters for DecisionTreeRegressor:
 * presort 
 * random_state    
 * splitter
+
+#### Signature
+
+See [Model Signature](https://www.mlflow.org/docs/latest/models.html#model-signature) documentation.
+
+If you save the schema of the expected input and output data with a model, you will (usualy) get a better error message in case of a schema mismatch when scoring with pyfunc or real-time scoring server.
+
+Examples:
+
+[ Mixed type](../../data/score/signature_test/json/wine-quality-white-type.json) for column `alcohol`.
+
+| With schema | Error message |
+|----------|---------|
+| no | ValueError: could not convert string to float: ' 8.8_FOO' |
+| yes |  mlflow.exceptions.MlflowException: Incompatible input types for column alcohol. Can not safely convert object to float64. |
+
+[Less columns](../../data/score/signature_test/json/wine-quality-white-less-columns.json)
+
+| With schema | Error message |
+|----------|---------|
+| no | ValueError: Number of features of the model must match the input. Model n_features is 11 and input n_features is 10 |
+| yes | mlflow.exceptions.MlflowException: Model input is missing columns ['alcohol']. Note that there were extra columns: []
+ |
+
+[More columns](../../data/score/signature_test/json/wine-quality-white-more-columns.json)
+
+| With schema | Error message |
+|----------|---------|
+| no | ValueError: Number of features of the model must match the input. Model n_features is 11 and input n_features is 12 |
+| yes | No error |
 
 
 ### 1. MLflow CLI - `mlflow run`
