@@ -1,4 +1,4 @@
-# MLflow Benchmarks
+# MLflow Scoring Server Benchmarks
 
 Benchmarks for the MLflow scoring server.
 

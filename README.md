@@ -21,7 +21,7 @@ MLflow examples - basic and advanced.
 * [model_registry](python/model_registry) - Jupyter notebook sampling the Model Registry API.
 * [e2e-ml-pipeline](python/e2e-ml-pipeline) - End-to-end ML pipeline - training to real-time scoring.
 * [reproduce](python/reproduce) - Reproduce an existing run.
-* [benchmarks](python/benchmarks) - Simple scoring server performance benchmark.
+* [scoring_server_benchmarks](python/scoring_server_benchmarks) - Scoring server performance benchmarks.
 
 The sklearn and Spark ML examples also demonstrate:
 * Different ways to run a project with the mlflow CLI 
