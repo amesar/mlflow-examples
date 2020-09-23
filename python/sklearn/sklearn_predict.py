@@ -20,4 +20,7 @@ if __name__ == "__main__":
 
     data = predict_utils.read_prediction_data(data_path)
     predictions = model.predict(data)
-    print("predictions:", predictions)
+    print("predictions.type:", type(predictions))
+    print("Predictions:")
+    for p in predictions:
+        print(" ",p)
