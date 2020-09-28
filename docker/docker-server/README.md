@@ -24,14 +24,14 @@ To launch a local MLflow server:
 ```
 cp .env-local-template .env
 vi .env # make changes 
-docker-compose -f docker-compose.yml -f docker-compose-local.yml  up -d 
+docker-compose -f docker-compose.yaml -f docker-compose-local.yaml  up -d 
 ```
 
 To launch an S3 MLflow server:
 ```
 cp .env-s3-template .env
 vi .env # make changes 
-docker-compose -f docker-compose.yml -f docker-compose-s3.yml up -d 
+docker-compose -f docker-compose.yaml -f docker-compose-s3.yaml up -d 
 ```
 You will then see two containers:
 ```
@@ -132,7 +132,7 @@ docker exec -i -t mlflow_mysql /bin/bash
 
 |   | Dockerfile   | Compose | Note |
 |---|---|---|--|
-| General  |  | [docker-compose.yml](docker-compose.yml)  | Basic config for MySQL and MLflow server |
+| General  |  | [docker-compose.yaml](docker-compose.yaml)  | Basic config for MySQL and MLflow server |
 |MySQL  | [Dockerfile-mysql](Dockerfile-mysql)  | | MySQL-specific configs |
-| MLflow Local  |[Dockerfile-mlflow-local](Dockerfile-mlflow-local)  |[docker-compose-local.yml](docker-compose-local.yml)  | Local-specific configs|
-| MLflow S3 | [Dockerfile-mlflow-s3](Dockerfile-mlflow-s3)  |[docker-compose-s3.yml](docker-compose-s3.yml)  | S3-specific configs|
+| MLflow Local  |[Dockerfile-mlflow-local](Dockerfile-mlflow-local)  |[docker-compose-local.yaml](docker-compose-local.yaml)  | Local-specific configs|
+| MLflow S3 | [Dockerfile-mlflow-s3](Dockerfile-mlflow-s3)  |[docker-compose-s3.yaml](docker-compose-s3.yaml)  | S3-specific configs|
