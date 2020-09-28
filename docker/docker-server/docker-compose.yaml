@@ -1,7 +1,7 @@
 version: '3.0'
 services:
   db:
-    image: mlflow_mysql:5.6.38
+    image: mlflow_mysql:5.7.31
     container_name: mlflow_mysql
     build:
       context: .
@@ -18,7 +18,7 @@ services:
     container_name: mlflow_server
     build:
       context: .
-      #dockerfile: OVERRIDEN by artifact-uri-specific yml file
+      #dockerfile: OVERRIDEN by artifact-uri-specific yaml file
       args:
         - ARG_MLFLOW_ARTIFACT_URI=$MLFLOW_ARTIFACT_URI
     depends_on:
