@@ -37,7 +37,7 @@ You will then see two containers:
 ```
 CONTAINER ID  IMAGE                  COMMAND                  PORTS                     NAMES
 7a4be1019858  mlflow_server:latest   "/bin/sh -c 'cd /hom…"   0.0.0.0:5005->5000/tcp    mlflow_server
-3b4eb5a2026e  mlflow_mysql:5.6.38    "docker-entrypoint.s…"   0.0.0.0:33306->3306/tcp   mlflow_mysql
+3b4eb5a2026e  mlflow_mysql:5.7.31    "docker-entrypoint.s…"   0.0.0.0:33306->3306/tcp   mlflow_mysql
 ```
 If you don't see the `mlflow_server` container, just run the docker-compose command again. 
 It failed to start because `mlflow_mysql` wasn't up yet. It's a TODO to add a wait-until-alive feature.
