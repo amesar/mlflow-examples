@@ -9,7 +9,6 @@ if __name__ == "__main__":
     if len(sys.argv) < 1:
         print("ERROR: Expecting MODEL_URI DATA_PATH")
         sys.exit(1)
-    print("MLflow Version:", mlflow.__version__)
     model_uri = sys.argv[1]
     data_path = sys.argv[2] if len(sys.argv) > 2 else "../../data/train/wine-quality-white.csv"
     print("data_path:", data_path)

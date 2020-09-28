@@ -6,8 +6,6 @@ import mlflow.onnx
 import predict_utils
 from wine_quality import onnx_utils
 
-print("MLflow Version:", mlflow.__version__)
-
 if __name__ == "__main__":
     if len(sys.argv) < 1:
         print("ERROR: Expecting MODEL_URI PREDICTION_FILE")

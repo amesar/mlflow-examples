@@ -1,6 +1,10 @@
 import pandas as pd
 import numpy as np
 from tabulate import tabulate
+import mlflow
+
+print("MLflow Version:", mlflow.__version__)
+print("MLflow Tracking URI:", mlflow.get_tracking_uri())
 
 def read_prediction_data(data_path):
     df = pd.read_csv(data_path) if data_path.endswith(".csv") else pd.read_json(data_path)

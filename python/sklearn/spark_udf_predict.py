@@ -13,6 +13,7 @@ if __name__ == "__main__":
     print("path:", path)
     print("model_uri:", model_uri)
     print("MLflow Version:", mlflow.__version__)
+    print("MLflow Tracking URI:", mlflow.get_tracking_uri())
     spark = SparkSession.builder.appName("ServePredictions").getOrCreate()
     print("Spark Version:", spark.version)
 
