@@ -199,7 +199,7 @@ mlflow sagemaker run-local \
 
 #### Score
 
-Score JSON file.
+##### Score JSON file.
 ```
 curl -X POST -H "Content-Type:application/json" \
   -d @../../data/score/mnist/mnist-mlflow.json \
@@ -223,7 +223,7 @@ curl -X POST -H "Content-Type:application/json" \
 ]
 ```
 
-Score MNIST PNG file.
+##### Score MNIST PNG file.
 ```
 python convert_png_to_mlflow_json.py ../../data/score/mnist/0_9993.png | \
 curl -X POST -H "Content-Type:application/json" \
