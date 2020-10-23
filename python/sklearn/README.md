@@ -112,7 +112,8 @@ mlflow run . \
 ```
 mlflow run https://github.com/amesar/mlflow-examples.git#python/sklearn \
   -P max_depth=2 -P max_leaf_nodes=32 -P run_origin=gitRun \
-  --experiment-name=sklearn_wine
+  --experiment-name=sklearn_wine \
+  --backend databricks --backend-config mlflow_run_cluster.json
 ```
 
 #### mlflow run Databricks remote
