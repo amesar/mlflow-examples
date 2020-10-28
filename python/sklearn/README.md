@@ -121,25 +121,17 @@ Run against a Databricks cluster.
 You will need a cluster spec file such as [mlflow_run_cluster.json](mlflow_run_cluster.json).
 See MLflow [Remote Execution on Databricks](https://mlflow.org/docs/latest/projects.html#run-an-mlflow-project-on-databricks).
 
-Setup: set MLFLOW_TRACKING_URI.
+Setup:
 ```
 export MLFLOW_TRACKING_URI=databricks
 ```
 
-Setup: build the wheel and push it to the Databricks file system.
-```
-python setup.py bdist_wheel
-databricks fs cp \
-  dist/mlflow_sklearn_wine-0.0.1-py3-none-any.whl \
-  dbfs:/tmp/jobs/sklearn_wine/mlflow_wine_quality-0.0.1-py3.6.whl 
-databricks fs cp data/train/wine-quality-white.csv dbfs:/tmp/jobs/sklearn_wine/wine-quality-white.csv
-```
-The token and tracking server URL will be picked up from your Databricks CLI ~/.databrickscfg default profile.
+The token and tracking server URL are picked up from your Databricks CLI `~/.databrickscfg` default profile.
 
 ```
 mlflow run https://github.com/amesar/mlflow-examples.git#python/sklearn \
   -P max_depth=2 -P max_leaf_nodes=32 -P run_origin=gitRun \
-  -P data_path=/dbfs/tmp/data/wine-quality-white.csv \
+  -P data_path=https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv \
   --experiment-name=/Users/juan.doe@acme.com/sklearn_wine \
   --backend databricks --backend-config mlflow_run_cluster.json
 ```
