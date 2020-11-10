@@ -10,4 +10,4 @@ dependencies:
     - pyarrow==0.12.1
     - onnx==1.7.0
     - onnxmltools==1.7.0
-    - onnxruntime==1.4.0
+    - onnxruntime==1.5.2
