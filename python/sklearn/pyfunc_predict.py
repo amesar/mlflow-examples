@@ -18,6 +18,8 @@ if __name__ == "__main__":
     model = mlflow.pyfunc.load_model(model_uri)
     print("model.type:", type(model))
     print("model:", model)
+    print("model.metadata:", model.metadata)
+    print("model.metadata.type:", type(model.metadata))
 
     data = predict_utils.read_prediction_data(data_path)
     predictions = model.predict(data)
