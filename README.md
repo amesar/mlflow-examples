@@ -6,7 +6,12 @@ MLflow examples - basic and advanced.
 
 **Python examples**
 * [hello_world](python/hello_world) - Hello World - no training or scoring.
-* [sklearn](python/sklearn) - Scikit-learn model - train and score. Options to log ONNX model, autolog and save model signature.
+* [sklearn](python/sklearn) - Scikit-learn model - train and score. 
+  * Canonical example that shows multiple ways to train and score.
+  * Options to log ONNX model, autolog and save model signature.
+  * Train locally or against a Databricks cluster.
+  * Score real-time against a local web server or Docker container.
+  * Score batch with mlflow.load_model or Spark UDF>
 * [sparkml](python/sparkml) - Spark ML model - train and score. ONNX too.
 * Keras/Tensorflow - train and score. ONNX working too.
   * Keras with TensorFlow 2.x

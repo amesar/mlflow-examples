@@ -1,19 +1,22 @@
 # mlflow-examples - sklearn 
 
 ## Overview
-* Wine Quality DecisionTreeRegressor Example
-* Is a well-formed Python project that generates a wheel
+* Wine Quality DecisionTreeRegressor example.
+* Is a well-formed Python project that generates a wheel.
 * This example demonstrates all features of MLflow training and prediction.
-* Saves model in pickle format
-* Saves plot artifacts
+* Saves model in pickle format.
+* Saves plot artifacts.
 * Shows several ways to run training:
-  * _mlflow run_ - several variants
-  * Run against Databricks cluster 
+  * `mlflow run` - several variants.
+  * Run against a Databricks cluster using `mlflow` run or Databricks job.
   * Call wheel from notebook, etc.
-* Shows several ways to run prediction  
-  * web server
-  * mlflow.load_model()
-  *  UDF - invoke with the DataFrame API or SQL
+* Shows several ways to run prediction:
+  * Real-time scoring
+    * Local web server
+    * Docker container - AWS SageMaker in local mode
+  * Batch scoring
+    * mlflow.load_model()
+    * UDF - invoke with the DataFrame API or SQL.
 * Data: [../../data/train/wine-quality-white.csv](../../data/train/wine-quality-white.csv)
 
 ## Training
