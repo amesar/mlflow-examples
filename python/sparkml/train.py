@@ -95,6 +95,7 @@ def main(experiment_name, model_name, data_path, max_depth, max_bins, describe, 
     if experiment_name:
         mlflow.set_experiment(experiment_name)
     if spark_autolog:
+        SparkSession.builder.config("spark.jars.packages", "org.mlflow.mlflow-spark")
         mlflow.spark.autolog()
     data_path = data_path or default_data_path
     data = read_data(spark, data_path)
