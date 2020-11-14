@@ -15,11 +15,10 @@ if __name__ == "__main__":
     print("model_uri:", model_uri)
 
     model = mlflow.sklearn.load_model(model_uri)
-    print("model:", model)
+    print("model.type:", type(model))
 
     data = predict_utils.read_prediction_data(data_path)
     predictions = model.predict(data)
     print("predictions.type:", type(predictions))
-    print("Predictions:")
-    for p in predictions:
-        print(" ",p)
+    print("predictions.shape:", predictions.shape)
+    print("predictions:", predictions)

@@ -25,7 +25,8 @@ def train(data_path, max_models, model_name):
     test_cols = train_cols[:-1]
     test_cols = "quality"
 
-    with mlflow.start_run():
+    with mlflow.start_run() as run:
+        print("run_id:", run.info.run_id)
         model = H2OAutoML(max_models=max_models, max_runtime_secs=300, seed=24, nfolds=6)
         model.train(x=train_cols, y=test_cols, training_frame=train_data, validation_frame=test_data)
         mlflow.log_param("max_models", max_models)
