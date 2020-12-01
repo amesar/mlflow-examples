@@ -55,7 +55,7 @@ Spark autologging works only with Spark 3.x and Scala 2.12.
 It logs the data source in the tag `sparkDatasourceInfo`.
 ```
 spark-submit --master local[2] \
-  --packages org.mlflow:mlflow-spark:1.9.0 \
+  --packages org.mlflow:mlflow-spark:1.12.1 \
   train.py --spark_autolog True
 ```
 
