@@ -79,8 +79,21 @@ mlflow run . \
 **mlflow run github**
 ```
 mlflow run https://github.com/amesar/mlflow-examples.git#python/sparkml \
-   -P max_depth=3 -P max_bins=24 \
+  -P max_depth=3 -P max_bins=24 \
   --experiment-name=sparkml
+```
+
+**mlflow run github with Databricks**
+
+```
+export MLFLOW_TRACKING_URI=databricks
+```
+```
+mlflow run https://github.com/amesar/mlflow-examples.git#python/sparkml \
+  -P max_depth=3 -P max_bins=24 \
+  -P data_path=https://raw.githubusercontent.com/amesar/mlflow-examples/master/data/train/wine-quality-white.csv \
+  --experiment-name=/Users/me@mycompany.com/experiments/sparkml
+  --backend databricks --backend-config mlflow_run_cluster.json
 ```
 
 ## Predictions
