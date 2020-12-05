@@ -2,7 +2,12 @@
 default_data_path = "../../data/train/wine-quality-white.csv"
 
 def read_data(spark, data_path):
-    return spark.read.csv(data_path, header="true", inferSchema="true")
+    if data_path.startswith("http"):
+        import pandas as pd
+        pdf = pd.read_csv(data_path)
+        return spark.createDataFrame(pdf)
+    else:
+        return spark.read.csv(data_path, header="true", inferSchema="true")
 
 colLabel = "quality"
 colPrediction = "prediction"
