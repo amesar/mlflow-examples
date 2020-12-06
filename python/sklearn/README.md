@@ -135,7 +135,7 @@ The token and tracking server URL are picked up from your Databricks CLI `~/.dat
 mlflow run https://github.com/amesar/mlflow-examples.git#python/sklearn \
   -P max_depth=2 -P max_leaf_nodes=32 -P run_origin=gitRun \
   -P data_path=https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv \
-  --experiment-name=/Users/juan.doe@acme.com/sklearn_wine \
+  --experiment-name=/Users/me@mycompany.com/sklearn_wine \
   --backend databricks --backend-config mlflow_run_cluster.json
 ```
 
