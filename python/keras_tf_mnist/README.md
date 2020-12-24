@@ -43,6 +43,19 @@ To log a model as ONNX flavor under the artifact path `onnx-model`.
 mlflow run . --experiment-name keras_mnist -P epochs=3 -P batch_size=128 -P log_as_onnx=True
 ```
 
+ONNX training works with TensorFlow 2.3.0 but fails with 2.4.0 with the following message:
+```
+ File "/home/mlflow-examples/python/keras_tf_mnist/onnx_utils.py", line 7, in log_model
+    onnx_model = onnxmltools.convert_keras(model, artifact_path)
+  File "/opt/conda/lib/python3.7/site-packages/onnxmltools/convert/main.py", line 33, in convert_keras
+    return convert(model, name, doc_string, target_opset, channel_first_inputs)
+  File "/opt/conda/lib/python3.7/site-packages/keras2onnx/main.py", line 62, in convert_keras
+    tf_graph = build_layer_output_from_model(model, output_dict, input_names, output_names)
+  File "/opt/conda/lib/python3.7/site-packages/keras2onnx/_parser_tf.py", line 304, in build_layer_output_from_model
+    graph = model.outputs[0].graph
+AttributeError: 'KerasTensor' object has no attribute 'graph'
+```
+
 ## Batch Scoring
 
 ### Data
