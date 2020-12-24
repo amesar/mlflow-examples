@@ -12,6 +12,8 @@ import torch.optim as optim
 from torch.autograd import Variable
 import utils
 
+print("MLflow Version:", mlflow.__version__)
+print("Torch Version:", torch.__version__)
 
 def init(args):
     enable_cuda_flag = True if args.enable_cuda == "True" else False
@@ -66,7 +68,7 @@ def train(model, optimizer, epoch, args, train_loader):
                 )
             )
             step = epoch * len(train_loader) + batch_idx
-            log_scalar("train_loss", loss.data.item(), step)
+            log_scalar("train_loss", loss.data.item(), step, args.autolog)
             model.log_weights(step)
 
 
@@ -94,13 +96,14 @@ def test(model, epoch, args, train_loader, test_loader):
         )
     )
     step = (epoch + 1) * len(train_loader)
-    log_scalar("test_loss", test_loss, step)
-    log_scalar("test_accuracy", test_accuracy, step)
+    log_scalar("test_loss", test_loss, step, args.autolog)
+    log_scalar("test_accuracy", test_accuracy, step, args.autolog)
 
 
-def log_scalar(name, value, step):
+def log_scalar(name, value, step, autolog):
     """Log a scalar value to both MLflow and TensorBoard"""
-    mlflow.log_metric(name, value)
+    if not autolog:
+        mlflow.log_metric(name, value)
 
 
 def do_train(args):
@@ -114,17 +117,19 @@ def do_train(args):
 
     with mlflow.start_run() as run:
         print("run_id:",run.info.run_id)
-        # Log parameters into mlflow
-        for key, value in vars(args).items():
-            mlflow.log_param(key, value)
+        mlflow.set_tag("mlflow_version",mlflow.__version__)
+        mlflow.set_tag("torch_version",torch.__version__)
+        mlflow.set_tag("autolog",args.autolog)
 
         # Perform the training
         for epoch in range(1, args.epochs + 1):
             train(model, optimizer, epoch, args, train_loader)
             test(model, epoch, args, train_loader, test_loader)
 
-        # Log model as pytorch
-        mlflow.pytorch.log_model(model, "pytorch-model")
+        if not args.autolog:
+            for key, value in vars(args).items():
+                mlflow.log_param(key, value)
+            mlflow.pytorch.log_model(model, "pytorch-model")
 
         # Log model as ONNX
         if args.log_as_onnx:
@@ -176,8 +181,9 @@ def create_args():
         metavar="N",
         help="how many batches to wait before logging training status",
     )
-    parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment name", default=None)
-    parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX", default=False, action='store_true')
+    parser.add_argument("--experiment-name", dest="experiment_name", help="Experiment name", default=None)
+    parser.add_argument("--log-as-onnx", dest="log_as_onnx", help="Log model as ONNX", default=False, action='store_true')
+    parser.add_argument("--autolog", dest="autolog", help="Autolog", default=False, action='store_true')
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):
@@ -190,4 +196,7 @@ if __name__ == "__main__":
     init(args)
     if args.experiment_name:
         mlflow.set_experiment(args.experiment_name)
+    if args.autolog:
+        print("AUTOLOG")
+        mlflow.pytorch.autolog(log_every_n_epoch=1)
     do_train(args)
