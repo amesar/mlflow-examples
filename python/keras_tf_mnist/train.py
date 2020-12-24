@@ -28,6 +28,7 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
         metrics=["accuracy"])
     model.summary()
     model.fit(x_train, y_train, epochs=epochs, batch_size=batch_size, verbose=0)
+    print("model.type:",type(model))
 
     test_loss, test_acc = model.evaluate(x_test, y_test)
     print("test_acc:", test_acc)
@@ -39,7 +40,19 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
 
         mlflow.log_metric("test_acc", test_acc)
         mlflow.log_metric("test_loss", test_loss)
-        mlflow.keras.log_model(model, "keras-model", registered_model_name=model_name)
+
+        # Save as default H5 format
+        mlflow.keras.log_model(model, "keras-model", registered_model_name=f"{model_name}")
+        #mlflow.keras.log_model(model, "keras-model-h5", registered_model_name=f"{model_name}_h5")
+
+        # Save as TensorFlow SavedModel flavor
+        if mlflow.__version__.startswith("1.12.2"): # 1.12.2.dev0 - https://github.com/mlflow/mlflow/issues/3224
+            mlflow.keras.log_model(model, "keras-model-tf", registered_model_name=f"{model_name}_tf", save_format="tf")
+
+        # Save as TensorFlow SavedModel format - non-flavor artifact
+        path = "keras-model-tf-non-flavor"
+        tf.keras.models.save_model(model, path, overwrite=True, include_optimizer=True)
+        mlflow.log_artifact(path)
 
         # write model summary
         summary = []
@@ -49,10 +62,6 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
             f.write(summary)
         mlflow.log_artifact("model_summary.txt")
 
-        # Save as TensorFlow SavedModel format
-        path = "tensorflow-model"
-        tf.keras.models.save_model(model, path, overwrite=True, include_optimizer=True)
-        mlflow.log_artifact(path)
     else:
         utils.register_model(run, model_name)
 
