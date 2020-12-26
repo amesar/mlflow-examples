@@ -41,13 +41,11 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
         mlflow.log_metric("test_acc", test_acc)
         mlflow.log_metric("test_loss", test_loss)
 
-        # Save as default H5 format
-        mlflow.keras.log_model(model, "keras-model", registered_model_name=f"{model_name}")
-        #mlflow.keras.log_model(model, "keras-model-h5", registered_model_name=f"{model_name}_h5")
-
         # Save as TensorFlow SavedModel flavor
-        if mlflow.__version__.startswith("1.12.2"): # 1.12.2.dev0 - https://github.com/mlflow/mlflow/issues/3224
-            mlflow.keras.log_model(model, "keras-model-tf", registered_model_name=f"{model_name}_tf", save_format="tf")
+        mlflow.keras.log_model(model, "keras-model-tf", registered_model_name=f"{model_name}", save_format="tf")
+
+        # Save as default H5 format
+        mlflow.keras.log_model(model, "keras-model-h5")
 
         # Save as TensorFlow SavedModel format - non-flavor artifact
         path = "keras-model-tf-non-flavor"

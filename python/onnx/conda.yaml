@@ -4,7 +4,7 @@ channels:
 dependencies:
   - python=3.7.56
   - pip:
-    - mlflow==1.12.0
+    - mlflow==1.13
     - onnx==1.6.0
     - onnxruntime==1.1.0
     - onnxmltools==1.6.0
