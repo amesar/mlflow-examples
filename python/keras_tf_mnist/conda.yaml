@@ -4,7 +4,7 @@ channels:
 dependencies:
   - python=3.7.6
   - pip:
-    - mlflow==1.13
+    - mlflow==1.13.1
     #- $HOME/lib/wheels/mlflow-1.12.2.dev0-py3-none-any.whl
     - tensorflow==2.4.0 # ONNX training fails
     #- tensorflow==2.3.0 # ONNX training OK
