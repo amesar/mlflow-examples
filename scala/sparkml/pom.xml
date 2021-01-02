@@ -9,9 +9,6 @@
   <profiles>
     <profile>
       <id>spark.2x</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
       <properties>
         <scala.version>2.11.8</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
@@ -22,6 +19,9 @@
     </profile>
     <profile>
       <id>spark.3x</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
       <properties>
         <scala.version>2.12.8</scala.version>
         <scala.binary.version>2.12</scala.binary.version>
@@ -34,7 +34,7 @@
 
   <properties>
     <mleap.version>0.16.0</mleap.version>
-    <mlflow.version>1.13</mlflow.version>
+    <mlflow.version>1.13.1</mlflow.version>
     <jcommander.version>1.72</jcommander.version>
   </properties>
 
