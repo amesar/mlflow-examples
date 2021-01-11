@@ -44,13 +44,8 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
         # Save as TensorFlow SavedModel flavor
         mlflow.keras.log_model(model, "keras-model-tf", registered_model_name=f"{model_name}", save_format="tf")
 
-        # Save as default H5 format
+        # Save as H5 format (MLflow Keras default)
         mlflow.keras.log_model(model, "keras-model-h5")
-
-        # Save as TensorFlow SavedModel format - non-flavor artifact
-        path = "keras-model-tf-non-flavor"
-        tf.keras.models.save_model(model, path, overwrite=True, include_optimizer=True)
-        mlflow.log_artifact(path)
 
         # write model summary
         summary = []

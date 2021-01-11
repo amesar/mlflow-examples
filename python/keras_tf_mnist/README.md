@@ -25,9 +25,22 @@
 
 Source: [train.py](train.py).
 
-### Autologging
+### Options
+```
+  --experiment_name TEXT        Experiment name
+  --model_name TEXT             Registered model name
+  --data_path TEXT              Data path
+  --epochs INTEGER              Epochs
+  --batch_size INTEGER          Batch size
+  --repeats INTEGER             Repeats
+  --mlflow_custom_log BOOLEAN   Log params/metrics with mlflow.log
+  --keras_autolog BOOLEAN       Automatically log params/ metrics with mlflow.keras.autolog
+  --tensorflow_autolog BOOLEAN  Automatically log params/ metrics with mlflow.tensorflow.autolog
+  --log_as_onnx BOOLEAN         log_as_onnx
+```
 
-To run with user logging (no autologging).
+### Run training
+
 ```
 python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128
 ```
@@ -36,6 +49,14 @@ or
 mlflow run . --experiment-name keras_mnist -P epochs=3 -P batch_size=128
 ```
 
+### SavedModel format
+
+The training program saves the Keras model in two formats:
+
+  * HD5 format - MLflow saves Keras model by default in the legacy HD5 format. Logged as `keras-model-h5` artifact.
+  * [SavedModel](https://www.tensorflow.org/guide/saved_model) - current TensorFlow preferred model format. Logged as `keras-model-tf` artifact.
+
+
 ### ONNX
 
 To log a model as ONNX flavor under the artifact path `onnx-model`.
@@ -43,7 +64,7 @@ To log a model as ONNX flavor under the artifact path `onnx-model`.
 mlflow run . --experiment-name keras_mnist -P epochs=3 -P batch_size=128 -P log_as_onnx=True
 ```
 
-ONNX training works with TensorFlow 2.3.0 but fails with 2.4.0 with the following message:
+ONNX training works with TensorFlow 2.3.0 but fails on 2.4.0 with the following message:
 ```
  File "/home/mlflow-examples/python/keras_tf_mnist/onnx_utils.py", line 7, in log_model
     onnx_model = onnxmltools.convert_keras(model, artifact_path)
@@ -55,6 +76,7 @@ ONNX training works with TensorFlow 2.3.0 but fails with 2.4.0 with the followin
     graph = model.outputs[0].graph
 AttributeError: 'KerasTensor' object has no attribute 'graph'
 ```
+However, it works when run on a Linux-based container.
 
 ## Batch Scoring
 
@@ -368,7 +390,7 @@ curl http://localhost:8502/v1/models/keras_mnist:predict -X POST \
 
 ## Autologging
 
-There are two autologging options:
+There are two apparently autologging options for Keras models:
 * keras_autolog - calls mlflow.keras.autolog()
 * tensorflow_autolog - calls mlflow.tensorflow.autolog()
 
@@ -381,10 +403,6 @@ Interestingly, they behave differently depending on the TensorFlow version.
 | 2x | mlflow.keras.autolog | ModuleNotFoundError: No module named 'keras' | 
 | 2x | mlflow.tensorflow.autolog | OK |
 
-
-```
-python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --keras_autolog True
-```
 
 Autologging will create a model under the name `model`.
 
@@ -412,4 +430,18 @@ validation_freq
 validation_split
 validation_steps
 workers
+```
+
+TensorFlow Autologging
+
+```
+python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --tensorflow_autolog True
+```
+
+Keras Autologging
+```
+python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --keras_autolog True
+```
+```
+ModuleNotFoundError: No module named 'keras'
 ```
