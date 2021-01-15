@@ -33,9 +33,10 @@ Source: [train.py](train.py).
   --epochs INTEGER              Epochs
   --batch_size INTEGER          Batch size
   --repeats INTEGER             Repeats
-  --mlflow_custom_log BOOLEAN   Log params/metrics with mlflow.log
-  --keras_autolog BOOLEAN       Automatically log params/ metrics with mlflow.keras.autolog
-  --tensorflow_autolog BOOLEAN  Automatically log params/ metrics with mlflow.tensorflow.autolog
+  --mlflow_custom_log BOOLEAN   Explicitly log params, metrics and model with mlflow.log_
+  --keras_autolog BOOLEAN       Automatically log params, metrics and model with mlflow.keras.autolog
+  --tensorflow_autolog BOOLEAN  Automatically log params, metrics and model with mlflow.tensorflow.autolog
+  --mlflow_autolog BOOLEAN      Automatically log params, metrics and model with mlflow.autolog
   --log_as_onnx BOOLEAN         log_as_onnx
 ```
 
@@ -433,6 +434,10 @@ workers
 ```
 
 TensorFlow Autologging
+
+```
+python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --mlflow_autolog True
+```
 
 ```
 python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --tensorflow_autolog True

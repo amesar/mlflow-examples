@@ -79,12 +79,13 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
 @click.option("--epochs", help="Epochs", default=5, type=int)
 @click.option("--batch_size", help="Batch size", default=128, type=int)
 @click.option("--repeats", help="Repeats", default=1, type=int)
-@click.option("--mlflow_custom_log", help="Log params/metrics with mlflow.log", default=True, type=bool)
-@click.option("--keras_autolog", help="Automatically log params/ metrics with mlflow.keras.autolog", default=False, type=bool)
-@click.option("--tensorflow_autolog", help="Automatically log params/ metrics with mlflow.tensorflow.autolog", default=False, type=bool)
+@click.option("--mlflow_custom_log", help="Explicitly log params, metrics and model with mlflow.log_")
+@click.option("--keras_autolog", help="Automatically log params, metrics and model with mlflow.keras.autolog", default=False, type=bool)
+@click.option("--tensorflow_autolog", help="Automatically log params, metrics and model with mlflow.tensorflow.autolog", default=False, type=bool)
+@click.option("--mlflow_autolog", help="Automatically log params, metrics and model with mlflow.autolog", default=False, type=bool)
 @click.option("--log_as_onnx", help="log_as_onnx", default=False, type=bool)
 
-def main(experiment_name, model_name, data_path, epochs, batch_size, repeats, keras_autolog, tensorflow_autolog, mlflow_custom_log, log_as_onnx):
+def main(experiment_name, model_name, data_path, epochs, batch_size, repeats, mlflow_autolog, keras_autolog, tensorflow_autolog, mlflow_custom_log, log_as_onnx):
     print("Options:")
     for k,v in locals().items():
         print(f"  {k}: {v}")
@@ -94,6 +95,8 @@ def main(experiment_name, model_name, data_path, epochs, batch_size, repeats, ke
         mlflow.keras.autolog()
     if tensorflow_autolog:
         mlflow.tensorflow.autolog()
+    if mlflow_autolog:
+        mlflow.autolog()
 
     if experiment_name:
         mlflow.set_experiment(experiment_name)
