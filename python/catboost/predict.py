@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
     X,y  = utils.build_data(args.data_path)
         
-    print("\n=== mlflow.catboost.load_model")
+    print("\n=== mlflow.sklearn.load_model")
     model = mlflow.sklearn.load_model(args.model_uri)
     print("model:", type(model))
     predictions = model.predict(X)
