@@ -327,12 +327,14 @@ data.createOrReplaceGlobalTempView("data")
 predictions = spark.sql("select *, predictUDF(*) as prediction from global_temp.data")
 ```
 
-### Real-time Predictions
+### Real-time Predictions - XX
 
-Use a server to score predictions over HTTP.
+Use the MLflow scoring server to score over HTTP.
+
+#### Scoring Server modes
 
 There are several ways to launch the server:
-  1. MLflow scoring web server 
+  1. Local MLflow scoring web server 
   2. Plain docker container
   3. SageMaker docker container
   4. Azure docker container
@@ -342,22 +344,15 @@ See MLflow documentation:
 * [Tutorial - Serving the Model](https://www.mlflow.org/docs/latest/tutorial.html#serving-the-model)
 * [Quickstart - Saving and Serving Models](https://www.mlflow.org/docs/latest/quickstart.html#saving-and-serving-models)
 
-In one window launch the server.
+#### Input formats
 
-In another window, score some data.
-```
-curl -X POST -H "Content-Type:application/json" \
-  -d @../../data/score/wine-quality.json \
-  http://localhost:5001/invocations
-```
-```
-[
-  [5.470588235294118,5.470588235294118,5.769607843137255]
-]
-```
+The MLflow scoring server supports the following input formats:
+* JSON-serialized Pandas DataFrames
+  * Split orientation - [score/wine-quality-split-orient.json](../../data/score/wine-quality-split-orient.json)
+  * Records orientation - [score/wine-quality-records-orient.json](../../data/score/wine-quality-records-orient.json)
+* CSV
 
-Data should be in `JSON-serialized Pandas DataFrames split orientation` format
-such as [score/wine-quality.json](../../data/score/wine-quality.json).
+JSON split orientation
 ```
 {
   "columns": [
@@ -381,9 +376,48 @@ such as [score/wine-quality.json](../../data/score/wine-quality.json).
 }
 ```
 
+JSON records orientation
+```
+[
+  {
+  "fixed acidity": 7,
+  "volatile acidity":  0.27,
+  "citric acid": 0.36,
+  "residual sugar": 20.7,
+  "chlorides": 0.045,
+  "free sulfur dioxide": 45,
+  "total sulfur dioxide": 170,
+  "density": 1.001,
+  "pH": 3,
+  "sulphates": 0.45,
+  "alcohol": 8.8
+}
+]
+```
+
+See MLflow documentation:
+* [Deploy MLflow models](https://mlflow.org/docs/latest/models.html#deploy-mlflow-models) - input format documentation
+* [pandas.DataFrame.to_json](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_json.html)
+
+#### Scoring
+
+In one window launch the scoring server.
+
+In another window, score some data.
+```
+curl -X POST -H "Content-Type:application/json" \
+  -d @../../data/score/wine-quality-split-orient.json \
+  http://localhost:5001/invocations
+```
+```
+[
+  [5.470588235294118,5.470588235294118,5.769607843137255]
+]
+```
+
 #### 1. MLflow scoring web server
 
-Launch the web server.
+Launch the scoring server.
 ```
 mlflow pyfunc serve -port 5001 \
   -model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model 
@@ -402,7 +436,7 @@ mlflow models build-docker \
   --name dk-wine-sklearn
 ```
 
-Then launch the server as a docker container.
+Then launch the scoring server as a docker container.
 ```
 docker run --p 5001:8080 dk-wine-sklearn
 ```
@@ -428,7 +462,7 @@ mlflow sagemaker run-local \
   --port 5001 --image sm-wine-sklearn
 ```
 
-You can also launch an ONNX-based model server.
+You can also launch a scoring server with an ONNX model.
 ```
 mlflow sagemaker run-local \
   --model-uri runs:/7e674524514846799310c41f10d6b99d/onnx-model \
@@ -436,10 +470,3 @@ mlflow sagemaker run-local \
 ```
 
 Make predictions with curl as described above.
-
-#### 4. Azure docker container
-
-See [Deploy a python_function model on Microsoft Azure ML](https://mlflow.org/docs/latest/models.html#deploy-a-python-function-model-on-microsoft-azure-ml) documentation.
-
-TODO.
-
