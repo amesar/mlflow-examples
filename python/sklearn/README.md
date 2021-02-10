@@ -75,14 +75,14 @@ If you save the schema of the expected input and output data with a model, you w
 
 Examples:
 
-[ Mixed type](../../data/score/signature_test/json/wine-quality-white-type.json) for column `alcohol`.
+[ Mixed type](../../data/score/wine-quality/signature_test/json/wine-quality-white-type.json) for column `alcohol`.
 
 | With schema | Error message |
 |----------|---------|
 | no | ValueError: could not convert string to float: ' 8.8_FOO' |
 | yes |  mlflow.exceptions.MlflowException: Incompatible input types for column alcohol. Can not safely convert object to float64. |
 
-[Less columns](../../data/score/signature_test/json/wine-quality-white-less-columns.json)
+[Less columns](../../data/score/wine-quality/ignature_test/json/wine-quality-white-less-columns.json)
 
 | With schema | Error message |
 |----------|---------|
@@ -90,7 +90,7 @@ Examples:
 | yes | mlflow.exceptions.MlflowException: Model input is missing columns ['alcohol']. Note that there were extra columns: []
  |
 
-[More columns](../../data/score/signature_test/json/wine-quality-white-more-columns.json)
+[More columns](../../data/score/wine-quality/signature_test/json/wine-quality-white-more-columns.json)
 
 | With schema | Error message |
 |----------|---------|
@@ -348,8 +348,8 @@ See MLflow documentation:
 
 The MLflow scoring server supports the following input formats:
 * JSON-serialized Pandas DataFrames
-  * Split orientation - [score/wine-quality-split-orient.json](../../data/score/wine-quality-split-orient.json)
-  * Records orientation - [score/wine-quality-records-orient.json](../../data/score/wine-quality-records-orient.json)
+  * Split orientation - [score/wine-quality/wine-quality-split-orient.json](../../data/score/wine-quality/wine-quality-split-orient.json)
+  * Records orientation - [score/wine-quality/wine-quality-records-orient.json](../../data/score/wine-quality/wine-quality-records-orient.json)
 * CSV
 
 JSON split orientation
@@ -406,7 +406,7 @@ In one window launch the scoring server.
 In another window, score some data.
 ```
 curl -X POST -H "Content-Type:application/json" \
-  -d @../../data/score/wine-quality-split-orient.json \
+  -d @../../data/score/wine-quality/wine-quality-split-orient.json \
   http://localhost:5001/invocations
 ```
 ```
