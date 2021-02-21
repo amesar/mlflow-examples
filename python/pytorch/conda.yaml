@@ -4,7 +4,7 @@ channels:
 dependencies:
   - python=3.7.6
   - pip:
-    - mlflow==1.13.1
+    - mlflow==1.14.0
     - torch==1.6.0
     - torchvision==0.7.0
     - pytorch-lightning==1.0.2
