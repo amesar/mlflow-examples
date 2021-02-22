@@ -41,11 +41,8 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
         mlflow.log_metric("test_acc", test_acc)
         mlflow.log_metric("test_loss", test_loss)
 
-        # Save as TensorFlow SavedModel flavor
-        mlflow.keras.log_model(model, "keras-model-tf", registered_model_name=f"{model_name}", save_format="tf")
-
-        # Save as H5 format (MLflow Keras default)
-        mlflow.keras.log_model(model, "keras-model-h5")
+        # Save as TensorFlow SavedModel format (MLflow Keras default)
+        mlflow.keras.log_model(model, "keras-model", registered_model_name=f"{model_name}")
 
         # write model summary
         summary = []
@@ -90,6 +87,8 @@ def main(experiment_name, model_name, data_path, epochs, batch_size, repeats, ml
     for k,v in locals().items():
         print(f"  {k}: {v}")
     model_name = None if not model_name or model_name == "None" else model_name
+    if not mlflow_autolog and not keras_autolog and not tensorflow_autolog:
+        mlflow_custom_log = True
 
     if keras_autolog:
         mlflow.keras.autolog()
