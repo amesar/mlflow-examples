@@ -8,21 +8,21 @@ Scala examples using the MLflow Java client:
 
 ## Setup
 
-You must install Python MLflow: `pip install mlflow==1.8.0`.
+You must install Python MLflow: `pip install mlflow==1.14.0`.
 
 The build supports either Scala 2.11 wth Spark 2.x or Scala 2.12 with Spark 3.x.
 
 The Maven pom.xml two profiles are:
-* spark-2x
-  * Scala 2.11
-  * Spark 2.4.5 
 * spark-3x
   * Scala 2.12
   * Spark 3.0.0
+* spark-2x
+  * Scala 2.11
+  * Spark 2.4.5 
 
 ## Build
 
-Default profile is spark-2x.
+Default profile is spark-3x.
 ```
 mvn clean package
 ```
@@ -32,10 +32,6 @@ To build explicitly with the Spark 2.x profile.
 mvn clean package -P spark-2x
 ```
 
-To build with the Spark 3.x profile.
-```
-mvn clean package -P spark-3x
-```
 
 ## Hello World Sample
 ### Run
