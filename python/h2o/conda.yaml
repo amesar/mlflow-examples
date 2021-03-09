@@ -4,8 +4,8 @@ channels:
   - anaconda
 dependencies:
   - python==3.7
-  - numpy==1.14.2
+  - numpy
   - pandas
   - pip:
     - h2o
-    - mlflow>=1.0
+    - mlflow==1.14.1
