@@ -327,7 +327,7 @@ data.createOrReplaceGlobalTempView("data")
 predictions = spark.sql("select *, predictUDF(*) as prediction from global_temp.data")
 ```
 
-### Real-time Predictions - XX
+### Real-time Predictions 
 
 Use the MLflow scoring server to score over HTTP.
 
