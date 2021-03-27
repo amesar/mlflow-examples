@@ -5,7 +5,7 @@ dependencies:
   - python=3.7.6
   - pip=19.0.3
   - pip:
-    - mlflow==1.14.1
+    - mlflow==1.15.0
     - mleap==0.15.0
     - pyspark==3.0.1
     - pyarrow==0.17.0
