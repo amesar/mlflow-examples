@@ -4,7 +4,7 @@ channels:
 dependencies:
   - python=3.7.6
   - pip:
-    - mlflow==1.15.0
+    - mlflow==1.16.0
     - catboost==0.24.4
     - scikit-learn==0.20.2
     - pyarrow==0.12.1

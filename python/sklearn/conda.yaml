@@ -4,10 +4,10 @@ channels:
 dependencies:
   - python=3.7.6
   - pip:
-    - mlflow==1.15.0
+    - mlflow==1.16.0
     - scikit-learn==0.20.2
     - matplotlib==3.2.1
-    - pyarrow==0.17
+    - pyarrow>=1.0.0
     - onnx==1.8.0
     - onnxmltools==1.7.0
     - onnxruntime==1.7.0

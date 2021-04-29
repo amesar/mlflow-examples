@@ -286,7 +286,6 @@ data = util.read_prediction_data(data_path)
 model_uri = client.get_run(run_id).info.artifact_uri + "/sklearn-model"
 model = mlflow.pyfunc.load_model(model_uri)
 predictions = model.predict(data)
-
 ```
 
 #### 3. Predict with Spark UDF (user-defined function)
@@ -298,7 +297,7 @@ We show how to invoke a UDF with both the DataFrame API and SQL.
 Scroll right to see prediction column.
 
 ```
-pip install pyarrow
+pip install pyarrow>=1.0.0
 
 spark-submit --master local[2] spark_udf_predict.py \
   runs:/7e674524514846799310c41f10d6b99d/sklearn-model

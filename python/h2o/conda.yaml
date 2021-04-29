@@ -8,4 +8,4 @@ dependencies:
   - pandas
   - pip:
     - h2o
-    - mlflow==1.15.0
+    - mlflow==1.16.0

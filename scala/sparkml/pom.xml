@@ -25,7 +25,7 @@
       <properties>
         <scala.version>2.12.8</scala.version>
         <scala.binary.version>2.12</scala.binary.version>
-        <spark.version>3.0.0</spark.version>
+        <spark.version>3.1.1</spark.version>
         <xgboost4j-spark.version>1.0.0</xgboost4j-spark.version>
         <xgboost4j-spark.artifact>xgboost4j-spark_2.12</xgboost4j-spark.artifact>
       </properties>
@@ -34,7 +34,7 @@
 
   <properties>
     <mleap.version>0.16.0</mleap.version>
-    <mlflow.version>1.14.0</mlflow.version>
+    <mlflow.version>1.16.0</mlflow.version>
     <jcommander.version>1.72</jcommander.version>
   </properties>
 
