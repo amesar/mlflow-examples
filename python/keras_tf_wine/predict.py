@@ -16,10 +16,20 @@ client = mlflow.tracking.MlflowClient()
 print("Operating System:",platform.system()+" - "+platform.release())
 tmp_dir = "out" # TODO 
 
-def predict_keras(model_uri, data):
+#def predict_keras(model_uri, data):
+def predict_tensorflow_model(model_uri, data):
     print(f"\nmlflow.keras.load_model\nModel URI: {model_uri}")
     model = mlflow.keras.load_model(model_uri)
     print("model.type:", type(model))
+    predictions = model.predict(data)
+    display(predictions)
+
+def _predict_tensorflow_model(run_id, data):
+    model_name = "tensorflow-model"
+    print(f"\nkeras.models.load_model\nModel name:{model_name}\nRun ID:{run_id}")
+    client.download_artifacts(run_id, model_name, tmp_dir)
+    model = keras.models.load_model(os.path.join(tmp_dir, model_name))
+    print("model.type:",type(model))
     predictions = model.predict(data)
     display(predictions)
 
@@ -38,15 +48,6 @@ def predict_onnx(model_uri, data):
     print("model.type:", type(model))
     data = data.to_numpy()
     predictions = onnx_utils.score_model(model, data)
-    display(predictions)
-
-def predict_tensorflow_model(run_id, data):
-    model_name = "tensorflow-model"
-    print(f"\nkeras.models.load_model\nModel name:{model_name}\nRun ID:{run_id}")
-    client.download_artifacts(run_id, model_name, tmp_dir)
-    model = keras.models.load_model(os.path.join(tmp_dir, model_name))
-    print("model.type:",type(model))
-    predictions = model.predict(data)
     display(predictions)
 
 def predict_tensorflow_lite_model(run_id, data):
@@ -102,16 +103,10 @@ def main(run_id, data_path, score_as_pyfunc, score_as_tensorflow_lite):
     utils.dump(run_id)
     data,_,_,_  = utils.build_data(data_path)
 
-    model_uri = f"runs:/{run_id}/keras-hd5-model"
-    predict_keras(model_uri, data)
+    model_uri = f"runs:/{run_id}/tensorflow-model"
+    predict_tensorflow_model(model_uri, data)
     if score_as_pyfunc:
-        predict_pyfunc(model_uri, data,"keras-hd5-model")
-
-    model_name = "tensorflow-model"
-    if artifact_exists(run_id, model_name):
-        predict_tensorflow_model(run_id, data)
-    else:
-        print(f"WARNING: no model '{model_name}'")
+        predict_pyfunc(model_uri, data, "tensorflow-model")
 
     if score_as_tensorflow_lite:
         model_name = "tensorflow-lite-model"
@@ -122,7 +117,7 @@ def main(run_id, data_path, score_as_pyfunc, score_as_tensorflow_lite):
 
     model_name = "onnx-model"
     if artifact_exists(run_id, model_name):
-        model_uri = f"runs:/{run_id}/'{model_name}'"
+        model_uri = f"runs:/{run_id}/{model_name}"
         predict_onnx(model_uri, data)
         predict_pyfunc(model_uri, data, "onnx-model")
     else:

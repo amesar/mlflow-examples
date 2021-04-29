@@ -14,7 +14,6 @@ from tensorflow.keras.wrappers.scikit_learn import KerasRegressor
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import KFold
 import mlflow
-import mlflow.keras
 import click
 import utils
 
@@ -45,8 +44,7 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
         print("Logging with mlflow.log")
         mlflow.log_param("epochs", epochs)
         mlflow.log_param("batch_size", batch_size)
-        # MLflow - log as Keras HD5 model
-        mlflow.keras.log_model(model, "keras-hd5-model", registered_model_name=model_name)
+        mlflow.keras.log_model(model, "tensorflow-model", registered_model_name=model_name)
     else:
         utils.register_model(run, model_name)
 
@@ -55,11 +53,6 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
         import onnx_utils
         mname = f"{model_name}_onnx" if model_name else None
         onnx_utils.log_model(model, "onnx-model", model_name=mname)
-
-    # Save as TensorFlow SavedModel format
-    path = "tensorflow-model"
-    tf.keras.models.save_model(model, path, overwrite=True, include_optimizer=True)
-    mlflow.log_artifact(path)
 
     # Save as TensorFlow Lite format
     if log_as_tensorflow_lite:
