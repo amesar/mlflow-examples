@@ -391,18 +391,20 @@ curl http://localhost:8502/v1/models/keras_mnist:predict -X POST \
 
 ## Autologging
 
-There are two apparently autologging options for Keras models:
-* keras_autolog - calls mlflow.keras.autolog()
-* tensorflow_autolog - calls mlflow.tensorflow.autolog()
+There are several autologging options for Keras models:
+* mlflow_autolog - calls mlflow.autolog() - globally scoped autologging - same as mlflow.tensorflow.autolog().
+* tensorflow_autolog - calls mlflow.tensorflow.autolog().
+* keras_autolog - calls mlflow.keras.autolog() - fails for TensorFlow 2.x. Seems redundant.
 
 Interestingly, they behave differently depending on the TensorFlow version.
 
-| TensorFlow Version | Autolog Method | Params | 
+| TensorFlow Version | Autolog Method | Result | 
 |---|---|---|
-| 1x | mlflow.keras.autolog | OK | 
-| 1x | mlflow.tensorflow.autolog | none |
-| 2x | mlflow.keras.autolog | ModuleNotFoundError: No module named 'keras' | 
+| 2x | mlflow.mlflow.autolog | OK |
 | 2x | mlflow.tensorflow.autolog | OK |
+| 2x | mlflow.keras.autolog | ModuleNotFoundError: No module named 'keras' | 
+| 1x | mlflow.tensorflow.autolog | none |
+| 1x | mlflow.keras.autolog | OK | 
 
 
 Autologging will create a model under the name `model`.
@@ -433,11 +435,13 @@ validation_steps
 workers
 ```
 
-TensorFlow Autologging
+MLflow  Autologging
 
 ```
 python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --mlflow_autolog True
 ```
+
+TensorFlow Autologging
 
 ```
 python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --tensorflow_autolog True
@@ -449,4 +453,12 @@ python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128 --kera
 ```
 ```
 ModuleNotFoundError: No module named 'keras'
+```
+
+## Testing
+```
+py.test -s -v test.py
+```
+```
+4 passed, 21 warnings in 71.57s (0:01:11) 
 ```

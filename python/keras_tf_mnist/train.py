@@ -52,7 +52,7 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
             f.write(summary)
         mlflow.log_artifact("model_summary.txt")
 
-    else:
+    elif model_name:
         utils.register_model(run, model_name)
 
     # write model as yaml file
@@ -69,20 +69,20 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
     predictions = model.predict_classes(x_test)
     print("predictions:", predictions)
 
+
 @click.command()
 @click.option("--experiment_name", help="Experiment name", default=None, type=str)
 @click.option("--model_name", help="Registered model name", default=None, type=str)
 @click.option("--data_path", help="Data path", default=None, type=str)
 @click.option("--epochs", help="Epochs", default=5, type=int)
 @click.option("--batch_size", help="Batch size", default=128, type=int)
-@click.option("--repeats", help="Repeats", default=1, type=int)
-@click.option("--mlflow_custom_log", help="Explicitly log params, metrics and model with mlflow.log_")
+@click.option("--mlflow_custom_log", help="Explicitly log params, metrics and model with mlflow.log_", default=True, type=bool)
 @click.option("--keras_autolog", help="Automatically log params, metrics and model with mlflow.keras.autolog", default=False, type=bool)
 @click.option("--tensorflow_autolog", help="Automatically log params, metrics and model with mlflow.tensorflow.autolog", default=False, type=bool)
 @click.option("--mlflow_autolog", help="Automatically log params, metrics and model with mlflow.autolog", default=False, type=bool)
 @click.option("--log_as_onnx", help="log_as_onnx", default=False, type=bool)
 
-def main(experiment_name, model_name, data_path, epochs, batch_size, repeats, mlflow_autolog, keras_autolog, tensorflow_autolog, mlflow_custom_log, log_as_onnx):
+def main(experiment_name, model_name, data_path, epochs, batch_size, mlflow_autolog, keras_autolog, tensorflow_autolog, mlflow_custom_log, log_as_onnx):
     print("Options:")
     for k,v in locals().items():
         print(f"  {k}: {v}")
@@ -100,19 +100,18 @@ def main(experiment_name, model_name, data_path, epochs, batch_size, repeats, ml
     if experiment_name:
         mlflow.set_experiment(experiment_name)
 
-    for i in range(0,repeats):
-        with mlflow.start_run() as run:
-            print(f"******** {i}/{repeats}")
-            print("MLflow:")
-            print("  run_id:",run.info.run_id)
-            print("  experiment_id:",run.info.experiment_id)
-            mlflow.set_tag("version.mlflow", mlflow.__version__)
-            mlflow.set_tag("version.keras", keras.__version__)
-            mlflow.set_tag("version.tensorflow", tf.__version__)
-            mlflow.set_tag("keras_autolog", keras_autolog)
-            mlflow.set_tag("tensorflow_autolog", tensorflow_autolog)
-            mlflow.set_tag("mlflow_custom_log", mlflow_custom_log)
-            train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx)
+    with mlflow.start_run() as run:
+        print("MLflow:")
+        print("  run_id:",run.info.run_id)
+        print("  experiment_id:",run.info.experiment_id)
+        mlflow.set_tag("version.mlflow", mlflow.__version__)
+        mlflow.set_tag("version.keras", keras.__version__)
+        mlflow.set_tag("version.tensorflow", tf.__version__)
+        mlflow.set_tag("mlflow_autolog", mlflow_autolog)
+        mlflow.set_tag("tensorflow_autolog", tensorflow_autolog)
+        mlflow.set_tag("keras_autolog", keras_autolog)
+        mlflow.set_tag("mlflow_custom_log", mlflow_custom_log)
+        train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log_as_onnx)
 
 if __name__ == "__main__":
     main()

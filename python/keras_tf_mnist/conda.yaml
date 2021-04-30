@@ -12,3 +12,4 @@ dependencies:
     - onnxruntime==1.7.0
     - keras2onnx==1.7.0
     - Pillow
+    - pytest==5.3.5
