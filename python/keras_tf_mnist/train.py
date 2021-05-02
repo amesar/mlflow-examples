@@ -42,7 +42,8 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
         mlflow.log_metric("test_loss", test_loss)
 
         # Save as TensorFlow SavedModel format (MLflow Keras default)
-        mlflow.keras.log_model(model, "keras-model", registered_model_name=f"{model_name}")
+        mlflow.keras.log_model(model, "keras-model", registered_model_name=model_name)
+        #mlflow.keras.log_model(model, "keras-model")
 
         # write model summary
         summary = []

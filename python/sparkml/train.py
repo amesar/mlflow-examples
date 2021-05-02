@@ -53,8 +53,7 @@ def train(run_id, data, max_depth, max_bins, model_name, log_as_mleap, log_as_on
 
     # MLflow - log spark model
     if not spark_autolog:
-        mlflow.spark.log_model(model, "spark-model", \
-            registered_model_name=None if not model_name else f"{model_name}")
+        mlflow.spark.log_model(model, "spark-model", registered_model_name=model_name)
 
         # MLflow - log Spark model with UDF wrapper for workaround
         log_udf_model(run_id, "spark-model", data.columns, model_name)
