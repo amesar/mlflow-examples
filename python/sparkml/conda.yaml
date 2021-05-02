@@ -8,7 +8,7 @@ dependencies:
     - mlflow==1.16.0
     - mleap==0.15.0
     - pyspark==3.0.1
-    - pyarrow==0.17.0
+    - pyarrow>=1.0.0
     - onnx==1.7.0
     - onnxruntime==1.2.0
     - onnxmltools==1.6.1

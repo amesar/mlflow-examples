@@ -5,7 +5,7 @@ dependencies:
   - python=3.7.6
   - pip:
     - mlflow==1.16.0
-    - scikit-learn==0.20.2
+    - scikit-learn==0.24.2
     - matplotlib==3.2.1
     - pyarrow>=1.0.0
     - onnx==1.8.0

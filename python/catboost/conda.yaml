@@ -7,7 +7,7 @@ dependencies:
     - mlflow==1.16.0
     - catboost==0.24.4
     - scikit-learn==0.20.2
-    - pyarrow==0.12.1
+    - pyarrow=>1.0.0
     - onnx==1.7.0
     - onnxmltools==1.7.0
     - onnxruntime==1.4.0
