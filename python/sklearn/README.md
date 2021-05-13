@@ -16,7 +16,7 @@
     * Docker container - AWS SageMaker in local mode
   * Batch scoring
     * mlflow.load_model()
-    * UDF - invoke with the DataFrame API or SQL.
+    * UDF - invoke with the DataFrame API or SQL. Works with Spark 3.1.1.
 * Data: [../../data/train/wine-quality-white.csv](../../data/train/wine-quality-white.csv)
 
 ## Training
