@@ -3,7 +3,7 @@
 import sys
 import mlflow
 import mlflow.onnx
-import predict_utils
+from wine_quality import predict_utils
 from wine_quality import onnx_utils
 
 if __name__ == "__main__":

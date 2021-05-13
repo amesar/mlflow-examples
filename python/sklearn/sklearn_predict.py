@@ -3,7 +3,7 @@
 import sys
 import mlflow
 import mlflow.sklearn
-import predict_utils
+from wine_quality import predict_utils
 
 if __name__ == "__main__":
     if len(sys.argv) < 1:
