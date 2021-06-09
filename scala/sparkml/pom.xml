@@ -33,9 +33,9 @@
   </profiles>
 
   <properties>
-    <mleap.version>0.16.0</mleap.version>
-    <mlflow.version>1.16.0</mlflow.version>
-    <jcommander.version>1.72</jcommander.version>
+    <mleap.version>0.17.0</mleap.version>
+    <mlflow.version>1.17.0</mlflow.version>
+    <jcommander.version>1.81</jcommander.version>
   </properties>
 
   <dependencies>
