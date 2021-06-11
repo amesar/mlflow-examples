@@ -24,6 +24,7 @@ object PredictAsSpark {
 
     val client = MLflowUtils.createMlflowClient(opts.trackingUri, opts.token)
     val spark = SparkSession.builder.appName("Predict").getOrCreate()
+    MLflowUtils.showVersions(spark)
     val data = WineUtils.readData(spark, opts.dataPath)
 
     println("==== Spark ML")
