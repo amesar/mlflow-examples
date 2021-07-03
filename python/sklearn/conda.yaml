@@ -10,6 +10,6 @@ dependencies:
     - pyarrow>=1.0.0
     - onnx==1.9.0
     - onnxmltools==1.7.0
-    - onnxruntime==1.7.0
+    - onnxruntime==1.8.0
     - pyspark==3.1.1
     - pytest
