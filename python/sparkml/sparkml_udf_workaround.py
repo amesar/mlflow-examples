@@ -22,7 +22,7 @@ class UdfModelWrapper(mlflow.pyfunc.PythonModel):
         )
         return self.spark_pyfunc.predict(renamed_input)
 
-def log_udf_model(run_id, artifact_path, ordered_columns, model_name):
+def log_udf_model(run_id, artifact_path, ordered_columns, model_name=None):
     udf_artifact_path = f"udf-{artifact_path}"
     model_uri = f"runs:/{run_id}/{artifact_path}"
     mlflow.pyfunc.log_model(
