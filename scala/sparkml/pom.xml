@@ -25,7 +25,7 @@
       <properties>
         <scala.version>2.12.8</scala.version>
         <scala.binary.version>2.12</scala.binary.version>
-        <spark.version>3.1.1</spark.version>
+        <spark.version>3.1.2</spark.version>
         <xgboost4j-spark.version>1.0.0</xgboost4j-spark.version>
         <xgboost4j-spark.artifact>xgboost4j-spark_2.12</xgboost4j-spark.artifact>
       </properties>
