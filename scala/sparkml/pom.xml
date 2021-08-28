@@ -34,7 +34,7 @@
 
   <properties>
     <mleap.version>0.17.0</mleap.version>
-    <mlflow.version>1.17.0</mlflow.version>
+    <mlflow.version>1.20.0</mlflow.version>
     <jcommander.version>1.81</jcommander.version>
   </properties>
 

@@ -7,7 +7,7 @@ dependencies:
   - pip:
     - mlflow>=1.17.0
     - mleap==0.17.0
-    - pyspark==3.1.1
+    - pyspark==3.1.2
     - pyarrow>=1.0.0
     - onnx==1.9.0
     - onnxmltools==1.7.0
