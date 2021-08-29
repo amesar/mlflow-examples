@@ -473,15 +473,6 @@ Make predictions with curl as described above.
 
 ```
 cd tests
-py.test -s -v tests.py
-```
-```
-tests.py::test_basic 
-tests.py::test_autolog 
-tests.py::test_onnx 
-tests.py::test_spark_udf 
-tests.py::test_spark_udf_onnx 
-
-5 passed, 20 warnings
+py.test -s -v test*.py
 ```
 
