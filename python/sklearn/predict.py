@@ -8,12 +8,12 @@ def banner(msg, model_uri):
     print(f"Predict: {msg} - {model_uri}")
     print("==========\n")
 
-def sklearn_predict(model_uri, data_path):
-    banner("sklearn", model_uri)
+def _predict(model_uri, data_path, load_model_method, msg):
+    banner(msg, model_uri)
     print("data_path:", data_path)
     print("model_uri:", model_uri)
 
-    model = mlflow.sklearn.load_model(model_uri)
+    model = load_model_method(model_uri)
     print("model.type:", type(model))
 
     data = predict_utils.read_prediction_data(data_path)
@@ -21,23 +21,12 @@ def sklearn_predict(model_uri, data_path):
     print("predictions.type:", type(predictions))
     print("predictions.shape:", predictions.shape)
     print("predictions:", predictions)
+
+def sklearn_predict(model_uri, data_path):
+    _predict(model_uri, data_path, mlflow.sklearn.load_model, "sklearn")
 
 def pyfunc_predict(model_uri, data_path):
-    banner("pyfunc", model_uri)
-    print("model_uri:", model_uri)
-    print("data_path:", data_path)
-
-    model = mlflow.pyfunc.load_model(model_uri)
-    print("model.type:", type(model))
-    print("model:", model)
-    print("model.metadata:", model.metadata)
-    print("model.metadata.type:", type(model.metadata))
-
-    data = predict_utils.read_prediction_data(data_path)
-    predictions = model.predict(data)
-    print("predictions.type:", type(predictions))
-    print("predictions.shape:", predictions.shape)
-    print("predictions:", predictions)
+    _predict(model_uri, data_path, mlflow.pyfunc.load_model, "sklearn")
 
 def spark_udf_predict(model_uri, data_path):
     banner("spark_udf", model_uri)
@@ -66,18 +55,7 @@ def spark_udf_predict(model_uri, data_path):
     predictions.show(10)
 
 def onnx_predict(model_uri, data_path):
-    banner("onnx", model_uri)
-    from wine_quality import onnx_utils
-    print("data_path:", data_path)
-    print("model_uri:", model_uri)
-
-    data = predict_utils.read_prediction_data(data_path)
-    data = data.to_numpy()
-
-    model = mlflow.onnx.load_model(model_uri)
-    print("model.type:", type(model))
-    predictions = onnx_utils.score(model, data)
-    predict_utils.display_predictions(predictions)
+    _predict(model_uri, data_path, mlflow.pyfunc.load_model, "onnx_predict")
 
 predict_methods = {
     "sklearn": sklearn_predict, 
