@@ -246,15 +246,15 @@ You can use either a `runs` or `models` scheme.
 
 URI with `runs` scheme.
 ```
-python predict.py --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model --flavor sklearn 
+python -um wine_quality.predict --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model --flavor sklearn 
 
 ```
 
 URI with `models` scheme.
 Assume you have a registered model with a `production` stage or version `1`.
 ```
-python predict.py --model-uri models:/sklearn_wine/production --flavor sklearn 
-python predict.py --model-uri models:/sklearn_wine/1 --flavor sklearn 
+python -um wine_quality.predict --model-uri models:/sklearn_wine/production --flavor sklearn 
+python -um wine_quality.predict --model-uri models:/sklearn_wine/1 --flavor sklearn 
 ```
 
 Result.
@@ -273,7 +273,7 @@ predictions = model.predict(data)
 #### 2. Predict with mlflow.pyfunc.load_model()
 
 ```
-python predict.py --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model --flavor pyfunc
+python -um wine_quality.predict --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model --flavor pyfunc
 ```
 
 ```
@@ -297,7 +297,7 @@ Demonstrates how to invoke a UDF with both the DataFrame API and SQL.
 Scroll right to see prediction column.
 
 ```
-python predict.py \
+python -um wine_quality.predict \
   --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model \
   --flavor spark_udf
 ```
