@@ -1,19 +1,19 @@
 # mlflow-examples - sklearn 
 
 ## Overview
-* Wine Quality DecisionTreeRegressor example.
+* This example demonstrates all different ways to train and score a MLflow project.
+* Use a Wine Quality DecisionTreeRegressor example.
 * Is a well-formed Python project that generates a wheel.
-* This example demonstrates all features of MLflow training and prediction.
 * Saves model in pickle format.
 * Saves plot artifacts.
 * Shows several ways to run training:
   * `mlflow run` - several variants.
   * Run against a Databricks cluster using `mlflow` run or Databricks job.
-  * Call wheel from notebook, etc.
-* Shows several ways to run prediction:
+  * Call wheel from notebook.
+* Shows several ways to run predictions:
   * Real-time scoring
-    * Local web server
-    * Docker container - AWS SageMaker in local mode
+    * Local web server.
+    * Docker container - Plain docker and AWS SageMaker in local mode.
   * Batch scoring
     * mlflow.load_model()
     * UDF - invoke with the DataFrame API or SQL. Works with Spark 3.1.1.
@@ -246,14 +246,15 @@ You can use either a `runs` or `models` scheme.
 
 URI with `runs` scheme.
 ```
-python sklearn_predict.py runs:/7e674524514846799310c41f10d6b99d/sklearn-model
+python predict.py --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model --flavor sklearn 
+
 ```
 
 URI with `models` scheme.
-Assume you have a registered model with a production stage or version 1.
+Assume you have a registered model with a `production` stage or version `1`.
 ```
-python sklearn_predict.py models:/sklearn_wine/production
-python sklearn_predict.py models:/sklearn_wine/1
+python predict.py --model-uri models:/sklearn_wine/production --flavor sklearn 
+python predict.py --model-uri models:/sklearn_wine/1 --flavor sklearn 
 ```
 
 Result.
@@ -261,8 +262,7 @@ Result.
 predictions: [5.55109634 5.29772751 5.42757213 5.56288644 5.56288644]
 ```
 
-
-Snippet from [sklearn_predict.py](sklearn_predict.py):
+Snippet from [predict.py](predict.py):
 ```
 model = mlflow.sklearn.load_model(model_uri)
 df = pd.read_csv("../../data/train/wine-quality-white.csv")
@@ -273,16 +273,16 @@ predictions = model.predict(data)
 #### 2. Predict with mlflow.pyfunc.load_model()
 
 ```
-python pyfunc_predict.py runs:/7e674524514846799310c41f10d6b99d/sklearn-model
+python predict.py --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model --flavor pyfunc
 ```
 
 ```
 predictions: [5.55109634 5.29772751 5.42757213 5.56288644 5.56288644]
 ```
-From [pyfunc_predict.py](pyfunc_predict.py):
+From [predict.py](predict.py):
 ```
 data_path = "../../data/train/wine-quality-white.csv"
-data = util.read_prediction_data(data_path)
+data = predict_utils.read_prediction_data(data_path)
 model_uri = client.get_run(run_id).info.artifact_uri + "/sklearn-model"
 model = mlflow.pyfunc.load_model(model_uri)
 predictions = model.predict(data)
@@ -292,15 +292,14 @@ predictions = model.predict(data)
 
 See [Export a python_function model as an Apache Spark UDF](https://mlflow.org/docs/latest/models.html#export-a-python-function-model-as-an-apache-spark-udf) documentation.
 
-We show how to invoke a UDF with both the DataFrame API and SQL.
+Demonstrates how to invoke a UDF with both the DataFrame API and SQL.
 
 Scroll right to see prediction column.
 
 ```
-pip install pyarrow>=1.0.0
-
-spark-submit --master local[2] spark_udf_predict.py \
-  runs:/7e674524514846799310c41f10d6b99d/sklearn-model
+python predict.py \
+  --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model \
+  --flavor spark_udf
 ```
 
 ```
@@ -312,7 +311,7 @@ spark-submit --master local[2] spark_udf_predict.py \
 4   10.1|     0.05|        0.4| 0.9951|          8.1|               30.0|3.26|           6.9|     0.44|                97.0|            0.28| 5.427572126267637|
 |    9.9|    0.058|       0.32| 0.9956|          7.2|               47.0|3.19|           8.5|      0.4|               186.0|            0.23| 5.562886443251915|
 ```
-From [spark_udf_predict.py](spark_udf_predict.py):
+From [predict.py](predict.py):
 ```
 spark = SparkSession.builder.appName("App").getOrCreate()
 data = spark.read.option("inferSchema",True).option("header", True).csv("../data/train/wine-quality-white.csv")
