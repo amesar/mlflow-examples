@@ -240,6 +240,25 @@ You can make predictions in two ways:
 
 ### Batch Predictions
 
+You can predict with either normal Python script or as `mlflow run` project.
+
+**Normal Python script**
+```
+python -um wine_quality.predict \
+  --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model \
+  --flavor sklearn 
+```
+
+**mlflow run**
+
+See [MLproject](MLproject) file.
+```
+mlflow run . \
+  -P model-uri=runs:/7e674524514846799310c41f10d6b99d/sklearn-model \
+  -P flavor=sklearn \
+  --entry-point predict 
+```
+
 #### 1. Predict with mlflow.sklearn.load_model()
 
 You can use either a `runs` or `models` scheme.

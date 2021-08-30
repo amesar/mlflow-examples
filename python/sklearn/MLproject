@@ -23,15 +23,12 @@ entry_points:
                 --log_as_onnx {log_as_onnx}
                 --autolog {autolog}
                 --run_origin {run_origin}"
-  sklearn_predict:
+  predict:
     parameters:
-      model_uri: string
-    command: "python sklearn_predict.py {model_uri}"
-  pyfunc_predict:
-    parameters:
-      model_uri: string
-    command: "python pyfunc_predict.py {model_uri}"
-  onnx_predict:
-    parameters:
-      model_uri: string
-    command: "python onnx_predict.py {model_uri}"
+      model-uri: string
+      flavor: string
+      data-path: {type: string, default: ../../data/train/wine-quality-white.csv }
+    command: "python -um wine_quality.predict 
+                --model-uri {model-uri} 
+                --flavor {flavor} 
+                --data-path {data-path}"
