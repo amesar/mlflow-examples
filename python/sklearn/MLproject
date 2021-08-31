@@ -15,7 +15,7 @@ entry_points:
       run_origin: {type: string, default: "default" }
       log_as_onnx: {type: boolean, default: False}
       autolog: {type: boolean, default: False}
-    command: "python main.py
+    command: "python -um wine_quality.train
                 --data_path {data_path}
                 --max_depth {max_depth}
                 --max_leaf_nodes {max_leaf_nodes}

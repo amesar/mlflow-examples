@@ -1,7 +1,7 @@
 {
   "run_name": "MLflow_RunSubmit_NewCluster",
   "new_cluster": {
-    "spark_version": "6.1.x-cpu-ml-scala2.11",
+    "spark_version": "9.0.x-cpu-ml-scala2.11",
     "node_type_id": "i3.xlarge",
     "num_workers": 1
   },
@@ -10,8 +10,12 @@
     { "whl": "dbfs:/tmp/jobs/sklearn_wine/mlflow_sklearn_wine-0.0.1-py3.6.whl" }
   ],
   "spark_python_task": {
-    "python_file": "dbfs:/tmp/jobs/sklearn_wine/main.py",
-    "parameters": [ "/Users/john.doe@acme.com/experiments/sklearn_wine", 2, 32, "/dbfs/tmp/jobs/sklearn_wine/wine-quality-white.csv", "run_submit_new_cluster_whl" ]
-  },
+    "python_file": "dbfs:/home/me@mycompany.com/work/jobs/sklearn_wine/main.py",
+    "parameters": [
+       "--experiment_name", "/Users/me@mycompany.com/experiments/sklearn_wine_job",
+       "--max_depth", 5,
+       "--data_path", "/dbfs/home/me@mycompany.com/work/jobs/sklearn_wine/wine-quality-white.csv",
+       "--run_origin", "run_submit_new_cluster_whl" ]
+   },
   "timeout_seconds": 3600
 }

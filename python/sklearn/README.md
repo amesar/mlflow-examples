@@ -98,7 +98,14 @@ Examples:
 | yes | No error |
 
 
-### 1. MLflow CLI - `mlflow run`
+### 1. Unmanaged without MLflow CLI
+
+Run the standard main function from the command-line.
+```
+python main.py --experiment_name sklearn --max_depth 2 --max_leaf_nodes 32
+```
+
+### 2. MLflow CLI - `mlflow run`
 
 Use the [MLproject](MLproject) file. For more details see [MLflow documentation - Running Projects](https://mlflow.org/docs/latest/projects.html#running-projects).
 
@@ -139,12 +146,6 @@ mlflow run https://github.com/amesar/mlflow-examples.git#python/sklearn \
   --backend databricks --backend-config mlflow_run_cluster.json
 ```
 
-### 2. Unmanaged without MLflow CLI
-
-Run the standard main function from the command-line.
-```
-python main.py --experiment_name sklearn --max_depth 2 --max_leaf_nodes 32
-```
 
 ### 3. Databricks REST API
 
@@ -162,13 +163,12 @@ python setup.py bdist_wheel
 
 Upload the data file, main file and wheel to your Databricks file system.
 ```
-databricks fs cp main.py dbfs:/tmp/jobs/sklearn_wine/main.py
+databricks fs cp wine_quality/main_train.py dbfs:/tmp/jobs/sklearn_wine/main.py
 databricks fs cp data/train/wine-quality-white.csv dbfs:/tmp/jobs/sklearn_wine/wine-quality-white.csv
 databricks fs cp \
   dist/mlflow_sklearn_wine-0.0.1-py3-none-any.whl \
   dbfs:/tmp/jobs/sklearn_wine/mlflow_wine_quality-0.0.1-py3.6.whl 
 ```
-
 
 #### Run Submit
 
