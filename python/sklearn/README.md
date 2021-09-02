@@ -31,19 +31,19 @@ There are several ways to train a model with MLflow.
 ### Options
 
 ```
-python main.py --help
+python -m wine_quality.train --help
 
 Options:
-  --experiment_name TEXT    Experiment name.
-  --data_path TEXT          Data path.
-  --model_name TEXT         Registered model name.
-  --max_depth INTEGER       Max depth parameter.
-  --max_leaf_nodes INTEGER  Max leaf nodes parameter.
-  --output_path TEXT        Output file containing run ID.
-  --log_as_onnx BOOLEAN     Log model as ONNX flavor. Default is false.
-  --run_origin TEXT         Run origin.
+  --experiment-name TEXT    Experiment name.
+  --data-path TEXT          Data path.
+  --model-name TEXT         Registered model name.
+  --max-depth INTEGER       Max depth parameter.
+  --max-leaf-nodes INTEGER  Max leaf nodes parameter.
+  --output-path TEXT        Output file containing run ID.
+  --log-as-onnx BOOLEAN     Log model as ONNX flavor. Default is false.
+  --run-origin TEXT         Run origin.
   --autolog BOOLEAN         Autolog parameters and metrics. Default is False.
-  --save_signature BOOLEAN  Save model signature. Default is False.
+  --save-signature BOOLEAN  Save model signature. Default is False.
 ```
 
 #### Autolog
@@ -102,7 +102,7 @@ Examples:
 
 Run the standard main function from the command-line.
 ```
-python main.py --experiment_name sklearn --max_depth 2 --max_leaf_nodes 32
+python main.py --experiment-name sklearn --max-depth 2 --max-leaf-nodes 32
 ```
 
 ### 2. MLflow CLI - `mlflow run`
@@ -114,14 +114,14 @@ Note that the `mlflow` CLI run ignores the `mlflow.set_experiment()` so you must
 #### mlflow run local
 ```
 mlflow run . \
-  -P max_depth=2 -P max_leaf_nodes=32 -P run_origin=localRun \
+  -P max-depth=2 -P max-leaf-nodes=32 -P run-origin=localRun \
   --experiment-name=sklearn_wine
 ```
 
 #### mlflow run github
 ```
 mlflow run https://github.com/amesar/mlflow-examples.git#python/sklearn \
-  -P max_depth=2 -P max_leaf_nodes=32 -P run_origin=gitRun \
+  -P max-depth=2 -P max-leaf-nodes=32 -P run-origin=gitRun \
   --experiment-name=sklearn_wine
 ```
 
@@ -140,8 +140,8 @@ The token and tracking server URL are picked up from your Databricks CLI `~/.dat
 
 ```
 mlflow run https://github.com/amesar/mlflow-examples.git#python/sklearn \
-  -P max_depth=2 -P max_leaf_nodes=32 -P run_origin=gitRun \
-  -P data_path=https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv \
+  -P max-depth=2 -P max-leaf-nodes=32 -P run-origin=gitRun \
+  -P data-path=https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv \
   --experiment-name=/Users/me@mycompany.com/sklearn_wine \
   --backend databricks --backend-config mlflow_run_cluster.json
 ```

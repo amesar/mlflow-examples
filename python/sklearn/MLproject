@@ -8,21 +8,21 @@ conda_env: conda.yaml
 entry_points:
   main:
     parameters:
-      data_path: {type: string, default: "../../data/train/wine-quality-white.csv"}
-      max_depth: int
-      max_leaf_nodes: {type: int, default: 32}
-      model_name: {type: string, default: None }
-      run_origin: {type: string, default: "default" }
-      log_as_onnx: {type: boolean, default: False}
+      data-path: {type: string, default: "../../data/train/wine-quality-white.csv"}
+      max-depth: int
+      max-leaf-nodes: {type: int, default: 32}
+      model-name: {type: string, default: None }
+      run-origin: {type: string, default: "default" }
+      log-as-onnx: {type: boolean, default: False}
       autolog: {type: boolean, default: False}
     command: "python -um wine_quality.train
-                --data_path {data_path}
-                --max_depth {max_depth}
-                --max_leaf_nodes {max_leaf_nodes}
-                --model_name {model_name}
-                --log_as_onnx {log_as_onnx}
+                --data-path {data-path}
+                --max-depth {max-depth}
+                --max-leaf-nodes {max-leaf-nodes}
+                --model-name {model-name}
+                --log-as-onnx {log-as-onnx}
                 --autolog {autolog}
-                --run_origin {run_origin}"
+                --run-origin {run-origin}"
   predict:
     parameters:
       model-uri: string
