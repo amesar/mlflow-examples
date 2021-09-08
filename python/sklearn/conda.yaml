@@ -8,8 +8,8 @@ dependencies:
     - scikit-learn==0.24.2
     - matplotlib==3.2.1
     - pyarrow>=1.0.0
-    - onnx==1.9.0
-    - onnxmltools==1.7.0
-    - onnxruntime==1.8.0
+    - onnx==1.10.1
+    - onnxmltools==1.9.1
+    - onnxruntime==1.8.1
     - pyspark==3.1.2
     - pytest
