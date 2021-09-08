@@ -2,26 +2,29 @@
 
 ## Overview
 * This example demonstrates all different ways to train and score a MLflow project.
-* Use a Wine Quality DecisionTreeRegressor example.
+* Uses a Wine Quality DecisionTreeRegressor example.
 * Is a well-formed Python project that generates a wheel.
 * Saves model in pickle format.
 * Saves plot artifacts.
-* Shows several ways to run training:
-  * `mlflow run` - several variants.
-  * Run against a Databricks cluster using `mlflow` run or Databricks job.
-  * Call wheel from notebook.
+* There are two ways to log your model training:
+  * [Manual logging](#Training---Manual-Logging)
+    * Shows several ways to run training:
+        * `mlflow run` - several variants.
+        * Run against a Databricks cluster using `mlflow` run or Databricks job.
+        * Run a Databricks job with a wheel built from this package.
+  * [Autologging](#Training---Autologging)
 * Shows several ways to run predictions:
   * Real-time scoring
     * Local web server.
     * Docker container - Plain docker and AWS SageMaker in local mode.
   * Batch scoring
     * mlflow.load_model()
-    * UDF - invoke with the DataFrame API or SQL. Works with Spark 3.1.1.
+    * UDF - invoke with the DataFrame API or SQL. Works with Spark 3.1.2.
 * Data: [../../data/train/wine-quality-white.csv](../../data/train/wine-quality-white.csv)
 
-## Training
+## Training - Manual Logging
 
-Source: [main.py](main.py) and [wine_quality/train.py](wine_quality/train.py).
+Source: [wine_quality/train.py](wine_quality/train.py).
 
 There are several ways to train a model with MLflow.
   1. MLflow CLI `run` command
@@ -46,26 +49,6 @@ Options:
   --save-signature BOOLEAN  Save model signature. Default is False.
 ```
 
-#### Autolog
-
-If you set the `autolog` option to True, [mlflow.sklearn.autolog()](https://mlflow.org/docs/latest/python_api/mlflow.sklearn.html#mlflow.sklearn.autolog) will be called and manually set parameters will not be recorded. Note that the model artifact path is simply model.
-
-If you set the `autolog`  option, mannually set parameters will not be recorded.
-Note that the model artifact path is simply `model`.
-
-Here's the list of parameters for DecisionTreeRegressor:
-* criterion       
-* max_depth       
-* max_features    
-* max_leaf_nodes  
-* min_impurity_decrease   
-* min_impurity_split      
-* min_samples_leaf        
-* min_samples_split       
-* min_weight_fraction_leaf        
-* presort 
-* random_state    
-* splitter
 
 #### Signature
 
@@ -228,6 +211,55 @@ trainer = Trainer("WineQualityExperiment", data_path, "from_notebook_with_wheel"
 trainer.train(0.4, 0.4)
 ```
 
+## Training - Autologging
+
+Source: [wine_quality/autolog_train.py](wine_quality/autolog_train.py).
+
+### Autolog parameters
+
+To activate autologging, you simply call [mlflow.sklearn.autolog()](https://mlflow.org/docs/latest/python_api/mlflow.sklearn.html#mlflow.sklearn.autolog).
+Note that the model artifact path is simply `model`.
+
+List of parameters for DecisionTreeRegressor:
+* criterion       
+* max_depth       
+* max_features    
+* max_leaf_nodes  
+* min_impurity_decrease   
+* min_impurity_split      
+* min_samples_leaf        
+* min_samples_split       
+* min_weight_fraction_leaf        
+* presort 
+* random_state    
+* splitter
+
+List of metrics for DecisionTreeRegressor:
+* training_mae
+* training_mse
+* training_r2_score
+* training_rmse
+* training_score
+
+### Run
+```
+mlflow run . \
+  --entry-point autolog \
+  --experiment-name sklearn_autolog\
+  -P max-depth=5 
+```
+
+### Options
+```
+Usage: python -m wine_quality.autolog_train [OPTIONS]
+
+Options:
+  --experiment-name TEXT    Experiment name.
+  --data-path TEXT          Data path.
+  --max-depth INTEGER       Max depth parameter.
+  --max-leaf-nodes INTEGER  Max leaf nodes parameter.
+```
+
 ## Predictions
 
 You can make predictions in two ways:
@@ -245,16 +277,16 @@ You can predict with either normal Python script or as `mlflow run` project.
 **Normal Python script**
 ```
 python -um wine_quality.predict \
-  --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model \
+  --model-uri runs:/7e674524514846799310c41f10d6b99d/model \
   --flavor sklearn 
 ```
 
 **mlflow run**
 
-See [MLproject](MLproject) file.
+See the [MLproject](MLproject) file.
 ```
 mlflow run . \
-  -P model-uri=runs:/7e674524514846799310c41f10d6b99d/sklearn-model \
+  -P model-uri=runs:/7e674524514846799310c41f10d6b99d/model \
   -P flavor=sklearn \
   --entry-point predict 
 ```
@@ -265,7 +297,7 @@ You can use either a `runs` or `models` scheme.
 
 URI with `runs` scheme.
 ```
-python -um wine_quality.predict --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model --flavor sklearn 
+python -um wine_quality.predict --model-uri runs:/7e674524514846799310c41f10d6b99d/model --flavor sklearn 
 
 ```
 
@@ -281,7 +313,7 @@ Result.
 predictions: [5.55109634 5.29772751 5.42757213 5.56288644 5.56288644]
 ```
 
-Snippet from [predict.py](predict.py):
+Snippet from [predict.py](wine_quality/predict.py):
 ```
 model = mlflow.sklearn.load_model(model_uri)
 df = pd.read_csv("../../data/train/wine-quality-white.csv")
@@ -292,17 +324,17 @@ predictions = model.predict(data)
 #### 2. Predict with mlflow.pyfunc.load_model()
 
 ```
-python -um wine_quality.predict --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model --flavor pyfunc
+python -um wine_quality.predict --model-uri runs:/7e674524514846799310c41f10d6b99d/model --flavor pyfunc
 ```
 
 ```
 predictions: [5.55109634 5.29772751 5.42757213 5.56288644 5.56288644]
 ```
-From [predict.py](predict.py):
+From [predict.py](wine_quality/predict.py):
 ```
 data_path = "../../data/train/wine-quality-white.csv"
 data = predict_utils.read_prediction_data(data_path)
-model_uri = client.get_run(run_id).info.artifact_uri + "/sklearn-model"
+model_uri = client.get_run(run_id).info.artifact_uri + "/model"
 model = mlflow.pyfunc.load_model(model_uri)
 predictions = model.predict(data)
 ```
@@ -317,7 +349,7 @@ Scroll right to see prediction column.
 
 ```
 python -um wine_quality.predict \
-  --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model \
+  --model-uri runs:/7e674524514846799310c41f10d6b99d/model \
   --flavor spark_udf
 ```
 
@@ -330,7 +362,7 @@ python -um wine_quality.predict \
 4   10.1|     0.05|        0.4| 0.9951|          8.1|               30.0|3.26|           6.9|     0.44|                97.0|            0.28| 5.427572126267637|
 |    9.9|    0.058|       0.32| 0.9956|          7.2|               47.0|3.19|           8.5|      0.4|               186.0|            0.23| 5.562886443251915|
 ```
-From [predict.py](predict.py):
+From [predict.py](wine_quality/predict.py):
 ```
 spark = SparkSession.builder.appName("App").getOrCreate()
 data = spark.read.option("inferSchema",True).option("header", True).csv("../data/train/wine-quality-white.csv")
@@ -437,7 +469,7 @@ curl -X POST -H "Content-Type:application/json" \
 Launch the scoring server.
 ```
 mlflow pyfunc serve -port 5001 \
-  -model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model 
+  -model-uri runs:/7e674524514846799310c41f10d6b99d/model 
 ```
 
 Make predictions with curl as described above.
@@ -449,7 +481,7 @@ See [build-docker](https://mlflow.org/docs/latest/cli.html#mlflow-models-build-d
 First build the docker image.
 ```
 mlflow models build-docker \
-  --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model \
+  --model-uri runs:/7e674524514846799310c41f10d6b99d/model \
   --name dk-wine-sklearn
 ```
 
@@ -475,7 +507,7 @@ mlflow sagemaker build-and-push-container --build --no-push --container sm-wine-
 To test locally, launch the server as a docker container.
 ```
 mlflow sagemaker run-local \
-  --model-uri runs:/7e674524514846799310c41f10d6b99d/sklearn-model \
+  --model-uri runs:/7e674524514846799310c41f10d6b99d/model \
   --port 5001 --image sm-wine-sklearn
 ```
 

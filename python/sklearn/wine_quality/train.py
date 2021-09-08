@@ -1,6 +1,10 @@
-# The data set used in this example is from http://archive.ics.uci.edu/ml/datasets/Wine+Quality
-# P. Cortez, A. Cerdeira, F. Almeida, T. Matos and J. Reis.
-# Modeling wine preferences by data mining from physicochemical properties. In Decision Support Systems, Elsevier, 47(4):547-553, 2009.
+"""
+Trains a wine quality dataset with a sklearn DecisionTreeRegressor using MLflow manual logging.
+
+The data set used in this example is from http://archive.ics.uci.edu/ml/datasets/Wine+Quality
+P. Cortez, A. Cerdeira, F. Almeida, T. Matos and J. Reis.
+Modeling wine preferences by data mining from physicochemical properties. In Decision Support Systems, Elsevier, 47(4):547-553, 2009.
+"""
 
 import platform
 import pandas as pd
@@ -28,12 +32,11 @@ client = mlflow.tracking.MlflowClient()
 colLabel = "quality"
 
 class Trainer():
-    def __init__(self, experiment_name, data_path, log_as_onnx, autolog, save_signature, run_origin="none"):
+    def __init__(self, experiment_name, data_path, log_as_onnx, save_signature, run_origin="none"):
         self.experiment_name = experiment_name
         self.data_path = data_path
         self.run_origin = run_origin
         self.log_as_onnx = log_as_onnx
-        self.autolog = autolog
         self.save_signature = save_signature
         self.X_train, self.X_test, self.y_train, self.y_test = self.build_data(data_path)
 
@@ -54,9 +57,6 @@ class Trainer():
 
     def train(self, max_depth, max_leaf_nodes, model_name, output_path):
         with mlflow.start_run(run_name=self.run_origin) as run:  # NOTE: mlflow CLI ignores run_name
-            if self.autolog:
-                mlflow.sklearn.autolog()
-
             run_id = run.info.run_uuid
             experiment_id = run.info.experiment_id
             print("MLflow:")
@@ -65,7 +65,6 @@ class Trainer():
             print("  experiment_name:", client.get_experiment(experiment_id).name)
 
             # MLflow tags
-            mlflow.set_tag("autolog",self.autolog)
             mlflow.set_tag("save_signature",self.save_signature)
             mlflow.set_tag("mlflow.runName", self.run_origin) # mlflow CLI picks this up
             mlflow.set_tag("data_path", self.data_path)
@@ -90,24 +89,24 @@ class Trainer():
             print("Parameters:")
             print("  max_depth:", max_depth)
             print("  max_leaf_nodes:", max_leaf_nodes)
-            if not self.autolog:
-                mlflow.log_param("max_depth", max_depth)
-                mlflow.log_param("max_leaf_nodes", max_leaf_nodes)
-
-                # MLflow metrics
-                rmse = np.sqrt(mean_squared_error(self.y_test, predictions))
-                mae = mean_absolute_error(self.y_test, predictions)
-                r2 = r2_score(self.y_test, predictions)
-                print("Metrics:")
-                print("  rmse:", rmse)
-                print("  mae:", mae)
-                print("  r2:", r2)
-                mlflow.log_metric("rmse", rmse)
-                mlflow.log_metric("r2", r2)
-                mlflow.log_metric("mae", mae)
             
-                # MLflow log model -  autolog creates a model called "model"
-                mlflow.sklearn.log_model(dt, "sklearn-model", registered_model_name=model_name, signature=signature)
+            mlflow.log_param("max_depth", max_depth)
+            mlflow.log_param("max_leaf_nodes", max_leaf_nodes)
+
+            # MLflow metrics
+            rmse = np.sqrt(mean_squared_error(self.y_test, predictions))
+            mae = mean_absolute_error(self.y_test, predictions)
+            r2 = r2_score(self.y_test, predictions)
+            print("Metrics:")
+            print("  rmse:", rmse)
+            print("  mae:", mae)
+            print("  r2:", r2)
+            mlflow.log_metric("rmse", rmse)
+            mlflow.log_metric("r2", r2)
+            mlflow.log_metric("mae", mae)
+        
+            # MLflow log model
+            mlflow.sklearn.log_model(dt, "model", registered_model_name=model_name, signature=signature)
 
             # Convert sklearn model to ONNX and log model
             if self.log_as_onnx:
@@ -137,17 +136,16 @@ class Trainer():
 @click.option("--output-path", help="Output file containing run ID.", default="none", type=str)
 @click.option("--log-as-onnx", help="Log model as ONNX flavor. Default is false.", default=False, type=bool)
 @click.option("--run-origin", help="Run origin.", default="none", type=str)
-@click.option("--autolog", help="Autolog parameters and metrics. Default is False.", default=False, type=bool)
 @click.option("--save-signature", help="Save model signature. Default is False.", default=False, type=bool)
          
-def main(experiment_name, data_path, model_name, max_depth, max_leaf_nodes, log_as_onnx, output_path, autolog, save_signature, run_origin):
+def main(experiment_name, data_path, model_name, max_depth, max_leaf_nodes, log_as_onnx, output_path, save_signature, run_origin):
     print("Options:")
     for k,v in locals().items(): 
         print(f"  {k}: {v}")
     model_name = None if not model_name or model_name == "None" else model_name
     print("Processed Options:")
     print(f"  model_name: {model_name} - type: {type(model_name)}")
-    trainer = Trainer(experiment_name, data_path, log_as_onnx, autolog, save_signature, run_origin)
+    trainer = Trainer(experiment_name, data_path, log_as_onnx, save_signature, run_origin)
     trainer.train(max_depth, max_leaf_nodes, model_name, output_path)
 
 if __name__ == "__main__":

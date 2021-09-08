@@ -23,6 +23,15 @@ entry_points:
                 --log-as-onnx {log-as-onnx}
                 --autolog {autolog}
                 --run-origin {run-origin}"
+  autolog:
+    parameters:
+      data-path: {type: string, default: "../../data/train/wine-quality-white.csv"}
+      max-depth: int
+      max-leaf-nodes: {type: int, default: 32}
+    command: "python -um wine_quality.autolog_train
+                --data-path {data-path}
+                --max-depth {max-depth}
+                --max-leaf-nodes {max-leaf-nodes}"
   predict:
     parameters:
       model-uri: string

@@ -7,7 +7,7 @@ run_id = None
 experiment_name = "sklearn_test"
 
 def sklearn_model_uri():  
-    return f"runs:/{run_id}/sklearn-model"
+    return f"runs:/{run_id}/model"
 
 def onnx_model_uri():  
     return f"runs:/{run_id}/onnx-model"
@@ -21,7 +21,7 @@ def banner(msg, model_uri):
 def test_train():
     global run_id
     banner("test_train","")
-    trainer = Trainer(experiment_name, log_as_onnx=True, run_origin="test", data_path=data_path, autolog=False, save_signature=True)
+    trainer = Trainer(experiment_name, log_as_onnx=True, run_origin="test", data_path=data_path, save_signature=True)
     _, run_id = trainer.train(5, 5, None, "none")
 
 
