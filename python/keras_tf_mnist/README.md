@@ -27,27 +27,27 @@ Source: [train.py](train.py).
 
 ### Options
 ```
-  --experiment_name TEXT        Experiment name
-  --model_name TEXT             Registered model name
-  --data_path TEXT              Data path
+  --experiment-name TEXT        Experiment name
+  --model-name TEXT             Registered model name
+  --data-path TEXT              Data path
   --epochs INTEGER              Epochs
-  --batch_size INTEGER          Batch size
+  --batch-size INTEGER          Batch size
   --repeats INTEGER             Repeats
-  --mlflow_custom_log BOOLEAN   Explicitly log params, metrics and model with mlflow.log_
-  --keras_autolog BOOLEAN       Automatically log params, metrics and model with mlflow.keras.autolog
-  --tensorflow_autolog BOOLEAN  Automatically log params, metrics and model with mlflow.tensorflow.autolog
-  --mlflow_autolog BOOLEAN      Automatically log params, metrics and model with mlflow.autolog
-  --log_as_onnx BOOLEAN         log_as_onnx
+  --mlflow-custom-log BOOLEAN   Explicitly log params, metrics and model with mlflow.log_
+  --keras-autolog BOOLEAN       Automatically log params, metrics and model with mlflow.keras.autolog
+  --tensorflow-autolog BOOLEAN  Automatically log params, metrics and model with mlflow.tensorflow.autolog
+  --mlflow-autolog BOOLEAN      Automatically log params, metrics and model with mlflow.autolog
+  --log-as-onnx BOOLEAN         Log an ONNX model also
 ```
 
 ### Run training
 
 ```
-python train.py --experiment_name keras_mnist --epochs 3 --batch_size 128
+python train.py --experiment-name keras_mnist --epochs 3 --batch-size 128
 ```
 or
 ```
-mlflow run . --experiment-name keras_mnist -P epochs=3 -P batch_size=128
+mlflow run . --experiment-name keras_mnist -P epochs=3 -P batch-size=128
 ```
 
 ### SavedModel format
@@ -62,7 +62,7 @@ The training program saves the Keras model in two formats:
 
 To log a model as ONNX flavor under the artifact path `onnx-model`.
 ```
-mlflow run . --experiment-name keras_mnist -P epochs=3 -P batch_size=128 -P log_as_onnx=True
+mlflow run . --experiment-name keras_mnist -P epochs=3 -P batch-size=128 -P log-as-onnx=True
 ```
 
 ONNX training works with TensorFlow 2.3.0 but fails on 2.4.0 with the following message:
@@ -102,7 +102,7 @@ Score as Keras and Keras/PyFunc flavor.
 Source: [keras_predict.py](keras_predict.py).
 
 ```
-python keras_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/keras-model
+python keras_predict.py --model-uri runs:/7e674524514846799310c41f10d6b99d/keras-model
 ```
 
 ```
@@ -142,7 +142,7 @@ Source: [pyfunc_predict.py](pyfunc_predict.py).
 #### Score Keras model with Pyfunc 
 
 ```
-python pyfunc_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/keras-model
+python pyfunc_predict.py --model-uri runs:/7e674524514846799310c41f10d6b99d/keras-model
 ```
 
 ```
@@ -157,7 +157,7 @@ predictions:               0             1  ...             8             9
 #### Score ONNX model with Pyfunc 
 
 ```
-python pyfunc_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/onnx-model
+python pyfunc_predict.py --model-uri runs:/7e674524514846799310c41f10d6b99d/onnx-model
 ```
 ```
 predictions.type: <class 'pandas.core.frame.DataFrame'>
@@ -175,7 +175,7 @@ predictions:             dense_2
 
 Source: [onnx_predict.py](onnx_predict.py) and [onnx_utils.py](onnx_utils.py).
 ```
-python onnx_predict.py --model_uri runs:/7e674524514846799310c41f10d6b99d/onnx-model
+python onnx_predict.py --model-uri runs:/7e674524514846799310c41f10d6b99d/onnx-model
 ```
 ```
 predictions.type: <class 'numpy.ndarray'>

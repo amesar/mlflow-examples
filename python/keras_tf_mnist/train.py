@@ -72,16 +72,16 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
 
 
 @click.command()
-@click.option("--experiment_name", help="Experiment name", default=None, type=str)
-@click.option("--model_name", help="Registered model name", default=None, type=str)
-@click.option("--data_path", help="Data path", default=None, type=str)
+@click.option("--experiment-name", help="Experiment name", default=None, type=str)
+@click.option("--model-name", help="Registered model name", default=None, type=str)
+@click.option("--data-path", help="Data path", default=None, type=str)
 @click.option("--epochs", help="Epochs", default=5, type=int)
-@click.option("--batch_size", help="Batch size", default=128, type=int)
-@click.option("--mlflow_custom_log", help="Explicitly log params, metrics and model with mlflow.log_", default=True, type=bool)
-@click.option("--keras_autolog", help="Automatically log params, metrics and model with mlflow.keras.autolog", default=False, type=bool)
-@click.option("--tensorflow_autolog", help="Automatically log params, metrics and model with mlflow.tensorflow.autolog", default=False, type=bool)
-@click.option("--mlflow_autolog", help="Automatically log params, metrics and model with mlflow.autolog", default=False, type=bool)
-@click.option("--log_as_onnx", help="log_as_onnx", default=False, type=bool)
+@click.option("--batch-size", help="Batch size", default=128, type=int)
+@click.option("--mlflow-custom-log", help="Explicitly log params, metrics and model with mlflow.log_", default=True, type=bool)
+@click.option("--keras-autolog", help="Automatically log params, metrics and model with mlflow.keras.autolog", default=False, type=bool)
+@click.option("--tensorflow-autolog", help="Automatically log params, metrics and model with mlflow.tensorflow.autolog", default=False, type=bool)
+@click.option("--mlflow-autolog", help="Automatically log params, metrics and model with mlflow.autolog", default=False, type=bool)
+@click.option("--log-as-onnx", help="log_as_onnx", default=False, type=bool)
 
 def main(experiment_name, model_name, data_path, epochs, batch_size, mlflow_autolog, keras_autolog, tensorflow_autolog, mlflow_custom_log, log_as_onnx):
     print("Options:")

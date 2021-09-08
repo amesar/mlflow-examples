@@ -9,7 +9,7 @@ import onnx_utils
 utils.display_versions()
 
 @click.command()
-@click.option("--model_uri", help="Model URI", required=True, type=str)
+@click.option("--model-uri", help="Model URI", required=True, type=str)
 def main(model_uri):
     print("model_uri:", model_uri)
     data = utils.get_prediction_data()

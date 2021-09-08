@@ -6,8 +6,8 @@ import utils
 utils.display_versions()
 
 @click.command()
-@click.option("--model_uri", help="Model URI", required=True, type=str)
-@click.option("--data_path", help="Data path", default=None, type=str)
+@click.option("--model-uri", help="Model URI", required=True, type=str)
+@click.option("--data-path", help="Data path", default=None, type=str)
 def main(model_uri, data_path):
     print("Options:")
     for k,v in locals().items(): print(f"  {k}: {v}")
