@@ -5,8 +5,9 @@ dependencies:
   - python=3.7.6
   - pip:
     - mlflow>=1.17.0
-    - tensorflow==2.4.1 # ONNX training fails on Mac and Debian
-    #- tensorflow==2.3.0 # ONNX training is OK on Mac and Debian
+    #- tensorflow==2.5.0 # ONNX training fails on Mac and Debian
+    #- tensorflow==2.4.1 # ONNX training fails on Mac and Debian
+    - tensorflow==2.3.0 # ONNX training is OK on Mac and Debian
     - onnx==1.9.0
     - onnxmltools==1.7.0
     - onnxruntime==1.7.0
