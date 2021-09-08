@@ -8,8 +8,8 @@ spark = SparkSession.builder.appName("Predict").getOrCreate()
 show_versions(spark)
 
 @click.command()
-@click.option("--model_uri", help="Model URI", required=True, type=str)
-@click.option("--data_path", help="Data path", default=default_data_path, type=str)
+@click.option("--model-uri", help="Model URI", required=True, type=str)
+@click.option("--data-path", help="Data path", default=default_data_path, type=str)
 
 def main(model_uri, data_path):
     print("Options:")

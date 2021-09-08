@@ -9,8 +9,8 @@ spark = SparkSession.builder.appName("Predict").getOrCreate()
 show_versions(spark)
 
 @click.command()
-@click.option("--run_id", help="Run ID", required=True, type=str)
-@click.option("--data_path", help="Data path", default=default_data_path, type=str)
+@click.option("--run-id", help="Run ID", required=True, type=str)
+@click.option("--data-path", help="Data path", default=default_data_path, type=str)
 
 def main(run_id, data_path):
     print("Options:")

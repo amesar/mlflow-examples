@@ -8,8 +8,8 @@ print("MLflow Version:", mlflow.__version__)
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 
 @click.command()
-@click.option("--model_uri", help="Model URI", default=None, type=str)
-@click.option("--data_path", help="Data path", default="../../data/train/wine-quality-white.csv", type=str)
+@click.option("--model-uri", help="Model URI", default=None, type=str)
+@click.option("--data-path", help="Data path", default="../../data/train/wine-quality-white.csv", type=str)
 
 def main(model_uri, data_path):
     print("Options:")

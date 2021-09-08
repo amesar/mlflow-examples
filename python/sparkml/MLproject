@@ -5,47 +5,47 @@ conda_env: conda.yaml
 entry_points:
   main:
     parameters:
-      max_depth: {type: int, default: 5 }
-      max_bins: {type: int, default: 32 }
-      model_name: {type: string, default: None }
-      log_as_mleap: {type: boolean, default: False}
-      log_as_onnx: {type: boolean, default: False}
+      max-depth: {type: int, default: 5 }
+      max-bins: {type: int, default: 32 }
+      model-name: {type: string, default: None }
+      log-as-mleap: {type: boolean, default: False}
+      log-as-onnx: {type: boolean, default: False}
     command: "python train.py 
-        --max_depth {max_depth} 
-        --max_bins {max_bins} 
-        --model_name {model_name}
-        --log_as_mleap {log_as_mleap}
-        --log_as_onnx {log_as_onnx}"
+        --max-depth {max-depth} 
+        --max-bins {max-bins} 
+        --model-name {model-name}
+        --log-as-mleap {log-as-mleap}
+        --log-as-onnx {log-as-onnx}"
   main_spark_submit:
     parameters:
-      max_depth: {type: int, default: 5 }
-      max_bins: {type: int, default: 32 }
-      model_name: {type: string, default: None }
-      log_as_mleap: {type: boolean, default: False}
-      log_as_onnx: {type: boolean, default: False}
+      max-depth: {type: int, default: 5 }
+      max-bins: {type: int, default: 32 }
+      model-name: {type: string, default: None }
+      log-as-mleap: {type: boolean, default: False}
+      log-as-onnx: {type: boolean, default: False}
     command: "spark-submit --master local[2] 
       --packages com.databricks:spark-avro_2.11:3.0.1,ml.combust.mleap:mleap-spark_2.11:0.12.0
       train.py 
-        --max_depth {max_depth} 
-        --max_bins {max_bins} 
-        --model_name {model_name}
-        --log_as_mleap {log_as_mleap}
-        --log_as_onnx {log_as_onnx}"
+        --max-depth {max-depth} 
+        --max-bins {max-bins} 
+        --model-name {model-name}
+        --log-as-mleap {log-as-mleap}
+        --log-as-onnx {log-as-onnx}"
   spark_predict: 
     parameters:
-      model_uri: string
+      model-uri: string
     command: "spark-submit --master local[2] 
-      spark_predict.py --model_uri {model_uri}"
+      spark_predict.py --model-uri {model-uri}"
   pyfunc_predict:
     parameters:
-      model_uri: string
-    command: "python pyfunc_predict.py --model_uri {model_uri}"
+      model-uri: string
+    command: "python pyfunc_predict.py --model-uri {model-uri}"
   udf_predict: 
     parameters:
-      model_uri: string
+      model-uri: string
     command: "spark-submit --master local[2] 
-      spark_predict.py --model_uri {model_uri}"
+      spark_predict.py --model-uri {model-uri}"
   onnx_predict:
     parameters:
-      model_uri: string
-    command: "python onnx_predict.py --model_uri {model_uri}"
+      model-uri: string
+    command: "python onnx_predict.py --model-uri {model-uri}"

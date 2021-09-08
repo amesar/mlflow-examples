@@ -78,15 +78,15 @@ def train(run_id, data, max_depth, max_bins, model_name, log_as_mleap, log_as_on
         onnx_utils.log_model(spark, model, "onnx-model", model_name, scoreData)
 
 @click.command()
-@click.option("--experiment_name", help="Experiment name", default=None, type=str)
-@click.option("--data_path", help="Data path", default=common.default_data_path, type=str)
-@click.option("--model_name", help="Registered model name", default=None, type=str)
-@click.option("--max_depth", help="Max depth", default=5, type=int) # per doc
-@click.option("--max_bins", help="Max bins", default=32, type=int) # per doc
+@click.option("--experiment-name", help="Experiment name", default=None, type=str)
+@click.option("--data-path", help="Data path", default=common.default_data_path, type=str)
+@click.option("--model-name", help="Registered model name", default=None, type=str)
+@click.option("--max-depth", help="Max depth", default=5, type=int) # per doc
+@click.option("--max-bins", help="Max bins", default=32, type=int) # per doc
 @click.option("--describe", help="Describe data", default=False, type=bool)
-@click.option("--log_as_mleap", help="Score as MLeap", default=False, type=bool)
-@click.option("--log_as_onnx", help="Log model as ONNX flavor", default=False, type=bool)
-@click.option("--spark_autolog", help="Use spark.autolog", default=False, type=bool)
+@click.option("--log-as-mleap", help="Score as MLeap", default=False, type=bool)
+@click.option("--log-as-onnx", help="Log model as ONNX flavor", default=False, type=bool)
+@click.option("--spark-autolog", help="Use spark.autolog", default=False, type=bool)
 
 def main(experiment_name, model_name, data_path, max_depth, max_bins, describe, log_as_mleap, log_as_onnx, spark_autolog):
     print("Options:")

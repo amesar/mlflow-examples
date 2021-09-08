@@ -11,22 +11,25 @@
 
 The model can be logged in the following flavors:
 * spark-model - Always logged
-* mleap-model - Use the `log_as_mleap` option
-* onnx-model - Use the `log_as_onnx` option
+* mleap-model - Use the `log-as-mleap` option
+* onnx-model - Use the `log-as-onnx` option
 
-### Arguments
+### Options
 
-|Name | Required | Default | Description|   
-|---|---|---|---|
-| experiment_name | no | none | Experiment name  |   
-| model_name | no | none | Registered model name (if set) |
-| data_path | no | ../../data/train/wine-quality-white.csv | Path to data  |
-| max_depth | no | 5 | Max depth  |
-| max_bins | no | 32 | Max bins  |
-| run_origin | no | none | Run tag  |
-| log_as_mleap | no | False | Log the model in MLeap flavor |
-| log_as_onnx | no | False | Log the model in ONNX flavor |
-| spark_autolog | no | False | [Spark autologging](https://www.mlflow.org/docs/latest/tracking.html#spark-experimental) with Spark 3.x |
+```
+python train.py --help
+
+Options:
+  --experiment-name TEXT   Experiment name
+  --data-path TEXT         Data path
+  --model-name TEXT        Registered model name
+  --max-depth INTEGER      Max depth
+  --max-bins INTEGER       Max bins
+  --describe BOOLEAN       Describe data
+  --log-as-mleap BOOLEAN   Score as MLeap
+  --log-as-onnx BOOLEAN    Log model as ONNX flavor
+  --spark-autolog BOOLEAN  Use spark.autolog
+```
 
 ### Run unmanaged without `mlflow run`
 
@@ -35,20 +38,20 @@ Install [conda.yaml](conda.yaml) environment.
 To run with standard main function.
 ```
 spark-submit --master local[2] \
-  train.py --max_depth 16 --max_bins 32 
+  train.py --max-depth 16 --max-bins 32 
 ```
 
 To log model as MLeap.
 ```
 spark-submit --master local[2] \
   --packages com.databricks:spark-avro_2.11:3.0.1,ml.combust.mleap:mleap-spark_2.11:0.12.0 \
-  train.py --log_as_mleap True
+  train.py --log-as-mleap True
 ```
 
 To log model as ONNX.
 ```
 spark-submit --master local[2] \
-  train.py --log_as_onnx True
+  train.py --log-as-onnx True
 ```
 
 Spark autologging works only with Spark 3.x and Scala 2.12.
@@ -56,7 +59,7 @@ It logs the data source in the tag `sparkDatasourceInfo`.
 ```
 spark-submit --master local[2] \
   --packages org.mlflow:mlflow-spark:1.12.1 \
-  train.py --spark_autolog True
+  train.py --spark-autolog True
 ```
 
 Resulting tag:
@@ -72,14 +75,14 @@ Note that `mlflow run` ignores the `set_experiment()` function so you must speci
 **mlflow run local**
 ```
 mlflow run . \
-  -P max_depth=3 -P max_bins=24 \
+  -P max-depth=3 -P max-bins=24 \
   --experiment-name=sparkml
 ```
 
 **mlflow run github**
 ```
 mlflow run https://github.com/amesar/mlflow-examples.git#python/sparkml \
-  -P max_depth=3 -P max_bins=24 \
+  -P max-depth=3 -P max-bins=24 \
   --experiment-name=sparkml
 ```
 
@@ -90,8 +93,8 @@ export MLFLOW_TRACKING_URI=databricks
 ```
 ```
 mlflow run https://github.com/amesar/mlflow-examples.git#python/sparkml \
-  -P max_depth=3 -P max_bins=24 \
-  -P data_path=https://raw.githubusercontent.com/amesar/mlflow-examples/master/data/train/wine-quality-white.csv \
+  -P max-depth=3 -P max-bins=24 \
+  -P data-path=https://raw.githubusercontent.com/amesar/mlflow-examples/master/data/train/wine-quality-white.csv \
   --experiment-name=/Users/me@mycompany.com/experiments/sparkml
   --backend databricks --backend-config mlflow_run_cluster.json
 ```
@@ -121,7 +124,7 @@ See [spark_predict.py](spark_predict.py).
 
 ```
 spark-submit --master local[2] spark_predict.py \
-  --model_uri runs:/ffd36a96dd204ac38a58a00c94390649/spark-model
+  --model-uri runs:/ffd36a96dd204ac38a58a00c94390649/spark-model
 ```
 
 ```
@@ -152,7 +155,7 @@ See [sparkml_udf_workaround.py](sparkml_udf_workaround.py).
 
 ```
 spark-submit --master local[2] udf_predict.py \
-  --model_uri runs:/ffd36a96dd204ac38a58a00c94390649/udf-spark-model
+  --model-uri runs:/ffd36a96dd204ac38a58a00c94390649/udf-spark-model
 ```
 
 ```
@@ -180,7 +183,7 @@ spark-submit --master local[2] mleap_predict.py \
 ```
 
 ```
-model_uri: runs:/ffd36a96dd204ac38a58a00c94390649/mleap-model
+model-uri: runs:/ffd36a96dd204ac38a58a00c94390649/mleap-model
 +-----------------+-------+--------------------------------------------------------+
 |prediction       |quality|features                                                |
 +-----------------+-------+--------------------------------------------------------+
@@ -196,7 +199,7 @@ See [pyfunc_predict.py](pyfunc_predict.py).
 
 ```
 spark-submit --master local[2] pyfunc_predict.py \
-  --model_uri runs:/ffd36a96dd204ac38a58a00c94390649/spark-model
+  --model-uri runs:/ffd36a96dd204ac38a58a00c94390649/spark-model
 ```
 
 ```
@@ -210,7 +213,7 @@ predictions: [5.470588235294118, 5.470588235294118, 5.769607843137255, 5.8770491
 
 ```
 python pyfunc_predict.py \
-  --model_uri runs:/ffd36a96dd204ac38a58a00c94390649/onnx-model
+  --model-uri runs:/ffd36a96dd204ac38a58a00c94390649/onnx-model
 ```
 Fails. Apparently the ONNX pyfunc code doesn't support columns with spaces.
 ```
@@ -228,7 +231,7 @@ See [onnx_predict.py](onnx_predict.py).
 
 ```
 python onnx_predict.py \
-  --model_uri runs:/ffd36a96dd204ac38a58a00c94390649/spark-model
+  --model-uri runs:/ffd36a96dd204ac38a58a00c94390649/spark-model
 ```
 ```
 ONNXRuntimeError: INVALID_ARGUMENT : Invalid rank for input: sulphates Got: 1 Expected: 2 Please fix either the inputs or the model.
