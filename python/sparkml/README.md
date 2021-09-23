@@ -2,17 +2,18 @@
 
 ## Overview
 
-* PySpark Spark ML Decision Tree Classification example
-* Logs model in SparkML, custom UDF, MLeap and ONNX flavor.
-* Demonstrates both batch (UDF) and real-time scoring.
+* PySpark Spark ML Decision Tree Classification example.
+* Logs model in SparkML, custom UDF, MLeap and ONNX flavors.
+* Both batch and real-time scoring.
 * Data: [../../data/train/wine-quality-white.csv](../../data/train/wine-quality-white.csv)
 
 ## Train
 
 The model can be logged in the following flavors:
-* spark-model - Always logged
-* mleap-model - Use the `log-as-mleap` option
-* onnx-model - Use the `log-as-onnx` option
+* spark-model - Always logged.
+* udf-spark-model - Custom Pyfunc model for spark-model UDF option.
+* onnx-model - Use the `log-as-onnx` option.
+* mleap-model - Use the `log-as-mleap` option.
 
 ### Options
 
@@ -31,59 +32,24 @@ Options:
   --spark-autolog BOOLEAN  Use spark.autolog
 ```
 
-### Run unmanaged without `mlflow run`
+### Run with `mlflow run`
 
-Install [conda.yaml](conda.yaml) environment.
-
-To run with standard main function.
-```
-spark-submit --master local[2] \
-  train.py --max-depth 16 --max-bins 32 
-```
-
-To log model as MLeap.
-```
-spark-submit --master local[2] \
-  --packages com.databricks:spark-avro_2.11:3.0.1,ml.combust.mleap:mleap-spark_2.11:0.12.0 \
-  train.py --log-as-mleap True
-```
-
-To log model as ONNX.
-```
-spark-submit --master local[2] \
-  train.py --log-as-onnx True
-```
-
-Spark autologging works only with Spark 3.x and Scala 2.12.
-It logs the data source in the tag `sparkDatasourceInfo`.
-```
-spark-submit --master local[2] \
-  --packages org.mlflow:mlflow-spark:1.12.1 \
-  train.py --spark-autolog True
-```
-
-Resulting tag:
-* Tag name: `sparkDatasourceInfo`
-* Value: `path=file:/var/folders/rp/88lfxw2n4lvgkdk9xl0lkqjr0000gp/T/DecisionTreeRegressionModel_1590801461.6367931/data,format=parquet`
-
-### Using `mlflow run`
-
-These runs use the [MLproject](MLproject) file. For more details see [MLflow documentation - Running Projects](https://mlflow.org/docs/latest/projects.html#running-projects).
+See the [MLproject](MLproject) file for the main entrypoints. 
+For more details see [MLflow documentation - Running Projects](https://mlflow.org/docs/latest/projects.html#running-projects).
 
 Note that `mlflow run` ignores the `set_experiment()` function so you must specify the experiment with the  `--experiment-id` argument.
 
-**mlflow run local**
+To run with the default main function.
 ```
-mlflow run . \
-  -P max-depth=3 -P max-bins=24 \
-  --experiment-name=sparkml
+mlflow run . -P max-depth=16 -P max-bins=32 \
+  -P model-name=sparkml \
+  --experiment-name sparkml
 ```
-
-**mlflow run github**
+To log model as ONNX.
 ```
-mlflow run https://github.com/amesar/mlflow-examples.git#python/sparkml \
-  -P max-depth=3 -P max-bins=24 \
-  --experiment-name=sparkml
+mlflow run . -P log-as-onnx=True \
+  -P model-name=sparkml \
+  --experiment-name sparkml
 ```
 
 **mlflow run github with Databricks**
@@ -98,6 +64,32 @@ mlflow run https://github.com/amesar/mlflow-examples.git#python/sparkml \
   --experiment-name=/Users/me@mycompany.com/experiments/sparkml
   --backend databricks --backend-config mlflow_run_cluster.json
 ```
+
+### Run without `mlflow run`
+
+Install [conda.yaml](conda.yaml) environment.
+
+#### Log model as MLeap.
+```
+spark-submit --master local[2] \
+  --packages com.databricks:spark-avro_2.11:3.0.1,ml.combust.mleap:mleap-spark_2.11:0.12.0 \
+  train.py --log-as-mleap True
+```
+
+#### Log model with Autologging.
+
+Spark autologging works only with Spark 3.x and Scala 2.12.
+It logs the data source in the tag `sparkDatasourceInfo`.
+```
+spark-submit --master local[2] \
+  --packages org.mlflow:mlflow-spark:1.12.1 \
+  train.py --spark-autolog True
+```
+
+Resulting tag:
+* Tag name: `sparkDatasourceInfo`
+* Value: `path=file:/var/folders/rp/88lfxw2n4lvgkdk9xl0lkqjr0000gp/T/DecisionTreeRegressionModel_1590801461.6367931/data,format=parquet`
+
 
 ## Predictions
 
@@ -119,12 +111,12 @@ Flavors:
 
 #### Predict as SparkML flavor
 
-Predict as Spark ML flavor with `spark-model`.
+Predict as native Spark ML flavor.
 See [spark_predict.py](spark_predict.py).
 
 ```
-spark-submit --master local[2] spark_predict.py \
-  --model-uri runs:/ffd36a96dd204ac38a58a00c94390649/spark-model
+mlflow run . --entry-point spark_predict \
+  -P model-uri=models:/sparkml/1
 ```
 
 ```
@@ -137,6 +129,21 @@ predictions.type: <class 'pyspark.sql.dataframe.DataFrame'>
 |5.470588235294118|6      |[6.3,0.3,0.34,1.6,0.049,14.0,132.0,0.994,3.3,0.49,9.5]  |
 . . .
 +-----------------+-------+--------------------------------------------------------+
+```
+#### Predict as Pyfunc/SparkML flavor
+
+See [pyfunc_predict.py](pyfunc_predict.py).
+
+```
+mlflow run . --entry-point pyfunc_predict \
+  -P model-uri=models:/sparkml/1
+```
+
+```
+model.type: <mlflow.spark._PyFuncModelWrapper object at 0x115f30b70>
+predictions.type: <class 'list'>
+predictions.len: 4898
+predictions: [5.470588235294118, 5.470588235294118, 5.769607843137255, 5.877049180327869, 5.877049180327869]
 ```
 
 #### Predict as UDF
@@ -154,23 +161,19 @@ You need to log the Spark ML model as `udf-spark-model` which uses a custom Pyth
 See [sparkml_udf_workaround.py](sparkml_udf_workaround.py).
 
 ```
-spark-submit --master local[2] udf_predict.py \
-  --model-uri runs:/ffd36a96dd204ac38a58a00c94390649/udf-spark-model
+mlflow run . --entry-point udf_predict \
+  -P model-uri=models:/sparkml/1
 ```
 
 ```
 predictions.type: <class 'pyspark.sql.dataframe.DataFrame'>
-+-------+------------------+
-|quality|prediction        |
-+-------+------------------+
-|6      |5.4586894586894585|
-|6      |5.011627906976744 |
-+-------+------------------+
-```
-
-Note: [pyarrow version](conda.yaml) must be 0.13.0 (or lower) for UDF prediction. Otherwise you get the following misleading error.
-```
-ImportError: PyArrow >= 0.8.0 must be installed; however, it was not found.
++-----------------+-------+--------------------------------------------------------+
+|prediction       |quality|features                                                |
++-----------------+-------+--------------------------------------------------------+
+|5.497191011235955|6      |[7.0,0.27,0.36,20.7,0.045,45.0,170.0,1.001,3.0,0.45,8.8]|
+|4.833333333333333|6      |[6.3,0.3,0.34,1.6,0.049,14.0,132.0,0.994,3.3,0.49,9.5]  |
+|5.670157068062827|6      |[8.1,0.28,0.4,6.9,0.05,30.0,97.0,0.9951,3.26,0.44,10.1] |
++-----------------+-------+--------------------------------------------------------+
 ```
 
 #### Predict as MLeap flavor
@@ -179,11 +182,10 @@ Predict as MLeap flavor using MLeap's SparkBundle with `mleap-model`.
 See [mleap_predict.py](mleap_predict.py).
 ```
 spark-submit --master local[2] mleap_predict.py \
-  --run_id ffd36a96dd204ac38a58a00c94390649
+  --run_id ffd36a96dd204ac38a58a00c94390649/mleap-model
 ```
 
 ```
-model-uri: runs:/ffd36a96dd204ac38a58a00c94390649/mleap-model
 +-----------------+-------+--------------------------------------------------------+
 |prediction       |quality|features                                                |
 +-----------------+-------+--------------------------------------------------------+
@@ -193,27 +195,10 @@ model-uri: runs:/ffd36a96dd204ac38a58a00c94390649/mleap-model
 +-----------------+-------+--------------------------------------------------------+
 ```
 
-#### Predict as Pyfunc/Spark flavor
-
-See [pyfunc_predict.py](pyfunc_predict.py).
-
-```
-spark-submit --master local[2] pyfunc_predict.py \
-  --model-uri runs:/ffd36a96dd204ac38a58a00c94390649/spark-model
-```
-
-```
-model.type: <mlflow.spark._PyFuncModelWrapper object at 0x115f30b70>
-predictions.type: <class 'list'>
-predictions.len: 4898
-predictions: [5.470588235294118, 5.470588235294118, 5.769607843137255, 5.877049180327869, 5.877049180327869]
-```
-
 #### Predict as Pyfunc/ONNX flavor
 
 ```
-python pyfunc_predict.py \
-  --model-uri runs:/ffd36a96dd204ac38a58a00c94390649/onnx-model
+python pyfunc_predict.py --model-uri models/sparkml_onnx/1
 ```
 Fails. Apparently the ONNX pyfunc code doesn't support columns with spaces.
 ```
@@ -231,7 +216,7 @@ See [onnx_predict.py](onnx_predict.py).
 
 ```
 python onnx_predict.py \
-  --model-uri runs:/ffd36a96dd204ac38a58a00c94390649/spark-model
+  --model-uri models:/sparkml_onnx/1
 ```
 ```
 ONNXRuntimeError: INVALID_ARGUMENT : Invalid rank for input: sulphates Got: 1 Expected: 2 Please fix either the inputs or the model.
@@ -296,7 +281,7 @@ such as [score/wine-quality.json](../../data/predict-wine-quality.json).
 Launch the web server.
 ```
 mlflow pyfunc serve -port 5001 \
-  -model-uri runs:/7e674524514846799310c41f10d6b99d/spark-model 
+  -model-uri models:/sparkml/1
 ```
 
 Make predictions with curl as described above.
@@ -308,7 +293,7 @@ See [build-docker](https://mlflow.org/docs/latest/cli.html#mlflow-models-build-d
 First build the docker image.
 ```
 mlflow models build-docker \
-  --model-uri runs:/7e674524514846799310c41f10d6b99d/spark-model \
+  --model-uri models:/sparkml/1
   --name dk-wine-sparkml
 ```
 
@@ -339,7 +324,7 @@ mlflow sagemaker build-and-push-container --build --no-push --container sm-wine-
 To test locally, launch the server as a docker container.
 ```
 mlflow sagemaker run-local \
-  --model-uri runs:/7e674524514846799310c41f10d6b99d/spark-model \
+  --model-uri models:/sparkml/1 \
   --port 5001 --image sm-wine-sparkml-spark
 ```
 ##### Score with MLeap model
@@ -352,7 +337,7 @@ mlflow sagemaker build-and-push-container --build --no-push --container sm-wine-
 To test locally, launch the server as a docker container.
 ```
 mlflow sagemaker run-local \
-  --model-uri runs:/7e674524514846799310c41f10d6b99d/mleap-model \
+  --model-uri models:/sparkml/1 \
   --port 5001 --image sm-wine-sparkml-mleap
 ```
 
