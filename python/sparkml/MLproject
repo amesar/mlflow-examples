@@ -34,8 +34,7 @@ entry_points:
   spark_predict: 
     parameters:
       model-uri: string
-    command: "spark-submit --master local[2] 
-      spark_predict.py --model-uri {model-uri}"
+    command: "python spark_predict.py --model-uri {model-uri}"
   pyfunc_predict:
     parameters:
       model-uri: string
