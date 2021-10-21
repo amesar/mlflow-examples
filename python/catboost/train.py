@@ -26,7 +26,7 @@ def build_data(data_path):
 def train(data_path, iterations, learning_rate, depth, log_as_onnx, model_name):
     X_train, X_test, y_train, _ = build_data(data_path)
     with mlflow.start_run() as run:
-        run_id = run.info.run_uuid
+        run_id = run.info.run_id
         experiment_id = run.info.experiment_id
         print("MLflow:")
         print("  run_id:", run_id)

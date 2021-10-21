@@ -10,7 +10,7 @@ client = mlflow.tracking.MlflowClient()
 
 def run(alpha, run_origin):
     with mlflow.start_run(run_name=run_origin) as run:
-        print("runId:",run.info.run_uuid)
+        print("runId:",run.info.run_id)
         print("experiment_id:", run.info.experiment_id)
         print("experiment_name:", client.get_experiment(run.info.experiment_id).name)
         print("artifact_uri:", mlflow.get_artifact_uri())
@@ -29,7 +29,7 @@ def run(alpha, run_origin):
         now = round(time.time())
         metrics = [ Metric("m1",0.1,now,0), Metric("m2",0.2,now,0) ]
         tags = [ RunTag("tag1","hi1"), RunTag("tag2","hi2") ]
-        client.log_batch(run.info.run_uuid, metrics, params, tags)
+        client.log_batch(run.info.run_id, metrics, params, tags)
 
 if __name__ == "__main__":
     parser = ArgumentParser()

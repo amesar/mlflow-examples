@@ -57,7 +57,7 @@ class Trainer():
 
     def train(self, max_depth, max_leaf_nodes, model_name, output_path):
         with mlflow.start_run(run_name=self.run_origin) as run:  # NOTE: mlflow CLI ignores run_name
-            run_id = run.info.run_uuid
+            run_id = run.info.run_id
             experiment_id = run.info.experiment_id
             print("MLflow:")
             print("  run_id:", run_id)

@@ -26,7 +26,7 @@ def build_data(data_path):
 def train(data_path, max_depth, min_child_weight, estimators, model_name):
     X_train, X_test, y_train, y_test = build_data(data_path)
     with mlflow.start_run() as run:
-        run_id = run.info.run_uuid
+        run_id = run.info.run_id
         experiment_id = run.info.experiment_id
         print("MLflow:")
         print("  run_id:", run_id)
