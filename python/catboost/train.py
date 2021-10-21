@@ -66,13 +66,13 @@ def train(data_path, iterations, learning_rate, depth, log_as_onnx, model_name):
 
 
 @click.command()
-@click.option("--experiment_name", help="Experiment name", default=None, type=str)
-@click.option("--data_path", help="Data path", default="../../data/train/wine-quality-white.csv", type=str)
-@click.option("--model_name", help="Registered model name", default=None, type=str)
-@click.option("--log_as_onnx", help="log_as_onnx", default=False, type=bool)
+@click.option("--experiment-name", help="Experiment name", default=None, type=str)
+@click.option("--data-path", help="Data path", default="../../data/train/wine-quality-white.csv", type=str)
+@click.option("--model-name", help="Registered model name", default=None, type=str)
+@click.option("--log-as-onnx", help="log_as_onnx", default=False, type=bool)
 @click.option("--iterations", help="Iterations", default=2, type=int)
 @click.option("--depth", help="Depth", default=2, type=int)
-@click.option("--learning_rate", help="Learning rate", default=1, type=int)
+@click.option("--learning-rate", help="Learning rate", default=1, type=int)
 
 def main(experiment_name, data_path, model_name, iterations, depth, learning_rate, log_as_onnx):
     print("Options:")
