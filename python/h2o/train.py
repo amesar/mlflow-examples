@@ -52,11 +52,11 @@ def train(data_path, ntrees, log_as_onnx, model_name):
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument("--experiment_name", dest="experiment_name", help="experiment_name", required=False, type=str)
-    parser.add_argument("--model_name", dest="model_name", help="Registered model name", default=None)
-    parser.add_argument("--data_path", dest="data_path", help="Data path", default=default_data_path)
+    parser.add_argument("--experiment-name", dest="experiment_name", help="experiment_name", required=False, type=str)
+    parser.add_argument("--model-name", dest="model_name", help="Registered model name", default=None)
+    parser.add_argument("--data-path", dest="data_path", help="Data path", default=default_data_path)
     parser.add_argument("--ntrees", dest="ntrees", help="ntrees", default=5, type=int)
-    parser.add_argument("--log_as_onnx", dest="log_as_onnx", help="Log model as ONNX flavor", default=False, action='store_true')
+    parser.add_argument("--log-as-onnx", dest="log_as_onnx", help="Log model as ONNX flavor", default=False, action='store_true')
     args = parser.parse_args()
     print("Arguments:")
     for arg in vars(args):
