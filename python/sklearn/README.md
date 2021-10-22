@@ -22,6 +22,14 @@
     * UDF - invoke with the DataFrame API or SQL. Works with Spark 3.1.2.
 * Data: [../../data/train/wine-quality-white.csv](../../data/train/wine-quality-white.csv)
 
+## Setup
+
+```
+python -m venv mlflow-examples-sklearn
+source mlflow-examples-sklearn/bin/activate
+pip install -e .
+```
+
 ## Training - Manual Logging
 
 Source: [wine_quality/train.py](wine_quality/train.py).
