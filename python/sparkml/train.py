@@ -13,7 +13,7 @@ from pyspark.ml.feature import VectorAssembler
 import mlflow
 import mlflow.spark
 import common
-from sparkml_udf_workaround import log_udf_model
+from spark_udf_workaround import log_udf_model
 
 spark = SparkSession.builder.appName("App").getOrCreate()
 common.show_versions(spark)

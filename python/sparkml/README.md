@@ -148,7 +148,7 @@ predictions: [5.470588235294118, 5.470588235294118, 5.769607843137255, 5.8770491
 
 #### Predict as UDF
 
-Predict as Spark ML UDF with `udf-spark-model`.
+Predict as Spark UDF with `udf-spark-model`.
 See [udf_predict.py](udf_predict.py).
 
 There is a bug with loading a Spark ML model as a UDF. If you try to load `spark-model` you will get:
@@ -158,7 +158,7 @@ Available fields: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
 ```
 
 You need to log the Spark ML model as `udf-spark-model` which uses a custom PythonModel that handles the column numeric problem.
-See [sparkml_udf_workaround.py](sparkml_udf_workaround.py).
+See [spark_udf_workaround.py](sparl_udf_workaround.py).
 
 ```
 mlflow run . --entry-point udf_predict \
