@@ -124,6 +124,7 @@ class Trainer():
                 output_path = output_path.replace("dbfs:","/dbfs")
                 with open(output_path, "w") as f:
                     f.write(run_id)
+            mlflow.shap.log_explanation(dt.predict, X_train, "shap")
 
         return (experiment_id,run_id)
 

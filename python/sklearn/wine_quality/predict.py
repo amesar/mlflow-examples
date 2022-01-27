@@ -45,6 +45,7 @@ def spark_udf_predict(model_uri, data_path):
 
     print("\nUDF with DataFrame API")
     udf = mlflow.pyfunc.spark_udf(spark, model_uri)
+    print("model.type:", type(udf))
     predictions = data.withColumn("prediction", udf(*data.columns))
     predictions.show(10)
 
