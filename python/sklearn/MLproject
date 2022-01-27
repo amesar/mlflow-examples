@@ -14,14 +14,12 @@ entry_points:
       model-name: {type: string, default: None }
       run-origin: {type: string, default: "default" }
       log-as-onnx: {type: boolean, default: False}
-      autolog: {type: boolean, default: False}
     command: "python -um wine_quality.train
                 --data-path {data-path}
                 --max-depth {max-depth}
                 --max-leaf-nodes {max-leaf-nodes}
                 --model-name {model-name}
                 --log-as-onnx {log-as-onnx}
-                --autolog {autolog}
                 --run-origin {run-origin}"
   autolog:
     parameters:
