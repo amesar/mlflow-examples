@@ -12,9 +12,9 @@ setup(name='mlflow-sklearn-wine',
           "scikit-learn==0.24.2",
           "matplotlib==3.2.1",
           "pyarrow>=1.0.0",
-          "onnx==1.10.1",
-          "onnxmltools==1.9.1",
-          "onnxruntime==1.8.1",
+          "onnx==1.10.2",
+          "onnxmltools==1.10.0",
+          "onnxruntime==1.10.0",
           "pyspark==3.2.0",
           "pytest"
     ])
