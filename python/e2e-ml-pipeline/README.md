@@ -17,7 +17,7 @@ Basis of subsequent CI/CD pipeline.
 <img src="e2e_ml_batch_pipeline.png" height="250" >
 
 ### Real-time Scoring 
-<img src="e2e_ml_pipeline.png" height="220" >
+<img src="e2e_ml_realtime_pipeline.png" height="220" >
 
 
 ## Setup
