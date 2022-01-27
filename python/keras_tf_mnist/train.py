@@ -56,10 +56,10 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
     elif model_name:
         utils.register_model(run, model_name)
 
-    # write model as yaml file
-    with open("model.yaml", "w") as f:
-        f.write(model.to_yaml())
-    mlflow.log_artifact("model.yaml")
+    # write model as json file
+    with open("model.json", "w") as f:
+        f.write(model.to_json())
+    mlflow.log_artifact("model.json")
 
     # MLflow - log onnx model
     if log_as_onnx:
