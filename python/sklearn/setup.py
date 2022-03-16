@@ -8,7 +8,7 @@ setup(name='mlflow-sklearn-wine',
       zip_safe=False,
       python_requires=">=3.7.6",
       install_requires=[
-          "mlflow>=1.17.0",
+          "mlflow>=1.23.1",
           "scikit-learn==0.24.2",
           "matplotlib==3.2.1",
           "pyarrow>=1.0.0",
