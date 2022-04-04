@@ -10,7 +10,7 @@ def get_train_data(data_path=None):
     from tensorflow.keras.datasets import mnist
     from tensorflow.keras.utils import to_categorical
     if data_path:
-        raise NotImplementedError(f"Custom data file yet supported: {data_path}")
+        (x_train, y_train), (x_test, y_test) = mnist.load_data(data_path)
     else:
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
     print("Data:")
