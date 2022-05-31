@@ -6,6 +6,7 @@ import common
 
 client = mlflow.tracking.MlflowClient()
 print(f"MLflow Version: {mlflow.__version__}")
+print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 
 def show_version(version):
     print(f"Version: id={version.version} status={version.status} state={version.current_stage}")
@@ -13,12 +14,13 @@ def show_version(version):
 def fmt_version(version):
     return f"Version: id={version.version} status={version.status} state={version.current_stage}"
 
-""" Create registered model if it doesn't exist and remove any existing versions """
 def init(model_name):
+    """ Create registered model if it doesn't exist and remove any existing versions """
     from mlflow.exceptions import RestException
     try:
-        registered_model = client.get_registered_model(model_name)
-        print(f"Found model '{model_name}'")
+        ##client.get_registered_model(model_name)
+        ##print(f"Found model '{model_name}'")
+        print(f"Model '{model_name}'")
         versions = client.get_latest_versions(model_name)
         print(f"Found {len(versions)} versions for model '{model_name}'")
         for v in versions:
@@ -29,12 +31,12 @@ def init(model_name):
         print(f"INFO: {e}")
         if e.error_code == "RESOURCE_DOES_NOT_EXIST":
             print(f"Creating {model_name}")
-            registered_model = client.create_registered_model(model_name)
+            client.create_registered_model(model_name)
         else:
             print(f"ERROR: {e}")
 
-""" Due to blob eventual consistency, wait until a newly created version is READY state """
 def wait_until_version_ready(model_name, model_version, sleep_time=1, iterations=100):
+    """ Due to blob eventual consistency, wait until a newly created version is READY state """
     start = time.time()
     for _ in range(iterations):
         version = client.get_model_version(model_name, model_version.version)
@@ -56,7 +58,7 @@ def run(experiment_name, data_path, model_name):
     print(f"Best run: {best_run.info.run_id} {best_run.data.metrics['rmse']}")
 
     init(model_name)
-    registered_model = client.get_registered_model(model_name)
+    ##client.get_registered_model(model_name)
 
     # Create new model version
     source = f"{best_run.info.artifact_uri}/sklearn-model"

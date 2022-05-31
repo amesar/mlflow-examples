@@ -20,8 +20,8 @@ def build_data(data_path):
     y_test = test[[col_label]]
     return X_train, X_test, y_train, y_test
 
-""" Convert CSV file to Pandas JSON format for MLflow scoring server """
 def to_json(data_path, num_lines=3):
+    """ Convert CSV file to Pandas JSON format for MLflow scoring server """
     with open(data_path, "r") as f:
         lines = f.read().splitlines()
     lines = [ x.split(",") for x in lines ]

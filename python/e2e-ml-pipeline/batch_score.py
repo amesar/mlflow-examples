@@ -5,7 +5,7 @@ import common
 print(f"MLflow Version: {mlflow.__version__}")
 
 def score(model_uri, data_path):
-    X_train, X_test, y_train, y_test = common.build_data(data_path)
+    _, X_test, _, _ = common.build_data(data_path)
     data = X_test
 
     print("==== sklearn score")

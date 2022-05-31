@@ -3,7 +3,7 @@
 
 ## Overview
 
-Launches a full-fledged MLflow server enviroment consisting of two containers:
+Launches a full-fledged MLflow server environment consisting of two containers:
 * mlflow_server - MLflow tracking server
 * mlflow_mysql - MySQL database server
 

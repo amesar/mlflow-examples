@@ -24,7 +24,7 @@ def wait_until_ready(uri, data_path):
         rsp = None
         try:
             rsp = call_server.call(uri, data)
-        except requests.exceptions.ConnectionError as e:
+        except requests.exceptions.ConnectionError:
             print(f"Calling scoring server: {j}/{iterations}")
         if rsp is not None: 
             print(f"Done waiting for {time.time()-start:5.2f} seconds")

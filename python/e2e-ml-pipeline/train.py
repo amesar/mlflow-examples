@@ -7,6 +7,7 @@ import common
 
 client = mlflow.tracking.MlflowClient()
 print(f"MLflow Version: {mlflow.__version__}")
+print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 
 def train(X_train, X_test, y_train, y_test, max_depth):
     with mlflow.start_run() as run:
