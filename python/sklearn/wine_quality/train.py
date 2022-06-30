@@ -10,6 +10,7 @@ import platform
 import pandas as pd
 import numpy as np
 import click
+import shortuuid
 import sklearn
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
@@ -74,6 +75,7 @@ class Trainer():
             mlflow.set_tag("version.platform", platform.platform())
             mlflow.set_tag("version.python", platform.python_version())
             mlflow.set_tag("model_name",model_name)
+            mlflow.set_tag("uuid",shortuuid.uuid())
 
             # Create model
             dt = DecisionTreeRegressor(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)

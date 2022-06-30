@@ -16,5 +16,6 @@ setup(name='mlflow-sklearn-wine',
           "onnxmltools==1.10.0",
           "onnxruntime==1.10.0",
           "pyspark==3.2.0",
-          "pytest"
+          "pytest",
+          "shortuuid"
     ])
