@@ -63,6 +63,7 @@ class Trainer():
             print("MLflow:")
             print("  run_id:", run_id)
             print("  experiment_id:", experiment_id)
+            client.set_experiment_tag(experiment_id,"version_mlflow",mlflow.__version__)
             print("  experiment_name:", client.get_experiment(experiment_id).name)
 
             # MLflow tags
