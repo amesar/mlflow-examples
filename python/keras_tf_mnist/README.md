@@ -260,6 +260,9 @@ curl -X POST -H "Content-Type:application/json" \
 ```
 
 ##### Score MNIST PNG file.
+
+Source: [convert_png_to_mlflow_json.py](convert_png_to_mlflow_json.py).
+
 ```
 python convert_png_to_mlflow_json.py ../../data/score/mnist/0_9993.png | \
 curl -X POST -H "Content-Type:application/json" \
