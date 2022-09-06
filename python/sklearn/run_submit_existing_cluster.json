@@ -8,10 +8,10 @@
   "spark_python_task": {
     "python_file": "dbfs:/home/me@mycompany.com/work/jobs/sklearn_wine/main.py",
     "parameters": [
-       "--experiment_name", "/Users/me@mycompany.com/experiments/sklearn_wine_job",
-       "--max_depth", 5,
-       "--data_path", "/dbfs/home/me@mycompany.com/work/jobs/sklearn_wine/wine-quality-white.csv",
-       "--run_origin", "run_submit_new_cluster_whl" ]
+       "--experiment-name", "/Users/me@mycompany.com/experiments/sklearn_wine_job",
+       "--max-depth", 5,
+       "--data-path", "/dbfs/home/me@mycompany.com/work/jobs/sklearn_wine/wine-quality-white.csv",
+       "--run-origin", "run_submit_new_cluster_whl" ]
   },
   "timeout_seconds": 3600
 }
