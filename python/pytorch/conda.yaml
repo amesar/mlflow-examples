@@ -5,6 +5,6 @@ dependencies:
   - python=3.7.6
   - pip:
     - mlflow>=1.17.0
-    - torch==1.6.0
-    - torchvision==0.7.0
-    - pytorch-lightning==1.0.2
+    - torch>=1.6.0
+    - torchvision>=0.7.0
+    - pytorch-lightning>=1.0.2
