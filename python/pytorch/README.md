@@ -19,6 +19,42 @@ Pytorch train and predict examples.
 
 Source: [train_mnist.py](train_mnist.py).
 
+#### Options
+
+```
+python train_mnist.py --help
+```
+
+```
+usage: train_mnist.py [-h] [--batch-size N] [--test-batch-size N] [--epochs N]
+                      [--lr LR] [--momentum M] [--enable-cuda {True,False}]
+                      [--seed S] [--log-interval N]
+                      [--experiment-name EXPERIMENT_NAME] [--log-as-onnx]
+                      [--autolog]
+
+PyTorch MNIST Example
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --batch-size N        input batch size for training (default: 64)
+  --test-batch-size N   input batch size for testing (default: 1000)
+  --epochs N            number of epochs to train (default: 10)
+  --lr LR               learning rate (default: 0.01)
+  --momentum M          SGD momentum (default: 0.5)
+  --enable-cuda {True,False}
+                        enables or disables CUDA training
+  --seed S              random seed (default: 1)
+  --log-interval N      how many batches to wait before logging training
+                        status
+  --experiment-name EXPERIMENT_NAME
+                        Experiment name
+  --log-as-onnx         Log model as ONNX
+  --autolog             Autolog
+```
+
+
+#### Run example
+
 ```
 python -u train_mnist.py --experiment_name pytorch_mnist --epochs 2 
 ```
@@ -38,17 +74,24 @@ Test set: Average loss: 2.2248, Accuracy: 9240/10000 (92%)
 
 Source: [predict_mnist.py](predict_mnist.py).
 
-TODO: pyfunc and ONNX scoring.
+#### Options
 
 ```
-usage: predict_mnist.py --run_id RUN_ID [--score_as_pyfunc]
+python predict_mnist.py --help
+```
+
+```
+usage: predict_mnist.py [-h] --run_id RUN_ID [--score_as_pyfunc]
                         [--score_as_onnx]
 
 optional arguments:
+  -h, --help         show this help message and exit
   --run_id RUN_ID    Run ID
   --score_as_pyfunc  Score as Pyfunc
   --score_as_onnx    Score as ONNX
 ```
+
+#### Run example
 
 ```
 python -u predict_mnist --run_id 5bd65b5fcf264e0b814c4bad7863b8e3
