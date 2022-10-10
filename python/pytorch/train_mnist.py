@@ -137,7 +137,7 @@ def do_train(args):
             import onnx
             print("ONNX Version:", onnx.__version__)
             dataiter = iter(test_loader)
-            images, labels = dataiter.next()
+            images, _ = dataiter.next()
             onnx_utils.log_model(model, "onnx-model", images)
 
 

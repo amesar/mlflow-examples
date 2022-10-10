@@ -11,8 +11,10 @@ client = mlflow.tracking.MlflowClient()
 print("MLflow Version:", mlflow.__version__)
 print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 
+
 def to_numpy(tensor):
     return tensor.detach().cpu().numpy() if tensor.requires_grad else tensor.cpu().numpy()
+
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -66,12 +68,8 @@ if __name__ == "__main__":
         # TODO: convert tensor to ONNX scoring format
         # INVALID_ARGUMENT : Got invalid dimensions for input: input.1 for the following indices
         # index: 0 Got: 10000 Expected: 64
-        #data = data.numpy() 
-        print(">> data.type:",type(data))
         data = to_numpy(data)
-        print(">> data.type:",type(data))
 
         outputs = onnx_utils.score_model(model, data)
         print("outputs.type:", type(outputs))
         print("outputs:\n",  pd.DataFrame(outputs))
-
