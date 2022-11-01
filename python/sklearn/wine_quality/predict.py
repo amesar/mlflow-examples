@@ -31,6 +31,8 @@ def pyfunc_predict(model_uri, data_path):
 def spark_udf_predict(model_uri, data_path):
     banner("spark_udf", model_uri)
     from pyspark.sql import SparkSession
+    import pyspark
+    print("pyspark version:",pyspark.__version__)
     print("data_path:", data_path)
     print("model_uri:", model_uri)
     print("MLflow Version:", mlflow.__version__)
