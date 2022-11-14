@@ -2,7 +2,7 @@ name: mlflow-examples-onnx
 channels:
   - defaults
 dependencies:
-  - python=3.7.56
+  - python=3.8
   - pip:
     - mlflow>=1.17.0
     - onnx==1.6.0

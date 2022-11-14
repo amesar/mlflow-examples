@@ -2,7 +2,7 @@ name: mlflow-examples-keras_tf_wine
 channels:
   - conda-forge
 dependencies:
-  - python=3.7.6
+  - python=3.8
   - pip:
     - mlflow>=1.17.0
     - tensorflow==2.3.0

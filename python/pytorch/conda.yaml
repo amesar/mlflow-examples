@@ -2,7 +2,7 @@ name: mlflow-examples-pytorch
 channels:
   - defaults
 dependencies:
-  - python=3.7.6
+  - python=3.8
   - pip:
     - mlflow>=1.17.0
     - torch>=1.6.0
