@@ -179,7 +179,7 @@ type(predictions)
 
 df = spark.createDataFrame(data_to_predict)
 udf = mlflow.pyfunc.spark_udf(spark, model_uri)
-predictions = df.withColumn("prediction", udf(*df.columns))
+predictions = df.withColumn("prediction", udf(*df.columns)).select("prediction")
 display(predictions)
 
 # COMMAND ----------
