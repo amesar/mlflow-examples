@@ -5,9 +5,9 @@ import mlflow
 import mlflow.sklearn
 import common
 
-client = mlflow.tracking.MlflowClient()
+client = mlflow.client.MlflowClient()
 print(f"MLflow Version: {mlflow.__version__}")
-print("Tracking URI:", mlflow.tracking.get_tracking_uri())
+print("Tracking URI:", mlflow.get_tracking_uri())
 
 def train(X_train, X_test, y_train, y_test, max_depth):
     with mlflow.start_run() as run:
@@ -28,9 +28,9 @@ def run(experiment_name, data_path):
     print(f"Experiment ID: {exp.experiment_id}")
 
     # Delete existing runs
-    runs = client.list_run_infos(exp.experiment_id)
+    runs = client.search_runs(exp.experiment_id)
     for run in runs:
-        client.delete_run(run.run_id)
+        client.delete_run(run.info.run_id)
 
     # Train against different parameters
     X_train, X_test, y_train, y_test = common.build_data(data_path)

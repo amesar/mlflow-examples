@@ -5,10 +5,11 @@ import mlflow
 import common
 import call_server
 
-client = mlflow.tracking.MlflowClient()
+client = mlflow.client.MlflowClient()
 print(f"MLflow Version: {mlflow.__version__}")
 sleep_time = 2
-iterations = 10000
+##iterations = 10000 # XX
+iterations = 100
 
 def kill(proc_pid):
     process = psutil.Process(proc_pid)
@@ -24,8 +25,8 @@ def wait_until_ready(uri, data_path):
         rsp = None
         try:
             rsp = call_server.call(uri, data)
-        except requests.exceptions.ConnectionError:
-            print(f"Calling scoring server: {j}/{iterations}")
+        except requests.exceptions.ConnectionError as e:
+            print(f"Calling scoring server: {j}/{iterations}. Error:",e)
         if rsp is not None: 
             print(f"Done waiting for {time.time()-start:5.2f} seconds")
             return rsp
@@ -56,7 +57,6 @@ def run(model_uri, port, data_path, docker_image, launch_container):
         proc = run_local_sagemaker(model_uri, port, docker_image)
     else:
         proc = run_local_webserver(model_uri, port)
-    print(f"Process ID: {proc.pid}")
 
     uri = f"http://localhost:{port}/invocations"
     try:

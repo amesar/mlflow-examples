@@ -4,9 +4,9 @@ import mlflow.pyfunc
 from mlflow.entities.model_registry.model_version_status import ModelVersionStatus
 import common
 
-client = mlflow.tracking.MlflowClient()
+client = mlflow.client.MlflowClient()
 print(f"MLflow Version: {mlflow.__version__}")
-print("Tracking URI:", mlflow.tracking.get_tracking_uri())
+print("Tracking URI:", mlflow.get_tracking_uri())
 
 def show_version(version):
     print(f"Version: id={version.version} status={version.status} state={version.current_stage}")
