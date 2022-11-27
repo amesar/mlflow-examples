@@ -14,29 +14,35 @@
 
 # COMMAND ----------
 
+dbutils.widgets.removeAll()
+
+# COMMAND ----------
+
 # Default values per: https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html
 
-dbutils.widgets.text("Experiment Name","")
-dbutils.widgets.text("Registered Model","")
-dbutils.widgets.dropdown("Save Signature","no",["yes","no"])
-dbutils.widgets.text("Max Depth", "1") 
-dbutils.widgets.text("Max Leaf Nodes", "")
-dbutils.widgets.dropdown("SHAP","no",["yes","no"])
+dbutils.widgets.text("1. Experiment Name","")
+dbutils.widgets.text("2. Registered Model","")
+dbutils.widgets.dropdown("3. Save Signature","no",["yes","no"])
+dbutils.widgets.dropdown("4. SHAP","no",["yes","no"])
+dbutils.widgets.text("5. Max Depth", "1") 
+dbutils.widgets.text("6. Max Leaf Nodes", "")
 
-max_depth = to_int(dbutils.widgets.get("Max Depth"))
-max_leaf_nodes = to_int(dbutils.widgets.get("Max Leaf Nodes"))
-save_signature = dbutils.widgets.get("Save Signature") == "yes"
-shap = dbutils.widgets.get("SHAP") == "yes"
-experiment_name = dbutils.widgets.get("Experiment Name")
-registered_model = dbutils.widgets.get("Registered Model")
+experiment_name = dbutils.widgets.get("1. Experiment Name")
+registered_model = dbutils.widgets.get("2. Registered Model")
+save_signature = dbutils.widgets.get("3. Save Signature") == "yes"
+shap = dbutils.widgets.get("4. SHAP") == "yes"
+max_depth = to_int(dbutils.widgets.get("5. Max Depth"))
+max_leaf_nodes = to_int(dbutils.widgets.get("6. Max Leaf Nodes"))
+
 if registered_model=="": registered_model = None
 
 print("experiment_name:",experiment_name)
 print("registered_model:",registered_model)
+print("save_signature:",save_signature)
+print("SHAP:",shap)
 print("max_depth:",max_depth)
 print("max_leaf_nodes:",max_leaf_nodes)
 print("save_signature:",save_signature)
-print("SHAP:",shap)
 
 # COMMAND ----------
 
