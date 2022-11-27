@@ -8,7 +8,7 @@ setup(name='mlflow-sklearn-wine',
       zip_safe=False,
       python_requires=">=3.8",
       install_requires=[
-          "mlflow>=1.30",
+          "mlflow>=1.30.0",
           "scikit-learn",
           "matplotlib",
           # "onnx==1.12.0", # As of MLflow 2.0.1 pip install fails for ONNX packages
