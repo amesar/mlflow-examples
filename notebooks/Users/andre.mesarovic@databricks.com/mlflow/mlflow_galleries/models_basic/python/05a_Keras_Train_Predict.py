@@ -23,18 +23,24 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("Epochs", "2") 
-dbutils.widgets.text("Batch Size", "128")
-dbutils.widgets.text("Registered Model","")
-dbutils.widgets.dropdown("Autolog","None",["None","mlflow","tensorflow","keras"])
+dbutils.widgets.text("1. Registered Model","")
+dbutils.widgets.dropdown("2. Autolog","None",["None","mlflow","tensorflow","keras"])
+dbutils.widgets.text("3. Epochs", "2") 
+dbutils.widgets.text("4. Batch Size", "128")
 
-epochs = int(dbutils.widgets.get("Epochs"))
-batch_size = int(dbutils.widgets.get("Batch Size"))
-autolog = dbutils.widgets.get("Autolog")
-registered_model = dbutils.widgets.get("Registered Model")
+registered_model = dbutils.widgets.get("1. Registered Model")
+
+epochs = int(dbutils.widgets.get("3. Epochs"))
+autolog = dbutils.widgets.get("2. Autolog")
+batch_size = int(dbutils.widgets.get("4. Batch Size"))
+autolog = dbutils.widgets.get("2. Autolog")
 if registered_model.strip() == "": registered_model = None
 
 epochs, batch_size, autolog, registered_model
+print("registered_model:",registered_model)
+print("autolog:",autolog)
+print("epochs:",epochs)
+print("batch_size:",batch_size)
 
 # COMMAND ----------
 
