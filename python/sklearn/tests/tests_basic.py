@@ -8,10 +8,10 @@ experiment_name = "sklearn_test"
 log_as_onnx = False # As of MLflow 2.0.1 pip install fails for ONNX packages: "Could not find cmake executable!"
 
 def sklearn_model_uri():  
-    return f"runs:/{run_id}/model"
+    return f"runs:/{run_id}/sklearn-model"
 
-##def onnx_model_uri():  
-    ##return f"runs:/{run_id}/onnx-model"
+def onnx_model_uri():  
+    return f"runs:/{run_id}/onnx-model"
 
 def banner(msg, model_uri):
     print("\n\n********************")
@@ -23,7 +23,8 @@ def test_train():
     global run_id
     banner("test_train","")
     trainer = Trainer(experiment_name, log_as_onnx=log_as_onnx, run_origin="test", data_path=data_path, save_signature=True)
-    _, run_id = trainer.train(5, 5, None, "none")
+    ##_, run_id = trainer.train(5, 5, None, "none")
+    _, run_id = trainer.train(model_name=None, max_depth=5, max_leaf_nodes=None)
 
 
 @pytest.mark.order2

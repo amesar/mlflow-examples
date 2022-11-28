@@ -9,18 +9,26 @@ entry_points:
   main:
     parameters:
       data-path: {type: string, default: "../../data/train/wine-quality-white.csv"}
+      model-name: {type: string, default: None }
+      model-version-stage: {type: string, default: None }
+      archive-existing-versions: {type: boolean, default: False }
+      save-signature: {type: boolean, default: False }
+      log-as-onnx: {type: boolean, default: False}
       max-depth: int
       max-leaf-nodes: {type: int, default: 32}
-      model-name: {type: string, default: None }
       run-origin: {type: string, default: "default" }
-      log-as-onnx: {type: boolean, default: False}
+      output-path: {type: string, default: None }
     command: "python -um wine_quality.train
                 --data-path {data-path}
+                --model-name {model-name}
+                --model-version-stage {model-version-stage}
+                --archive-existing-versions {archive-existing-versions}
+                --log-as-onnx {log-as-onnx}
                 --max-depth {max-depth}
                 --max-leaf-nodes {max-leaf-nodes}
-                --model-name {model-name}
-                --log-as-onnx {log-as-onnx}
-                --run-origin {run-origin}"
+                --run-origin {run-origin}
+                --output-path {output-path}
+                "
   autolog:
     parameters:
       data-path: {type: string, default: "../../data/train/wine-quality-white.csv"}

@@ -45,16 +45,22 @@ There are several ways to train a model with MLflow.
 python -m wine_quality.train --help
 
 Options:
-  --experiment-name TEXT    Experiment name.
-  --data-path TEXT          Data path.
-  --model-name TEXT         Registered model name.
-  --max-depth INTEGER       Max depth parameter.
-  --max-leaf-nodes INTEGER  Max leaf nodes parameter.
-  --output-path TEXT        Output file containing run ID.
-  --log-as-onnx BOOLEAN     Log model as ONNX flavor. Default is false.
-  --run-origin TEXT         Run origin.
-  --autolog BOOLEAN         Autolog parameters and metrics. Default is False.
-  --save-signature BOOLEAN  Save model signature. Default is False.
+  --experiment-name TEXT          Experiment name.
+  --data-path TEXT                Data path.  [default: ../../data/train/wine-
+                                  quality-white.csv]
+  --model-name TEXT               Registered model name.
+  --model-version-stage TEXT      Registered model version stage:
+                                  production|staging|archive|none.
+  --archive-existing-versions BOOLEAN
+                                  Archive existing versions.  [default: True]
+  --save-signature BOOLEAN        Save model signature. Default is False.
+                                  [default: False]
+  --log-as-onnx BOOLEAN           Log model as ONNX flavor. Default is false.
+                                  [default: False]
+  --max-depth INTEGER             Max depth parameter.
+  --max-leaf-nodes INTEGER        Max leaf nodes parameter.  [default: 32]
+  --run-origin TEXT               Run origin.  [default: none]
+  --output-path TEXT              Output file containing run ID.
 ```
 
 #### Signature
