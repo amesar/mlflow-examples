@@ -10,6 +10,7 @@ def log_model(model, artifact_path, model_name, data):
     onnx_model = convert_sklearn(model, initial_types=initial_types)
     print("onnx_model.type:",type(onnx_model))
     mlflow.set_tag("version.onnx",onnx.__version__)
+    print("version.onnx",onnx.__version__)
     mlflow.onnx.log_model(onnx_model, artifact_path, \
         registered_model_name=None if not model_name else f"{model_name}_onnx")
     return onnx_model
