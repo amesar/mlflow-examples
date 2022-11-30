@@ -23,7 +23,7 @@ def test_train():
     global run_id
     banner("test_train","")
     trainer = Trainer(experiment_name, log_as_onnx=log_as_onnx, run_origin="test", data_path=data_path, save_signature=True)
-    _, run_id = trainer.train(model_name=None, max_depth=5, max_leaf_nodes=None)
+    _, run_id = trainer.train(registered_model_name=None, max_depth=5, max_leaf_nodes=None)
 
 
 @pytest.mark.order2

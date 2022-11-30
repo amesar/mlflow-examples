@@ -59,20 +59,19 @@ class Trainer():
         return X_train, X_test, y_train, y_test 
 
 
-    def _register_model(self, model_name, model_version_stage, archive_existing_versions, run):
+    def _register_model(self, mlflow_model_name, registered_model_name, registered_model_version_stage, archive_existing_versions, run):
         try:
-            client.create_registered_model(model_name)
+            client.create_registered_model(registered_model_name)
         except RestException:
             pass
-        model_artifact = "model"
-        source = f"{run.info.artifact_uri}/{model_artifact}"
+        source = f"{run.info.artifact_uri}/{mlflow_model_name}"
         print("Model source:",source)
-        version = client.create_model_version(model_name, source, run.info.run_id)
-        if model_version_stage:
-            client.transition_model_version_stage(model_name, version.version, model_version_stage, archive_existing_versions)
+        version = client.create_model_version(registered_model_name, source, run.info.run_id)
+        if registered_model_version_stage:
+            client.transition_model_version_stage(registered_model_name, version.version, registered_model_version_stage, archive_existing_versions)
 
 
-    def train(self, model_name, model_version_stage="None", archive_existing_versions=True, output_path=None, max_depth=None, max_leaf_nodes=32):
+    def train(self, registered_model_name, registered_model_version_stage="None", archive_existing_versions=True, output_path=None, max_depth=None, max_leaf_nodes=32):
         import time
         dt = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time()))
         run_name = f"{self.run_origin} {mlflow.__version__} {dt}" if self.run_origin else None
@@ -88,21 +87,22 @@ class Trainer():
             # MLflow tags
             mlflow.set_tag("save_signature",self.save_signature)
             mlflow.set_tag("data_path", self.data_path)
+            mlflow.set_tag("registered_model_name",registered_model_name)
+            mlflow.set_tag("registered_model_version_stage",registered_model_version_stage)
+            mlflow.set_tag("uuid",shortuuid.uuid())
             mlflow.set_tag("run_origin", self.run_origin)
             mlflow.set_tag("version.mlflow", mlflow.__version__)
             mlflow.set_tag("version.sklearn", sklearn.__version__)
             mlflow.set_tag("version.platform", platform.platform())
             mlflow.set_tag("version.python", platform.python_version())
-            mlflow.set_tag("model_name",model_name)
-            mlflow.set_tag("uuid",shortuuid.uuid())
 
             # Create model
-            dt = DecisionTreeRegressor(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)
-            print("Model:\n ", dt)
+            model = DecisionTreeRegressor(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)
+            print("Model:\n ", model)
 
             # Fit and predict
-            dt.fit(self.X_train, self.y_train)
-            predictions = dt.predict(self.X_test)
+            model.fit(self.X_train, self.y_train)
+            predictions = model.predict(self.X_test)
 
             # MLflow params
             print("Parameters:")
@@ -129,14 +129,14 @@ class Trainer():
             print("Signature:",signature)
 
             # MLflow log model
-            mlflow.sklearn.log_model(dt, "sklearn-model", signature=signature)
-            if model_name:
-                self._register_model(model_name, model_version_stage, archive_existing_versions, run)
+            mlflow.sklearn.log_model(model, "sklearn-model", signature=signature)
+            if registered_model_name:
+                self._register_model("sklearn-model", registered_model_name, registered_model_version_stage, archive_existing_versions, run)
 
             # Convert sklearn model to ONNX and log model
             if self.log_as_onnx:
                 from wine_quality import onnx_utils
-                onnx_utils.log_model(dt, "onnx-model", model_name, self.X_test)
+                onnx_utils.log_model(model, "onnx-model", registered_model_name, self.X_test)
 
             # MLflow artifact - plot file
             plot_file = "plot.png"
@@ -149,7 +149,7 @@ class Trainer():
                 output_path = output_path.replace("dbfs:","/dbfs")
                 with open(output_path, "w", encoding="utf-8") as f:
                     f.write(run_id)
-            #mlflow.shap.log_explanation(dt.predict, self.X_train, "shap") # TODO: errors out
+            #mlflow.shap.log_explanation(model.predict, self.X_train, "shap") # TODO: errors out
 
         return (experiment_id,run_id)
 

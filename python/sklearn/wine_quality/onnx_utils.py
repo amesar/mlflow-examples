@@ -6,6 +6,7 @@ def log_model(model, artifact_path, model_name, data):
     import onnx
     from skl2onnx import convert_sklearn
     from skl2onnx.common.data_types import FloatTensorType
+    print("onnx artifact_path:",artifact_path)
     initial_types = [('float_input', FloatTensorType([None, data.shape[1]]))]
     onnx_model = convert_sklearn(model, initial_types=initial_types)
     print("onnx_model.type:",type(onnx_model))
