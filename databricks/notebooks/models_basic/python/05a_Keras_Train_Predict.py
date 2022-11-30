@@ -14,10 +14,6 @@
 
 # COMMAND ----------
 
-# dbutils.widgets.removeAll()
-
-# COMMAND ----------
-
 # Default values per: https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html
 
 dbutils.widgets.text("1. Experiment Name","")
@@ -114,16 +110,18 @@ def _register_model(model_name, model_version_stage, archive_existing_versions, 
        model =  client.create_registered_model(model_name)
     except RestException as e:
        model =  client.get_registered_model(model_name)
-    #model_artifact = "artifacts/sklearn-model"
     model_artifact = "sklearn-model"
     source = f"{run.info.artifact_uri}/{model_artifact}"
     version = client.create_model_version(model_name, source, run.info.run_id)
     if model_version_stage:
         client.transition_model_version_stage(model_name, version.version, model_version_stage, archive_existing_versions)
+    return version
 
 # COMMAND ----------
 
-with mlflow.start_run(run_name=f"sklearn_{mlflow.__version__}") as run:
+import time
+ts = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time()))
+with mlflow.start_run(run_name=f"sklearn {mlflow.__version__} {ts}") as run:
     run_id = run.info.run_id
     print("MLflow:")
     print("  run_id:",run_id)
@@ -132,7 +130,9 @@ with mlflow.start_run(run_name=f"sklearn_{mlflow.__version__}") as run:
     print("  max_depth:",max_depth)
     print("  max_leaf_nodes:",max_leaf_nodes)
     
+    mlflow.set_tag("timestamp", ts)
     mlflow.set_tag("version.mlflow", mlflow.__version__)
+    mlflow.set_tag("version.sklearn", sklearn.__version__)
     mlflow.set_tag("save_signature", save_signature)
 
     model = DecisionTreeRegressor(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)
@@ -147,7 +147,9 @@ with mlflow.start_run(run_name=f"sklearn_{mlflow.__version__}") as run:
     #mlflow.sklearn.log_model(model, "sklearn-model", signature=signature, model_name_name=model_name)
     mlflow.sklearn.log_model(model, "sklearn-model", signature=signature)
     if model_name:
-        _register_model(model_name, model_version_stage, archive_existing_versions, run)
+        version = _register_model(model_name, model_version_stage, archive_existing_versions, run)
+    else:
+        version = None
         
     rmse = np.sqrt(mean_squared_error(test_y, predictions))
     r2 = r2_score(test_y, predictions)
@@ -165,8 +167,8 @@ display_run_uri(run.info.experiment_id, run_id)
 
 # COMMAND ----------
 
-if model_name:
-    display_registered_model_uri(model_name)
+if version:
+    display_registered_model_version_uri(model_name, version.version)
 
 # COMMAND ----------
 

@@ -54,6 +54,12 @@ def display_registered_model_uri(model_name):
 
 # COMMAND ----------
 
+def display_registered_model_version_uri(model_name, version):
+    uri = f"https://{host_name}/#mlflow/models/{model_name}/versions/{version}"
+    displayHTML("""<b>Registered Model Version URI:</b> <a href="{}">{}</a>""".format(uri,uri))
+
+# COMMAND ----------
+
 def display_experiment_info(experiment):
   host_name = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().get("browserHostName").get()
   uri = f"https://{host_name}/#mlflow/experiments/{experiment.experiment_id}"

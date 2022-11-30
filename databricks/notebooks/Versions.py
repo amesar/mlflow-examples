@@ -3,6 +3,10 @@
 
 # COMMAND ----------
 
+# %sh pip install mlflow==2.0.1
+
+# COMMAND ----------
+
 def get_notebook_tag(tag):
     tag = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().get(tag)
     return None if tag.isEmpty() else tag.get()
@@ -79,7 +83,7 @@ try:
     lst.append(["onnxruntime version:",onnxruntime.__version__])
 except ModuleNotFoundError as e:
     pass
-  
+
 try:
     import skl2onnx
     lst.append(["skl2onnx version:",skl2onnx.__version__])
