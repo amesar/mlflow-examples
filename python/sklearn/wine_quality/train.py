@@ -1,6 +1,5 @@
 """
 Trains a wine quality dataset with a sklearn DecisionTreeRegressor using MLflow manual logging.
-
 The data set used in this example is from http://archive.ics.uci.edu/ml/datasets/Wine+Quality
 P. Cortez, A. Cerdeira, F. Almeida, T. Matos and J. Reis.
 Modeling wine preferences by data mining from physicochemical properties. In Decision Support Systems, Elsevier, 47(4):547-553, 2009.
@@ -80,13 +79,13 @@ class Trainer():
         version = client.create_model_version(registered_model_name, source, run.info.run_id)
         if registered_model_version_stage:
             client.transition_model_version_stage(registered_model_name, version.version, registered_model_version_stage, archive_existing_versions)
-        desc = f"v{version.version} {registered_model_version_stage}"
+        desc = f"v{version.version} {registered_model_version_stage} - wine"
         client.update_model_version(registered_model_name, version.version, desc)
-        client.set_model_version_tag(registered_model_name, version.version, "info", desc)
+        client.set_model_version_tag(registered_model_name, version.version, "registered_version_info", desc)
 
 
     def train(self, registered_model_name, registered_model_version_stage="None", archive_existing_versions=True, output_path=None, max_depth=None, max_leaf_nodes=32):
-        run_name = f"{self.run_origin} {mlflow.__version__} {ts}" if self.run_origin else None
+        run_name = f"{ts} {self.run_origin} {mlflow.__version__}" if self.run_origin else None
         with mlflow.start_run(run_name=run_name) as run: # NOTE: when running with `mlflow run`, mlflow --run-name option takes precedence!
             run_id = run.info.run_id
             experiment_id = run.info.experiment_id
@@ -101,6 +100,7 @@ class Trainer():
             mlflow.set_tag("registered_model_name", registered_model_name)
             mlflow.set_tag("registered_model_version_stage", registered_model_version_stage)
             mlflow.set_tag("uuid",shortuuid.uuid())
+            mlflow.set_tag("dataset", "wine-quality")
             mlflow.set_tag("run_origin", self.run_origin)
             mlflow.set_tag("version.mlflow", mlflow.__version__)
             mlflow.set_tag("version.sklearn", sklearn.__version__)
