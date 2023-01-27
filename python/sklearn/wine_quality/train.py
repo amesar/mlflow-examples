@@ -84,7 +84,7 @@ class Trainer():
         client.set_model_version_tag(registered_model_name, version.version, "registered_version_info", desc)
 
 
-    def train(self, registered_model_name, registered_model_version_stage="None", archive_existing_versions=True, output_path=None, max_depth=None, max_leaf_nodes=32):
+    def train(self, registered_model_name, registered_model_version_stage="None", archive_existing_versions=False, output_path=None, max_depth=None, max_leaf_nodes=32):
         run_name = f"{ts} {self.run_origin} {mlflow.__version__}" if self.run_origin else None
         with mlflow.start_run(run_name=run_name) as run: # NOTE: when running with `mlflow run`, mlflow --run-name option takes precedence!
             run_id = run.info.run_id
@@ -193,7 +193,7 @@ class Trainer():
 @click.option("--archive-existing-versions", 
     help="Archive existing versions.", 
     type=bool,
-    default=True,
+    default=False,
     show_default=True
 )
 @click.option("--save-signature", 

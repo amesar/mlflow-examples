@@ -52,7 +52,7 @@ Options:
   --model-version-stage TEXT      Registered model version stage:
                                   production|staging|archive|none.
   --archive-existing-versions BOOLEAN
-                                  Archive existing versions.  [default: True]
+                                  Archive existing versions.  [default: False]
   --save-signature BOOLEAN        Save model signature. Default is False.
                                   [default: False]
   --log-as-onnx BOOLEAN           Log model as ONNX flavor. Default is false.
