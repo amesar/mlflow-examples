@@ -77,7 +77,7 @@ class Trainer():
         source = f"{run.info.artifact_uri}/{mlflow_model_name}"
         print("Model source:",source)
         version = client.create_model_version(registered_model_name, source, run.info.run_id)
-        if registered_model_version_stage:
+        if registered_model_version_stage and not registered_model_version_stage == "None":
             client.transition_model_version_stage(registered_model_name, version.version, registered_model_version_stage, archive_existing_versions)
         desc = f"v{version.version} {registered_model_version_stage} - wine"
         client.update_model_version(registered_model_name, version.version, desc)
