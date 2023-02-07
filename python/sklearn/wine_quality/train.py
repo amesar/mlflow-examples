@@ -89,6 +89,7 @@ class Trainer():
             mlflow.set_tag("uuid",shortuuid.uuid())
             mlflow.set_tag("dataset", "wine-quality")
             mlflow.set_tag("run_origin", self.run_origin)
+            mlflow.set_tag("timestamp", now)
             mlflow.set_tag("version.mlflow", mlflow.__version__)
             mlflow.set_tag("version.sklearn", sklearn.__version__)
             mlflow.set_tag("version.platform", platform.platform())
