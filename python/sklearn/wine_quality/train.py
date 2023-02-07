@@ -20,8 +20,8 @@ from sklearn.tree import DecisionTreeRegressor
 import mlflow
 import mlflow.sklearn
 from mlflow.models.signature import infer_signature
-from mlflow.exceptions import RestException
-from wine_quality import plot_utils
+from wine_quality import plot_utils, mlflow_utils
+from wine_quality.timestamp_utils import fmt_ts_seconds, fmt_ts_millis
 
 
 print("Versions:")
@@ -36,22 +36,23 @@ client = mlflow.client.MlflowClient()
 
 col_label = "quality"
 
-ts = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time()))
+now = fmt_ts_seconds(round(time.time()))
 
 class Trainer():
-    def __init__(self, experiment_name, data_path, log_as_onnx, save_signature, run_origin=None):
+    def __init__(self, experiment_name, data_path, log_as_onnx, save_signature, run_origin=None, use_run_id_as_run_name=False):
         self.experiment_name = experiment_name
         self.data_path = data_path
         self.run_origin = run_origin
         self.log_as_onnx = log_as_onnx
         self.save_signature = save_signature
+        self.use_run_id_as_run_name = use_run_id_as_run_name
         self.X_train, self.X_test, self.y_train, self.y_test = self._build_data(data_path)
 
         if self.experiment_name:
             mlflow.set_experiment(experiment_name)
             exp = client.get_experiment_by_name(experiment_name)
             client.set_experiment_tag(exp.experiment_id, "version_mlflow", mlflow.__version__)
-            client.set_experiment_tag(exp.experiment_id, "experiment_created", ts)
+            client.set_experiment_tag(exp.experiment_id, "experiment_created", now)
 
 
     def _build_data(self, data_path):
@@ -67,25 +68,8 @@ class Trainer():
         return X_train, X_test, y_train, y_test 
 
 
-    def _register_model(self, mlflow_model_name, registered_model_name, registered_model_version_stage, archive_existing_versions, run):
-        try:
-            desc = "Skearn Wine Quality model"
-            tags = { "info": desc}
-            client.create_registered_model(registered_model_name, tags, desc)
-        except RestException:
-            pass
-        source = f"{run.info.artifact_uri}/{mlflow_model_name}"
-        print("Model source:",source)
-        version = client.create_model_version(registered_model_name, source, run.info.run_id)
-        if registered_model_version_stage and not registered_model_version_stage == "None":
-            client.transition_model_version_stage(registered_model_name, version.version, registered_model_version_stage, archive_existing_versions)
-        desc = f"v{version.version} {registered_model_version_stage} - wine"
-        client.update_model_version(registered_model_name, version.version, desc)
-        client.set_model_version_tag(registered_model_name, version.version, "registered_version_info", desc)
-
-
     def train(self, registered_model_name, registered_model_version_stage="None", archive_existing_versions=False, output_path=None, max_depth=None, max_leaf_nodes=32):
-        run_name = f"{ts} {self.run_origin} {mlflow.__version__}" if self.run_origin else None
+        run_name = f"{now} {self.run_origin} {mlflow.__version__}" if self.run_origin else None
         with mlflow.start_run(run_name=run_name) as run: # NOTE: when running with `mlflow run`, mlflow --run-name option takes precedence!
             run_id = run.info.run_id
             experiment_id = run.info.experiment_id
@@ -95,6 +79,9 @@ class Trainer():
             print("  experiment_name:", client.get_experiment(experiment_id).name)
 
             # MLflow tags
+            if self.use_run_id_as_run_name:
+                mlflow.set_tag("mlflow.runName", run_id)
+            mlflow.set_tag("run_id", run_id)
             mlflow.set_tag("save_signature", self.save_signature)
             mlflow.set_tag("data_path", self.data_path)
             mlflow.set_tag("registered_model_name", registered_model_name)
@@ -142,7 +129,8 @@ class Trainer():
             # MLflow log model
             mlflow.sklearn.log_model(model, "sklearn-model", signature=signature)
             if registered_model_name:
-                self._register_model("sklearn-model", registered_model_name, registered_model_version_stage, archive_existing_versions, run)
+                mlflow_utils.register_model(client, "sklearn-model", registered_model_name, 
+                   registered_model_version_stage, archive_existing_versions, run)
 
             # Convert sklearn model to ONNX and log model
             if self.log_as_onnx:
@@ -162,7 +150,13 @@ class Trainer():
                     f.write(run_id)
             #mlflow.shap.log_explanation(model.predict, self.X_train, "shap") # TODO: errors out
 
-        return (experiment_id,run_id)
+        run = client.get_run(run_id)
+        client.set_tag(run_id, "run.info.start_time", run.info.start_time)
+        client.set_tag(run_id, "run.info.end_time", run.info.end_time)
+        client.set_tag(run_id, "run.info._start_time", fmt_ts_millis(run.info.start_time))
+        client.set_tag(run_id, "run.info._end_time", fmt_ts_millis(run.info.end_time))
+
+        return (experiment_id, run_id)
 
 
 @click.command()
@@ -232,15 +226,20 @@ class Trainer():
     default=None,
     show_default=True
 )
-         
+@click.option("--use-run-id-as-run-name",
+    help="use_run_id_as_run_name",
+    type=bool,
+    default=False,
+    show_default=True
+)
 def main(experiment_name, data_path, model_name, model_version_stage, archive_existing_versions, 
-        save_signature, log_as_onnx, max_depth, max_leaf_nodes, run_origin, output_path):
+        save_signature, log_as_onnx, max_depth, max_leaf_nodes, run_origin, output_path, use_run_id_as_run_name):
     print("Options:")
     for k,v in locals().items(): 
         print(f"  {k}: {v}")
     print("Processed Options:")
     print(f"  model_name: {model_name} - type: {type(model_name)}")
-    trainer = Trainer(experiment_name, data_path, log_as_onnx, save_signature, run_origin)
+    trainer = Trainer(experiment_name, data_path, log_as_onnx, save_signature, run_origin, use_run_id_as_run_name)
     trainer.train(model_name, model_version_stage, archive_existing_versions, output_path, max_depth, max_leaf_nodes)
 
 
