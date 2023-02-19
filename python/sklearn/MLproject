@@ -8,7 +8,7 @@ conda_env: conda.yaml
 entry_points:
   main:
     parameters:
-      data-path: {type: string, default: "../../data/train/wine-quality-white.csv"}
+      data-path: {type: string, default: "https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv" }
       model-name: {type: string, default: None }
       model-version-stage: {type: string, default: None }
       archive-existing-versions: {type: boolean, default: False }
