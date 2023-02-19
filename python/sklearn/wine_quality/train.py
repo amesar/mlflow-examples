@@ -73,7 +73,7 @@ class Trainer():
         with mlflow.start_run(run_name=run_name) as run: # NOTE: when running with `mlflow run`, mlflow --run-name option takes precedence!
             run_id = run.info.run_id
             experiment_id = run.info.experiment_id
-            print("MLflow:")
+            print("MLflow run:")
             print("  run_id:", run_id)
             print("  experiment_id:", experiment_id)
             print("  experiment_name:", client.get_experiment(experiment_id).name)
@@ -170,7 +170,7 @@ class Trainer():
 @click.option("--data-path", 
     help="Data path.", 
     type=str,
-    default="../../data/train/wine-quality-white.csv",
+    default="https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv",
     show_default=True
 )
 @click.option("--model-name", 
