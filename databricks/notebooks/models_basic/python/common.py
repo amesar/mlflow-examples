@@ -19,29 +19,6 @@ print("base_dir_fuse:",base_dir_fuse)
 
 # COMMAND ----------
 
-import os
-import requests
-
-def download_file(data_uri, data_path):
-    if os.path.exists(data_path):
-        print("File {data_path} already exists")
-    else:
-        print(f"Downloading {data_uri} to {data_path}")
-        os.makedirs(os.path.dirname(data_path), exist_ok=True)
-        rsp = requests.get(data_uri)
-        with open(data_path, "w") as f:
-            f.write(rsp.text)
-
-# COMMAND ----------
-
-def download_wine_file():
-    data_path = f"{base_dir_fuse}/wine-quality.csv"
-    data_uri = "https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv"
-    download_file(data_uri, data_path)
-    return data_path
-
-# COMMAND ----------
-
 def display_run_uri(experiment_id, run_id):
     uri = f"https://{host_name}/#mlflow/experiments/{experiment_id}/runs/{run_id}"
     displayHTML("""<b>Run URI:</b> <a href="{}">{}</a>""".format(uri,uri))
@@ -104,3 +81,29 @@ def delete_registered_model(client, model_name):
         client.delete_registered_model(model_name)
     except RestException:
         pass
+
+# COMMAND ----------
+
+import time
+def now():
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time()))
+
+# COMMAND ----------
+
+def get_wine_quality_data(table_name=""):
+    import pandas as pd
+    path = "https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv"
+    if table_name == "":
+        print(f"Reading data from '{path}'")
+        pdf = pd.read_csv(path)
+        pdf.columns = pdf.columns.str.replace(" ","_") # for consistency with Spark column names
+        return pdf
+    else:
+        if not spark.catalog._jcatalog.tableExists(table_name):
+            print(f"Creating table '{table_name}'")
+            pdf = pd.read_csv(path)
+            pdf.columns = pdf.columns.str.replace(" ","_") # make Spark legal column names
+            df = spark.createDataFrame(pdf)
+            df.write.mode("overwrite").saveAsTable(table_name)
+        print(f"Using table '{table_name}'")
+        return spark.table(table_name).toPandas()
