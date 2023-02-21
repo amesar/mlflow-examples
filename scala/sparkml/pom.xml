@@ -33,9 +33,12 @@
   </profiles>
 
   <properties>
-    <mleap.version>0.17.0</mleap.version>
-    <mlflow.version>1.20.0</mlflow.version>
-    <jcommander.version>1.81</jcommander.version>
+    <mleap.version>0.20.0</mleap.version>
+<!--  NOTE: only if using Java 11 since  his mleap is compiled with Java 11
+    <mleap.version>0.21.0</mleap.version>
+-->
+    <mlflow.version>2.1.1</mlflow.version>
+    <jcommander.version>1.82</jcommander.version>
   </properties>
 
   <dependencies>

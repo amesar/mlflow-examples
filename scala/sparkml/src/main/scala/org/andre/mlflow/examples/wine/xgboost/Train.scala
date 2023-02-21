@@ -48,9 +48,10 @@ object Train {
     // MLflow - set tags
     client.setTag(runId, "dataPath",dataPath)
     client.setTag(runId, "mlflow.source.name",MLflowUtils.getSourceName(getClass()))
-    client.setTag(runId, "mlflowVersion",MlflowClientVersion.getClientVersion())
-    client.setTag(runId, "sparkVersion",spark.version)
-    client.setTag(runId, "scalaVersion",util.Properties.versionString)
+    client.setTag(runId, "version.mlflow",MlflowClientVersion.getClientVersion())
+    client.setTag(runId, "version.spark",spark.version)
+    client.setTag(runId, "version.scala",util.Properties.versionString)
+    client.setTag(runId, "version.java",System.getProperty("java.version"))
 
     // Process data
     val dataTransformed = Utils.transformData(data)

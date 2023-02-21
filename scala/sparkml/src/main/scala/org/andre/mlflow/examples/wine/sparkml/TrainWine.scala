@@ -18,6 +18,7 @@ import org.andre.mlflow.examples.wine.WineUtils
  */
 object TrainWine {
   val spark = SparkSession.builder.appName("DecisionTreeRegressionExample").getOrCreate()
+  spark.sparkContext.setLogLevel("WARN")
   MLflowUtils.showVersions(spark)
 
   def main(args: Array[String]) {
@@ -68,10 +69,19 @@ object TrainWine {
     // MLflow - set tags
     client.setTag(runId, "dataPath",dataPath)
     client.setTag(runId, "mlflow.source.name",MLflowUtils.getSourceName(getClass()))
-    client.setTag(runId, "mlflowVersion",MlflowClientVersion.getClientVersion())
-    client.setTag(runId, "sparkVersion",spark.version)
-    client.setTag(runId, "scalaVersion",util.Properties.versionString)
-    client.setTag(runId, "MLeapVersion",SparkBundleUtils.getMLeapBundleVersion)
+
+    client.setTag(runId, "version.mlflow",MlflowClientVersion.getClientVersion())
+    client.setTag(runId, "version.spark",spark.version)
+    client.setTag(runId, "version.scala",util.Properties.versionString)
+    client.setTag(runId, "version.java",System.getProperty("java.version"))
+    client.setTag(runId, "version.mleap",SparkBundleUtils.getMLeapBundleVersion)
+
+
+    //client.setTag(runId, "mlflowVersion",MlflowClientVersion.getClientVersion())
+    //client.setTag(runId, "sparkVersion",spark.version)
+    //client.setTag(runId, "scalaVersion",util.Properties.versionString)
+    //client.setTag(runId, "MLeapVersion",SparkBundleUtils.getMLeapBundleVersion)
+
 
     // MLflow - log parameters
     val params = Seq(("maxDepth",maxDepth),("maxBins",maxBins),("runOrigin",runOrigin))

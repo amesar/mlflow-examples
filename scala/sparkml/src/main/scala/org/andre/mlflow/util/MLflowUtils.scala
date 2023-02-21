@@ -36,8 +36,7 @@ object MLflowUtils {
   def getExperiment(client: MlflowClient, experimentIdOrName: String) = {
     if (isNumeric(experimentIdOrName)) {
       try {
-        val expResponse = client.getExperiment(experimentIdOrName)
-        expResponse.getExperiment()
+        client.getExperiment(experimentIdOrName)
       } catch {
         case e: org.mlflow.tracking.MlflowHttpException => {
           throw new NoSuchElementException(s"Cannot find experiment name '$experimentIdOrName'. ${e}")
