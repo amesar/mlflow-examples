@@ -41,15 +41,10 @@ print("sparkVersion:", get_notebook_tag("sparkVersion"))
 
 # COMMAND ----------
 
-data_path = download_wine_file()
-
-# COMMAND ----------
-
-data = spark.read.format("csv") \
-  .option("header", "true") \
-  .option("inferSchema", "true") \
-  .load(data_path.replace("/dbfs","dbfs:")) 
+data = get_wine_quality_data()
+data = spark.createDataFrame(data)
 (trainData, testData) = data.randomSplit([0.7, 0.3], 42)
+display(data)
 
 # COMMAND ----------
 
