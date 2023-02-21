@@ -1,8 +1,14 @@
 # Databricks notebook source
-# MAGIC %md # Basic Sklearn MLflow train and predict
-# MAGIC * Trains and saves model as sklearn
-# MAGIC * Predicts using Sklearn, PyFunc and UDF flavors
-# MAGIC * Option to save model signature
+# MAGIC %md # Basic Keras MNIST train and predict notebook
+# MAGIC * Trains and saves model as Keras flavor which uses the TensorFlow SavedModel format.
+# MAGIC * Predicts using Keras model.
+# MAGIC 
+# MAGIC Widgets:
+# MAGIC * Registered Model - If set, register the model under this name.
+# MAGIC * Epochs - Number of epochs.
+# MAGIC * Batch Size - Batch size.
+# MAGIC 
+# MAGIC Last update: 2023-02-20
 
 # COMMAND ----------
 
@@ -14,49 +20,42 @@
 
 # COMMAND ----------
 
-# Default values per: https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html
+dbutils.widgets.text("2. Epochs", "2") 
+dbutils.widgets.text("3. Batch Size", "128")
 
-dbutils.widgets.text("1. Experiment Name","")
-dbutils.widgets.text("2. Registered Model","")
-dbutils.widgets.dropdown("3. Model version stage","None",["Production","Staging","Archived","None"])
-dbutils.widgets.dropdown("4. Achive existing versions","yes",["yes","no"])
-dbutils.widgets.dropdown("5. Save Signature","no",["yes","no"])
-dbutils.widgets.dropdown("6. SHAP","no",["yes","no"])
-dbutils.widgets.text("7. Max Depth", "1") 
-dbutils.widgets.text("8. Max Leaf Nodes", "")
+registered_model = dbutils.widgets.get("1. Registered Model")
 
-experiment_name = dbutils.widgets.get("1. Experiment Name")
-model_name = dbutils.widgets.get("2. Registered Model")
-model_version_stage = dbutils.widgets.get("3. Model version stage")
-archive_existing_versions = dbutils.widgets.get("4. Achive existing versions") == "yes"
-save_signature = dbutils.widgets.get("5. Save Signature") == "yes"
-shap = dbutils.widgets.get("6. SHAP") == "yes"
-max_depth = to_int(dbutils.widgets.get("7. Max Depth"))
-max_leaf_nodes = to_int(dbutils.widgets.get("8. Max Leaf Nodes"))
+epochs = int(dbutils.widgets.get("2. Epochs"))
+batch_size = int(dbutils.widgets.get("3. Batch Size"))
+if registered_model.strip() == "": registered_model = None
 
-if model_name=="": model_name = None
-if model_version_stage=="None": model_version_stage = None
-if experiment_name=="None": experiment_name = None
-
-print("experiment_name:",experiment_name)
-print("model_name:",model_name)
-print("model_version_stage:",model_version_stage)
-print("archive_existing_versions:",archive_existing_versions)
-print("save_signature:",save_signature)
-print("SHAP:",shap)
-print("max_depth:",max_depth)
-print("max_leaf_nodes:",max_leaf_nodes)
+epochs, batch_size, registered_model
+print("registered_model:", registered_model)
+print("epochs:", epochs)
+print("batch_size:", batch_size)
 
 # COMMAND ----------
 
-import sklearn
+import tensorflow.keras as keras
+import tensorflow as tf
 import mlflow
-import mlflow.sklearn
+import numpy as np
+
+np.random.seed(1)
+tf.random.set_seed(1)
 
 # COMMAND ----------
 
-if experiment_name:
-    mlflow.set_experiment(experiment_name)
+print("sparkVersion:", get_notebook_tag("sparkVersion"))
+print("MLflow Version:", mlflow.__version__)
+print("Keras version:", keras.__version__)
+print("Tensorflow version:", tf.__version__)
+
+# COMMAND ----------
+
+from tensorflow.keras import models
+from tensorflow.keras import layers
+from tensorflow.keras.utils import to_categorical
 
 # COMMAND ----------
 
@@ -64,29 +63,38 @@ if experiment_name:
 
 # COMMAND ----------
 
-data_path = download_wine_file()
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras import backend as K
+
+(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+print("K.image_data_format:",K.image_data_format())
+print("train_images.shape:",train_images.shape)
+print("train_labels.shape:",train_labels.shape)
+print("train_labels:",train_labels)
+print("test_images.shape:",test_images.shape)
+print("test_labels.shape:",test_labels.shape)
+print("test_labels:",test_labels)
+
+train_images = train_images.reshape((60000, 28 * 28))
+train_images = train_images.astype('float32') / 255 
+
+test_images = test_images.reshape((10000, 28 * 28))
+test_images = test_images.astype('float32') / 255 
+
+train_labels = to_categorical(train_labels)
+test_labels = to_categorical(test_labels)
 
 # COMMAND ----------
 
-import pandas as pd
-data = pd.read_csv(data_path)
-display(data)
+input_shape = (28 * 28,)
+print("input_shape:",input_shape)
 
 # COMMAND ----------
 
-data.describe()
-
-# COMMAND ----------
-
-from sklearn.model_selection import train_test_split
-
-train, test = train_test_split(data, test_size=0.30, random_state=42)
-
-# The predicted column is colLabel which is a scalar from [3, 9]
-train_x = train.drop([colLabel], axis=1)
-test_x = test.drop([colLabel], axis=1)
-train_y = train[colLabel]
-test_y = test[colLabel]
+print("train_images.shape:",train_images.shape)
+print("train_labels.shape:",train_labels.shape)
+print("test_images.shape:",test_images.shape)
+print("test_labels.shape:",test_labels.shape)
 
 # COMMAND ----------
 
@@ -94,81 +102,57 @@ test_y = test[colLabel]
 
 # COMMAND ----------
 
-import pandas as pd
-import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from mlflow.models.signature import infer_signature
+model = models.Sequential()
+model.add(layers.Dense(512, activation="relu", input_shape=input_shape))
+model.add(layers.Dense(10, activation='softmax'))
 
 # COMMAND ----------
 
-client = mlflow.tracking.MlflowClient()
+import mlflow.keras
 
-def _register_model(model_name, model_version_stage, archive_existing_versions, run):
-    try:
-       model =  client.create_registered_model(model_name)
-    except RestException as e:
-       model =  client.get_registered_model(model_name)
-    model_artifact = "sklearn-model"
-    source = f"{run.info.artifact_uri}/{model_artifact}"
-    version = client.create_model_version(model_name, source, run.info.run_id)
-    if model_version_stage:
-        client.transition_model_version_stage(model_name, version.version, model_version_stage, archive_existing_versions)
-    return version
-
-# COMMAND ----------
-
-import time
-ts = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time()))
-with mlflow.start_run(run_name=f"sklearn {mlflow.__version__} {ts}") as run:
-    run_id = run.info.run_id
-    print("MLflow:")
-    print("  run_id:",run_id)
-    print("  experiment_id:",run.info.experiment_id)
-    print("Parameters:")
-    print("  max_depth:",max_depth)
-    print("  max_leaf_nodes:",max_leaf_nodes)
-    
-    mlflow.set_tag("timestamp", ts)
+with mlflow.start_run(run_name=f"{now()} - {mlflow.__version__}") as run:
+    print("Run ID:", run.info.run_id)
     mlflow.set_tag("version.mlflow", mlflow.__version__)
-    mlflow.set_tag("version.sklearn", sklearn.__version__)
-    mlflow.set_tag("save_signature", save_signature)
+    mlflow.set_tag("version.tensorflow", tf.__version__)
+    mlflow.set_tag("version.keras", keras.__version__)
 
-    model = DecisionTreeRegressor(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)
-    model.fit(train_x, train_y)
-      
-    predictions = model.predict(test_x)
-    signature = infer_signature(train_x, predictions) if save_signature else None
-    print("signature:",signature)
-    mlflow.log_param("max_depth", max_depth)
-    mlflow.log_param("max_leaf_nodes", max_leaf_nodes)
-        
-    #mlflow.sklearn.log_model(model, "sklearn-model", signature=signature, model_name_name=model_name)
-    mlflow.sklearn.log_model(model, "sklearn-model", signature=signature)
-    if model_name:
-        version = _register_model(model_name, model_version_stage, archive_existing_versions, run)
-    else:
-        version = None
-        
-    rmse = np.sqrt(mean_squared_error(test_y, predictions))
-    r2 = r2_score(test_y, predictions)
-    print("Metrics:")
-    print("  rmse:",rmse)
-    print("  r2:",r2)
-    mlflow.log_metric("rmse", rmse)
-    mlflow.log_metric("r2", r2) 
-    if shap:
-        mlflow.shap.log_explanation(model.predict, train_x)
+    model.compile(optimizer='rmsprop',
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
+    model.summary()
+    model.fit(train_images, train_labels, epochs=epochs, batch_size=batch_size, verbose=1)
+
+    test_loss, test_acc = model.evaluate(test_images, test_labels)
+    print("test_acc:", test_acc)
+    print("test_loss:", test_loss)
+    
+    mlflow.log_param("my_epochs",epochs)
+    mlflow.log_param("my_batch_size",batch_size)
+    mlflow.log_metric("my_acc", test_acc)
+    mlflow.log_metric("my_loss", test_loss)
+    mlflow.keras.log_model(model, "model", registered_model_name=registered_model) 
+    with open("model.json", "w") as f:
+        f.write(model.to_json())
+    mlflow.log_artifact("model.json")
 
 # COMMAND ----------
 
-display_run_uri(run.info.experiment_id, run_id)
+test_images.shape
 
 # COMMAND ----------
 
-if version:
-    display_registered_model_version_uri(model_name, version.version)
+# AttributeError: 'PyFuncModel' object has no attribute 'predict_classes'
+#predictions = model.predict_classes(test_images) # Error: 'Sequential' object has no attribute 'predict_classes'
+#predictions
+
+# COMMAND ----------
+
+predictions = model.predict(test_images)
+pd.DataFrame(data=predictions)
+
+# COMMAND ----------
+
+display_run_uri(run.info.experiment_id, run.info.run_id)
 
 # COMMAND ----------
 
@@ -176,19 +160,22 @@ if version:
 
 # COMMAND ----------
 
-model_uri = f"runs:/{run_id}/sklearn-model"
+model_uri = f"runs:/{run.info.run_id}/model"
 model_uri
 
 # COMMAND ----------
 
-# MAGIC %md #### Predict as sklearn
+# MAGIC %md #### Predict as Keras
 
 # COMMAND ----------
 
-model = mlflow.sklearn.load_model(model_uri)
-data_to_predict = data.drop(colLabel, axis=1)
-predictions = model.predict(data_to_predict)
-display(pd.DataFrame(predictions,columns=[colPrediction]))
+test_images.shape
+
+# COMMAND ----------
+
+model = mlflow.keras.load_model(model_uri)
+predictions = model.predict(test_images)
+pd.DataFrame(data=predictions)
 
 # COMMAND ----------
 
@@ -196,13 +183,22 @@ type(predictions)
 
 # COMMAND ----------
 
-# MAGIC %md #### Predict as PyFunc
+# MAGIC %md #### Predict as Pyfunc
 
 # COMMAND ----------
 
 model = mlflow.pyfunc.load_model(model_uri)
-predictions = model.predict(data_to_predict)
-display(pd.DataFrame(predictions,columns=[colPrediction]))
+model
+
+# COMMAND ----------
+
+test_images_pd = pd.DataFrame(data=test_images)
+test_images_pd.shape
+
+# COMMAND ----------
+
+predictions = model.predict(test_images_pd)
+pd.DataFrame(data=predictions)
 
 # COMMAND ----------
 
@@ -210,15 +206,13 @@ type(predictions)
 
 # COMMAND ----------
 
-# MAGIC %md #### Predict as Spark UDF
+# MAGIC %md #### Predict as UDF - TODO
+# MAGIC 
+# MAGIC * TypeError: Can not infer schema for type: ``<class 'numpy.ndarray'>``
 
 # COMMAND ----------
 
-df = spark.createDataFrame(data_to_predict)
-udf = mlflow.pyfunc.spark_udf(spark, model_uri)
-predictions = df.withColumn("prediction", udf(*df.columns)).select("prediction")
-display(predictions)
-
-# COMMAND ----------
-
-type(predictions)
+#df = spark.createDataFrame(test_images)
+#udf = mlflow.pyfunc.spark_udf(spark, model_uri)
+#predictions = df.withColumn("prediction", udf(*df.columns))
+#predictions
