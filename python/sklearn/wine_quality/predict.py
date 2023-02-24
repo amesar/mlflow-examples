@@ -2,6 +2,7 @@ import click
 import mlflow
 import mlflow.sklearn
 from wine_quality import predict_utils
+from wine_quality import common
 
 def banner(msg, model_uri):
     print("\n==========")
@@ -70,7 +71,7 @@ predict_methods = {
 
 @click.command()
 @click.option("--model-uri", help="Model URI.", required=True, type=str)
-@click.option("--data-path", help="Data path.", default="../../data/train/wine-quality-white.csv", type=str)
+@click.option("--data-path", help="Data path.", default=common.data_path)
 @click.option("--flavor", help="MLflow flavor.", required=True, type=str)
 def main(model_uri, data_path, flavor):
     print("Options:")

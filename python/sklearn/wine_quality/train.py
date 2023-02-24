@@ -22,6 +22,7 @@ import mlflow.sklearn
 from mlflow.models.signature import infer_signature
 from wine_quality import plot_utils, mlflow_utils
 from wine_quality.timestamp_utils import fmt_ts_seconds, fmt_ts_millis
+from wine_quality import common
 
 
 print("Versions:")
@@ -170,7 +171,7 @@ class Trainer():
 @click.option("--data-path", 
     help="Data path.", 
     type=str,
-    default="https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv",
+    default=common.data_path,
     show_default=True
 )
 @click.option("--model-name", 

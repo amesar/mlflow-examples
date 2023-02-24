@@ -8,7 +8,7 @@ conda_env: conda.yaml
 entry_points:
   main:
     parameters:
-      data-path: {type: string, default: "https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv" }
+      data-path: {type: string, default: https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv }
       model-name: {type: string, default: None }
       model-version-stage: {type: string, default: None }
       archive-existing-versions: {type: boolean, default: False }
@@ -31,7 +31,7 @@ entry_points:
                 "
   autolog:
     parameters:
-      data-path: {type: string, default: "../../data/train/wine-quality-white.csv"}
+      data-path: {type: string, default: https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv }
       max-depth: int
       max-leaf-nodes: {type: int, default: 32}
     command: "python -um wine_quality.autolog_train
@@ -42,7 +42,7 @@ entry_points:
     parameters:
       model-uri: string
       flavor: string
-      data-path: {type: string, default: ../../data/train/wine-quality-white.csv }
+      data-path: {type: string, default: https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv }
     command: "python -um wine_quality.predict 
                 --model-uri {model-uri} 
                 --flavor {flavor} 
