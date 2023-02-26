@@ -6,22 +6,22 @@ import xgboost as xgb
 import mlflow
 import mlflow.xgboost
 
-print("MLflow Version:", mlflow.__version__)
 print("MLflow Tracking URI:", mlflow.get_tracking_uri())
-print("XGBoost version:",xgb.__version__)
+print("MLflow Version:", mlflow.__version__)
+print("XGBoost version:", xgb.__version__)
 client = mlflow.tracking.MlflowClient()
+
 
 def build_data(data_path):
     data = pd.read_csv(data_path)
     train, test = train_test_split(data, test_size=0.30, random_state=2019)
-
     # The predicted column is "quality" which is a scalar from [3, 9]
     X_train = train.drop(["quality"], axis=1)
     X_test = test.drop(["quality"], axis=1)
     y_train = train["quality"]
     y_test = test["quality"]
-
     return X_train, X_test, y_train, y_test 
+
 
 def train(data_path, max_depth, min_child_weight, estimators, model_name):
     X_train, X_test, y_train, y_test = build_data(data_path)
@@ -41,6 +41,8 @@ def train(data_path, max_depth, min_child_weight, estimators, model_name):
         mlflow.log_param("max_depth", max_depth)
         mlflow.log_param("min_child_weight", min_child_weight)
         mlflow.log_param("estimators", estimators)
+        mlflow.set_tag("version.mlflow",mlflow.__version__)
+        mlflow.set_tag("version.xgboost",xgb.__version__)
 
         # Create and fit model
         model = xgb.XGBRegressor(
@@ -65,6 +67,7 @@ def train(data_path, max_depth, min_child_weight, estimators, model_name):
 
         # Log model
         mlflow.xgboost.log_model(model, "xgboost-model", registered_model_name=model_name)
+
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
