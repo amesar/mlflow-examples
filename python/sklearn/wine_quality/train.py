@@ -65,6 +65,8 @@ class Trainer():
         X_test = test.drop([col_label], axis=1)
         y_train = train[[col_label]]
         y_test = test[[col_label]]
+        print(">> X_test.type:",type(X_test))
+        print(">> X_test.dtypes:",X_test.dtypes)
 
         return X_train, X_test, y_train, y_test 
 
@@ -129,9 +131,9 @@ class Trainer():
             print("Signature:",signature)
 
             # MLflow log model
-            mlflow.sklearn.log_model(model, "sklearn-model", signature=signature)
+            mlflow.sklearn.log_model(model, "model", signature=signature)
             if registered_model_name:
-                mlflow_utils.register_model(client, "sklearn-model", registered_model_name, 
+                mlflow_utils.register_model(client, "model", registered_model_name, 
                    registered_model_version_stage, archive_existing_versions, run)
 
             # Convert sklearn model to ONNX and log model

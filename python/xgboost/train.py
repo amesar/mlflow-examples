@@ -66,7 +66,7 @@ def train(data_path, max_depth, min_child_weight, estimators, model_name):
         mlflow.log_metric("mae", mae)
 
         # Log model
-        mlflow.xgboost.log_model(model, "xgboost-model", registered_model_name=model_name)
+        mlflow.xgboost.log_model(model, "model", registered_model_name=model_name)
 
 
 if __name__ == "__main__":

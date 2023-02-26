@@ -48,4 +48,3 @@ if __name__ == "__main__":
     X,y  = build_data(args.data_path)
     predict_pyfunc(args.model_uri, X)
     predict_xgboost(args.model_uri, X, y)
-
