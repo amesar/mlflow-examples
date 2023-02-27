@@ -189,7 +189,15 @@ print("New runName:", run.data.tags.get("mlflow.runName",None))
 
 # COMMAND ----------
 
+# MAGIC %md ### Display links
+
+# COMMAND ----------
+
 display_run_uri(run.info.experiment_id, run_id)
+
+# COMMAND ----------
+
+display_experiment_id_info(run.info.experiment_id)
 
 # COMMAND ----------
 
