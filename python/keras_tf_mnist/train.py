@@ -67,9 +67,6 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
         mname = f"{model_name}_onnx" if model_name else None
         onnx_utils.log_model(model, "onnx-model", mname)
 
-    predictions = model.predict_classes(x_test)
-    print("predictions:", predictions)
-
 
 @click.command()
 @click.option("--experiment-name", help="Experiment name", default=None, type=str)

@@ -26,13 +26,8 @@ def main(model_uri, data_path):
     #print("predictions:", predictions)
     utils.display_predictions(predictions)
 
-    print("\n== model.predict_classes")
-    predictions = model.predict_classes(data)
-    print("predictions.type:", type(predictions))
-    print("predictions.shape:", predictions.shape)
-    utils.display_predictions(predictions)
-
     utils.predict_pyfunc(model_uri, data)
+
 
 if __name__ == "__main__":
     main()
