@@ -3,6 +3,11 @@
 
 # COMMAND ----------
 
+import mlflow
+client = mlflow.client.MlflowClient()
+
+# COMMAND ----------
+
 def get_notebook_tag(tag):
     tag = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().get(tag)
     return None if tag.isEmpty() else tag.get()
@@ -34,6 +39,12 @@ def display_registered_model_uri(model_name):
 def display_registered_model_version_uri(model_name, version):
     uri = f"https://{host_name}/#mlflow/models/{model_name}/versions/{version}"
     displayHTML("""<b>Registered Model Version URI:</b> <a href="{}">{}</a>""".format(uri,uri))
+
+# COMMAND ----------
+
+def display_experiment_id_info(experiment_id):
+    experiment = client.get_experiment(experiment_id)
+    display_experiment_info(experiment)
 
 # COMMAND ----------
 
