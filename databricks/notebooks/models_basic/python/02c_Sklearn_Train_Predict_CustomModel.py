@@ -5,7 +5,7 @@
 # MAGIC * Three custom models:
 # MAGIC   * CustomProbaModel - custom call to DecisionTreeClassifier.predict_proba() instead of default Pyfunc call to DecisionTreeClassifier.predict().
 # MAGIC   * CustomResponseModel - return a custom response (dict) for [Pyfunc.predict](https://mlflow.org/docs/latest/python_api/mlflow.pyfunc.html#mlflow.pyfunc.PyFuncModel.predict) response instead of standard response (pandas.DataFrame, pandas.Series, numpy.ndarray or list).
-# MAGIC   * CustomCodeModel - write you own non-Dklearn code for predictions.
+# MAGIC   * CustomCodeModel - write you own non-Sklearn code for predictions.
 
 # COMMAND ----------
 
@@ -39,12 +39,7 @@ print("sparkVersion:", get_notebook_tag("sparkVersion"))
 
 # COMMAND ----------
 
-data_path = download_wine_file()
-
-# COMMAND ----------
-
-import pandas as pd
-data = pd.read_csv(data_path)
+data = get_wine_quality_data()
 display(data)
 
 # COMMAND ----------
