@@ -125,7 +125,7 @@ def _register_model(model_name, model_version_stage, archive_existing_versions, 
        model =  client.create_registered_model(model_name)
     except RestException as e:
        model =  client.get_registered_model(model_name)
-    model_artifact = "sklearn-model"
+    model_artifact = "model"
     source = f"{run.info.artifact_uri}/{model_artifact}"
     version = client.create_model_version(model_name, source, run.info.run_id)
     if model_version_stage:
@@ -162,7 +162,7 @@ with mlflow.start_run(run_name=f"{now} - {mlflow.__version__}") as run:
     mlflow.log_param("max_depth", max_depth)
     mlflow.log_param("max_leaf_nodes", max_leaf_nodes)
         
-    mlflow.sklearn.log_model(model, "sklearn-model", signature=signature)
+    mlflow.sklearn.log_model(model, "model", signature=signature)
     if model_name:
         version = _register_model(model_name, model_version_stage, archive_existing_versions, run)
     else:
@@ -202,7 +202,7 @@ if version:
 
 # COMMAND ----------
 
-model_uri = f"runs:/{run_id}/sklearn-model"
+model_uri = f"runs:/{run_id}/model"
 model_uri
 
 # COMMAND ----------
