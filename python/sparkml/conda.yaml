@@ -3,12 +3,11 @@ channels:
   - conda-forge
 dependencies:
   - python=3.8
-  - pip=19.0.3
   - pip:
-    - mlflow>=1.17.0
-    - mleap==0.17.0
+    - mlflow>=1.30
+    - mleap==0.21.1
     - pyspark==3.3.1
     - pyarrow>=1.0.0
-    - onnx==1.9.0
-    - onnxmltools==1.7.0
-    - onnxruntime==1.7.0
+    - onnx==1.13.0
+    - onnxruntime==1.13.1
+    - onnxmltools==1.11.0
