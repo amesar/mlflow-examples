@@ -5,9 +5,8 @@ dependencies:
   - python=3.8
   - pip:
     - mlflow>=1.30.0
-    - catboost==0.25.1
-    - scikit-learn==0.24.2
-    - pyarrow>=1.0.0
-    - onnx==1.9.0
-    - onnxmltools==1.7.0
-    - onnxruntime==1.7.0
+    - catboost==1.1.1
+    - scikit-learn==1.2.1
+    - onnx==1.13.0
+    - onnxruntime==1.13.1
+    - onnxmltools==1.11.1
