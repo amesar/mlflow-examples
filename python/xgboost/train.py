@@ -50,6 +50,8 @@ def train(data_path, max_depth, min_child_weight, estimators, model_name):
                  min_child_weight=min_child_weight,
                  random_state=42) 
         model.fit(X_train, y_train)
+        print("model.type:", type(model))
+        print("model:", model)
 
         # MLflow metrics
         predictions = model.predict(X_test)
