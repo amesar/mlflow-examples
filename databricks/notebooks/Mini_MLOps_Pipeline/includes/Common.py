@@ -10,44 +10,67 @@
 _model_name = "mini_mlops_pipeline"
 _model_uri = f"models:/{_model_name}/production"
 _endpoint_name = "mini_mlops_wine_quality"
+
 print("_model_name:", _model_name)
 print("_endpoint_name:", _endpoint_name)
 print("_model_uri:", _model_uri)
 
 # COMMAND ----------
 
+import os
+
+_notebook_context = dbutils.notebook.entry_point.getDbutils().notebook().getContext()
+user = _notebook_context.tags().get("user").get()
+user
+
+# COMMAND ----------
+
 # Experiment name is the same as the 01_Train_Model notebook.
 
-import os
-notebook = dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get()
-dir = os.path.dirname(notebook)
-_experiment_name = f"{dir}/01_Train_Model"
+_notebook = _notebook_context.notebookPath().get()
+_dir = os.path.dirname(_notebook)
+_experiment_name = f"{_dir}/01_Train_Model"
+
 print("_experiment_name:", _experiment_name)
 
 # COMMAND ----------
 
 def _get_notebook_tag(tag):
-    tag = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().get(tag)
+    tag = _notebook_context.tags().get(tag)
     return None if tag.isEmpty() else tag.get()
+
+# COMMAND ----------
+
+def _create_experiment_for_repos():
+    print("Creating Repos scratch experiment")
+    with mlflow.start_run() as run:
+        pass # mlflow.set_tag("info","hi there")
+    return mlflow_client.get_experiment(run.info.experiment_id)
 
 # COMMAND ----------
 
 # Gets the current notebook's experiment information
 
 def init():
-    experiment_name = dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get()
-    print("Experiment name:",experiment_name)
-    experiment = client.get_experiment_by_name(experiment_name)
-    print("Experiment ID:",experiment.experiment_id)
+    experiment_name = _notebook
+    print("Experiment name:", experiment_name)
+    experiment = mlflow_client.get_experiment_by_name(experiment_name)
+    # Is running in as Repos, cannot need to create its default "notebook" experiment
+    if not experiment:
+        experiment = _create_experiment_for_repos()
+        print(f"Running as Repos - created Repos experiment:", experiment.name)
+
+    print("Experiment ID:", experiment.experiment_id)
+    print("Experiment name:", experiment.name)
     return experiment.experiment_id, experiment_name
 
 # COMMAND ----------
 
 def delete_runs(experiment_id):
-    runs = client.search_runs(experiment_id)
+    runs = mlflow_client.search_runs(experiment_id)
     print(f"Found {len(runs)} runs for experiment_id {experiment_id}")
     for run in runs:
-        client.delete_run(run.info.run_id)
+      mlflow_client.delete_run(run.info.run_id)
 
 # COMMAND ----------
 
@@ -88,12 +111,9 @@ import mlflow
 import mlflow.spark
 import pyspark
 print("MLflow Version:", mlflow.__version__)
-print("Spark Version:", spark.version)
-print("PySpark Version:", pyspark.__version__)
-print("sparkVersion:", _get_notebook_tag("sparkVersion"))
 print("DATABRICKS_RUNTIME_VERSION:", os.environ.get('DATABRICKS_RUNTIME_VERSION',None))
 
-client = mlflow.client.MlflowClient()
+mlflow_client = mlflow.client.MlflowClient()
 
 # COMMAND ----------
 

@@ -3,7 +3,15 @@
 
 # COMMAND ----------
 
+# MAGIC %md ### Setup includes
+
+# COMMAND ----------
+
 # MAGIC %run ./includes/Common
+
+# COMMAND ----------
+
+# MAGIC %md ### Setup widgets
 
 # COMMAND ----------
 
@@ -32,13 +40,9 @@ if registered_model=="": raise Exception("Missing 'Registered Model'")
 
 # COMMAND ----------
 
-#dbutils.widgets.removeAll()
-
-# COMMAND ----------
-
 dbutils.widgets.text("Registered Model Version", "1")
 registered_model_version = dbutils.widgets.get("Registered Model Version")
-print("registered_model_version:",registered_model_version)
+print("registered_model_version:", registered_model_version)
 
 # COMMAND ----------
 
@@ -117,4 +121,5 @@ model_serving_client.wait_until(_endpoint_name, max=50, sleep_time=4)
 model_serving_client.get_endpoint(_endpoint_name)
 
 # COMMAND ----------
+
 
