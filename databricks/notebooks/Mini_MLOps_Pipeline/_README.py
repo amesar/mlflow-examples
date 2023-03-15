@@ -1,12 +1,12 @@
 # Databricks notebook source
-# MAGIC %md # README - Mini MLOps pipeline
+# MAGIC %md # Mini MLOps pipeline
 # MAGIC 
 # MAGIC **Overview**
 # MAGIC 
 # MAGIC * Trains several model runs with different hyperparameters.
 # MAGIC * Registers the best run's model in the model registry as a production stage.
 # MAGIC * Batch scoring with Spark.
-# MAGIC * Real-time model scoring with [Serverless Model Serving](https://docs.databricks.com/machine-learning/model-inference/serverless/serverless-real-time-inference.html).
+# MAGIC * Real-time model scoring with Serverless Model Serving ([AWS](https://docs.databricks.com/machine-learning/model-inference/serverless/serverless-real-time-inference.html) - [Azure](https://learn.microsoft.com/en-us/azure/databricks/machine-learning/model-serving/)).
 # MAGIC   
 # MAGIC **Notebooks**
 # MAGIC 
@@ -23,7 +23,9 @@
 # MAGIC   * [ModelServingClient]($includes/ModelServingClient) - Python HTTP client to invoke Databricks Model Serving API.
 # MAGIC   * [HttpClient]($includes/HttpClient) - Python HTTP client to invoke Databricks API.
 # MAGIC 
-# MAGIC Last updated: 2023-03-09
+# MAGIC **Github:** [github.com/amesar/mlflow-examplesdatabricks/notebooks/Mini_MLOps_Pipeline](https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/Mini_MLOps_Pipeline)
+# MAGIC 
+# MAGIC Last updated: 2023-03-15
 
 # COMMAND ----------
 
