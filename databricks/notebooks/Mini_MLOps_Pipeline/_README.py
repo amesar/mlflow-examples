@@ -14,7 +14,7 @@
 # MAGIC   * Option to use [MLflow Autologging](https://docs.databricks.com/applications/mlflow/databricks-autologging.html).
 # MAGIC * [02_Register_Model]($02_Register_Model) - Find the best run and register as model `models:/mini_mlops_pipeline/production`.
 # MAGIC * [03_Batch_Scoring]($03_Batch_Scoring) - Batch score with Sklearn, Pyfunc and UDF flavors.
-# MAGIC * Real-time Model Serving endpoint - using [Serverless Model Serving](https://docs.databricks.com/machine-learning/model-inference/serverless/serverless-real-time-inference.html)
+# MAGIC * Real-time Model Serving endpoint - using [Serverless Model Serving](https://docs.databricks.com/machine-learning/model-inference/serverless/serverless-real-time-inference.html).
 # MAGIC   * [04a_RT_Serving_Start]($04a_RT_Serving_Start) - Start endpoint.
 # MAGIC   * [04b_RT_Serving_Score]($04b_RT_Serving_Score) - Score endpoint.
 # MAGIC   * [04c_RT_Serving_Stop]($04c_RT_Serving_Stop) - Stop endpoint.

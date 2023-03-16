@@ -3,6 +3,7 @@
 # MAGIC * Scores the best model run from the [01_Train_Model]($01_Train_Model) notebook.
 # MAGIC * Uses the model URI: `models:/mini_mlops_pipeline/production`.
 # MAGIC * Scores with native Sklearn, Pyfunc and UDF flavors.
+# MAGIC * Sklearn and Pyfunc scoring is executed only on the driver node, whereas UDF scoring leverages all nodes of the cluster.
 
 # COMMAND ----------
 
@@ -15,6 +16,7 @@
 # COMMAND ----------
 
 # MAGIC %md ### Prepare scoring data
+# MAGIC * Drop the label column.
 
 # COMMAND ----------
 
@@ -28,6 +30,7 @@ display(data)
 # COMMAND ----------
 
 # MAGIC %md ### Score with native Sklearn flavor
+# MAGIC * Executes only on the driver node of the cluster.
 
 # COMMAND ----------
 
@@ -46,6 +49,7 @@ display(pd.DataFrame(predictions, columns=[_col_prediction]))
 # COMMAND ----------
 
 # MAGIC %md ### Score with Pyfunc flavor
+# MAGIC * Executes only on the driver node of the cluster.
 
 # COMMAND ----------
 
@@ -58,9 +62,10 @@ display(pd.DataFrame(predictions, columns=[_col_prediction]))
 # COMMAND ----------
 
 # MAGIC %md ### Distributed scoring with UDF
-# MAGIC * UDF wraps the Sklearn model
-# MAGIC * Pass a Spark dataframe to the UDF
-# MAGIC * The dataframe is split into multiple pieces and sent to each worker in the cluster for scoring
+# MAGIC * Executes on all worker nodes of the cluster.
+# MAGIC * UDF wraps the Sklearn model.
+# MAGIC * Pass a Spark dataframe to the UDF.
+# MAGIC * The dataframe is split into multiple pieces and sent to each worker in the cluster for scoring.
 
 # COMMAND ----------
 
@@ -73,4 +78,4 @@ display(predictions.select(_col_prediction))
 
 # MAGIC %md ### Next notebook
 # MAGIC 
-# MAGIC Now go to the **[04a_RT_Serving_Start]($04a_RT_Serving_Start)** notebook for real-time scoring
+# MAGIC Optionally, go to the **[04a_RT_Serving_Start]($04a_RT_Serving_Start)** notebook for real-time scoring.

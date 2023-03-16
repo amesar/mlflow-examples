@@ -15,31 +15,6 @@
 
 # COMMAND ----------
 
-"""
-dbutils.widgets.text("1. Endpoint", _endpoint_name)
-endpoint_name = dbutils.widgets.get("1. Endpoint")
-
-dbutils.widgets.text("2. Served Model", "my_model")
-served_model = dbutils.widgets.get("2. Served Model")
-
-dbutils.widgets.text("3. Registered Model", _model_name)
-registered_model = dbutils.widgets.get("3. Registered Model")
-
-dbutils.widgets.text("4. Registered Model Version", "1")
-registered_model_version = dbutils.widgets.get("4. Registered Model Version")
-
-print("endpoint_name:",endpoint_name)
-print("served_model:",served_model)
-print("registered_model:",registered_model)
-print("registered_model_version:",registered_model_version)
-
-if endpoint_name =="": raise Exception("Missing 'Endpoint'")
-if served_model =="": raise Exception("Missing 'Served Model'")
-if registered_model=="": raise Exception("Missing 'Registered Model'")
-"""
-
-# COMMAND ----------
-
 dbutils.widgets.text("Registered Model Version", "1")
 registered_model_version = dbutils.widgets.get("Registered Model Version")
 print("registered_model_version:", registered_model_version)
@@ -119,7 +94,3 @@ model_serving_client.wait_until(_endpoint_name, max=50, sleep_time=4)
 # COMMAND ----------
 
 model_serving_client.get_endpoint(_endpoint_name)
-
-# COMMAND ----------
-
-
