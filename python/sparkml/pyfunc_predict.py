@@ -17,7 +17,7 @@ def main(model_uri, data_path):
         print(f"  {k}: {v}")
 
     data = pd.read_csv(data_path)
-    print("data.shape:",data.shape)
+    print(data.head(5).to_string(index=False, justify='right'))
 
     model = mlflow.pyfunc.load_model(model_uri)
     print("model:", model)

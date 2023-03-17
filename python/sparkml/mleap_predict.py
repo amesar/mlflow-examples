@@ -24,7 +24,7 @@ def main(run_id, data_path):
     data.printSchema()
 
     print("MLeap predictions")
-    client = mlflow.tracking.MlflowClient()
+    client = mlflow.client.MlflowClient()
     run = client.get_run(run_id)
     model = mleap_utils.load_model(run, "mleap-model/mleap/model")
     print("model.type:", type(model))

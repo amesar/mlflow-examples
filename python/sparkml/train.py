@@ -93,7 +93,7 @@ def main(experiment_name, model_name, data_path, max_depth, max_bins, describe, 
     for k,v in locals().items():
         print(f"  {k}: {v}")
 
-    client = mlflow.tracking.MlflowClient()
+    client = mlflow.client.MlflowClient()
     if experiment_name:
         mlflow.set_experiment(experiment_name)
     if spark_autolog:
