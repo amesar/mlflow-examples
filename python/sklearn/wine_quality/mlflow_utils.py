@@ -1,13 +1,15 @@
-import pandas as pd
+import mlflow
 from mlflow.exceptions import RestException
 
+client = mlflow.client.MlflowClient()
 
-def register_model(client, 
-        mlflow_model_name, 
-        registered_model_name, 
-        registered_model_version_stage, 
-        archive_existing_versions, 
-        run):
+def register_model(
+        run,
+        mlflow_model_name,
+        registered_model_name,
+        registered_model_version_stage,
+        archive_existing_versions
+    ):
     try:
         desc = "Skearn Wine Quality model"
         tags = { "info": desc}
@@ -15,7 +17,7 @@ def register_model(client,
     except RestException:
         pass
     source = f"{run.info.artifact_uri}/{mlflow_model_name}"
-    print("Model source:",source)
+    print("MLflow model source:", source)
     vr = client.create_model_version(registered_model_name, source, run.info.run_id)
     if registered_model_version_stage:
         if  registered_model_version_stage in [ "None", "Archived" ]:

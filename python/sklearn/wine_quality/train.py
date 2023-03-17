@@ -133,13 +133,24 @@ class Trainer():
             # MLflow log model
             mlflow.sklearn.log_model(model, "model", signature=signature)
             if registered_model_name:
-                mlflow_utils.register_model(client, "model", registered_model_name, 
-                   registered_model_version_stage, archive_existing_versions, run)
+                mlflow_utils.register_model(run,
+                    "model",
+                    registered_model_name,
+                    registered_model_version_stage,
+                    archive_existing_versions
+                )
 
             # Convert sklearn model to ONNX and log model
             if self.log_as_onnx:
                 from wine_quality import onnx_utils
-                onnx_utils.log_model(model, "onnx-model", registered_model_name, self.X_test)
+                onnx_utils.log_model(model, "onnx-model", self.X_test)
+                if registered_model_name:
+                    mlflow_utils.register_model(run,
+                        "onnx-model", 
+                        f"{registered_model_name}_onnx",
+                        registered_model_version_stage,
+                        archive_existing_versions
+                    )
 
             # MLflow artifact - plot file
             plot_file = "plot.png"
