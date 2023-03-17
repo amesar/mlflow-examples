@@ -4,11 +4,11 @@ channels:
 dependencies:
   - python=3.8
   - pip:
-    - mlflow>=1.30
+    - mlflow>=2.2.2
     - scikit-learn
     - matplotlib
-    - onnx==1.13.0
-    - onnxruntime==1.13.1
-    - onnxmltools==1.11.1
+    - onnx==1.13.1
+    - onnxruntime==1.14.1
+    - onnxmltools==1.11.2
     - pyspark==3.3.1
     - shortuuid
