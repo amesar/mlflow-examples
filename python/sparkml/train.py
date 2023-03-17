@@ -66,7 +66,7 @@ def train(run_id, data, max_depth, max_bins, model_name, log_as_mleap, log_as_on
 
         # Log MLeap schema file for MLeap runtime deserialization
         schema_path = "schema.json"
-        with open(schema_path, 'w') as f:
+        with open(schema_path, "w",  encoding="utf-8") as f:
             f.write(scoreData.schema.json())
         print("schema_path:", schema_path)
         mlflow.log_artifact(schema_path, "mleap-model")

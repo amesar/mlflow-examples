@@ -1,8 +1,10 @@
 import click
 import mlflow
-import mlflow.spark
+##import mlflow.spark
 from pyspark.sql import SparkSession
-from common import *
+##from common import *
+from common import show_versions, read_data, default_data_path
+from common import colLabel, colPrediction, colFeatures
 import mleap_utils
 
 spark = SparkSession.builder.appName("Predict").getOrCreate()
@@ -16,7 +18,7 @@ def main(run_id, data_path):
     print("Options:")
     for k,v in locals().items():
         print(f"  {k}: {v}")
-    model_uri = f"runs:/{run_id}/mleap-model"
+    #model_uri = f"runs:/{run_id}/mleap-model"
 
     data_path = data_path or default_data_path
     data = read_data(spark, data_path)

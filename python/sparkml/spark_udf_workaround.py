@@ -1,7 +1,7 @@
 """
 Workaround for MLflow Spark UDF named columns bug.
 """
-import mlflow.pyfunc
+import mlflow
 import mlflow.spark
 
 class UdfModelWrapper(mlflow.pyfunc.PythonModel):
@@ -10,7 +10,6 @@ class UdfModelWrapper(mlflow.pyfunc.PythonModel):
         self.model_artifact = model_artifact
 
     def load_context(self, context):
-        import mlflow.pyfunc
         self.spark_pyfunc = mlflow.pyfunc.load_model(context.artifacts[self.model_artifact])
 
     def predict(self, context, model_input):
@@ -34,5 +33,5 @@ def log_udf_model(run_id, artifact_path, ordered_columns, model_name=None):
     return udf_artifact_path
 
 def log_spark_and_udf_models(model, artifact_path, run_id, ordered_columns):   
-  mlflow.spark.log_model(model, artifact_path)
-  return log_udf_model(artifact_path, ordered_columns, run_id)
+    mlflow.spark.log_model(model, artifact_path)
+    return log_udf_model(artifact_path, ordered_columns, run_id)

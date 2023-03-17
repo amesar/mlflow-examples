@@ -2,7 +2,7 @@ import click
 import mlflow
 import mlflow.spark
 from pyspark.sql import SparkSession
-from common import *
+from common import show_versions, default_data_path, read_data, colLabel, colPrediction
 
 spark = SparkSession.builder.appName("Predict").getOrCreate()
 show_versions(spark)

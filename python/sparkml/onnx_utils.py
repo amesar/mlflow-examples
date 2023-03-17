@@ -3,7 +3,6 @@ import onnx
 def log_model(spark, model, name, model_name, data_df):
     import mlflow.onnx
     import onnxmltools
-    from onnxmltools.convert.common.data_types import FloatTensorType
     from onnxmltools.convert.sparkml.utils import buildInitialTypesSimple
     initial_types = buildInitialTypesSimple(data_df)
     onnx_model = onnxmltools.convert_sparkml(model, name, initial_types, spark_session=spark)
