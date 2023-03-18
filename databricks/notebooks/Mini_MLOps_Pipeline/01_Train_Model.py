@@ -91,7 +91,8 @@ from sklearn.metrics import mean_squared_error
 def train_no_autologging(max_depth):
     import time
     now = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time()))
-    with mlflow.start_run(run_name=f"No autolog - {now}") as run:
+    context = _experiment_name.split("/")[1]
+    with mlflow.start_run(run_name=f"No autolog - {context} - {now}") as run:
         mlflow.set_tag("mlflow_version", mlflow.__version__)
         mlflow.log_param("max_depth", max_depth)
         model = DecisionTreeRegressor(max_depth=max_depth)

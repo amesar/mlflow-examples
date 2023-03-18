@@ -7,29 +7,40 @@
 
 # COMMAND ----------
 
+import os
+import mlflow
+mlflow_client = mlflow.client.MlflowClient()
+
+# COMMAND ----------
+
+print("Versions:")
+print("  MLflow Version:", mlflow.__version__)
+print("  DATABRICKS_RUNTIME_VERSION:", os.environ.get('DATABRICKS_RUNTIME_VERSION', None))
+
+# COMMAND ----------
+
+def show_status():
+    print("Status:")
+    print("  _model_name:   ", _model_name)
+    print("  _model_uri:    ", _model_uri)
+    print("  _endpoint_name:", _endpoint_name)
+
+# COMMAND ----------
+
 _model_name = "mini_mlops_pipeline"
 _model_uri = f"models:/{_model_name}/production"
 _endpoint_name = "mini_mlops_wine_quality"
 
-print("_model_name:", _model_name)
-print("_endpoint_name:", _endpoint_name)
-print("_model_uri:", _model_uri)
-
-# COMMAND ----------
-
-import os
-
-_notebook_context = dbutils.notebook.entry_point.getDbutils().notebook().getContext()
-user = _notebook_context.tags().get("user").get()
-user
+show_status()
 
 # COMMAND ----------
 
 # Experiment name is the same as the 01_Train_Model notebook.
+_notebook_context = dbutils.notebook.entry_point.getDbutils().notebook().getContext()
 
 _notebook = _notebook_context.notebookPath().get()
 _dir = os.path.dirname(_notebook)
-_experiment_name = f"{_dir}/01_Train_Model"
+_experiment_name = os.path.join(_dir, "01_Train_Model")
 
 print("_experiment_name:", _experiment_name)
 
@@ -100,20 +111,6 @@ def get_wine_quality_data(table_name=""):
 # Columns 
 _col_label = "quality"
 _col_prediction = "prediction"
-print("_col_label:", _col_label)
-print("_col_prediction:", _col_prediction)
-
-# COMMAND ----------
-
-# Version information
-import os
-import mlflow
-import mlflow.spark
-import pyspark
-print("MLflow Version:", mlflow.__version__)
-print("DATABRICKS_RUNTIME_VERSION:", os.environ.get('DATABRICKS_RUNTIME_VERSION',None))
-
-mlflow_client = mlflow.client.MlflowClient()
 
 # COMMAND ----------
 
@@ -155,7 +152,7 @@ from mlflow.entities.model_registry.model_version_status import ModelVersionStat
 def wait_until_version_ready(model_name, model_version, sleep_time=1, iterations=100):
     start = time.time()
     for _ in range(iterations):
-        version = client.get_model_version(model_name, model_version.version)
+        version = mlflow_client.get_model_version(model_name, model_version.version)
         status = ModelVersionStatus.from_string(version.status)
         dt = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(round(time.time())))
         print(f"{dt}: Version {version.version} status: {ModelVersionStatus.to_string(status)}")
