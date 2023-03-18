@@ -5,7 +5,7 @@ import mlflow.onnx
 import onnx_utils
 
 print("MLflow Version:", mlflow.__version__)
-print("Tracking URI:", mlflow.client.get_tracking_uri())
+print("Tracking URI:", mlflow.tracking.get_tracking_uri())
 
 @click.command()
 @click.option("--model-uri", help="Model URI", default=None, type=str)
@@ -16,8 +16,9 @@ def main(model_uri, data_path):
     for k,v in locals().items():
         print(f"  {k}: {v}")
 
-    data = pd.read_csv(data_path).to_numpy()
+    data = pd.read_csv(data_path)
     print(data.head(5).to_string(index=False, justify='right'))
+    data = data.to_numpy()
 
     model = mlflow.onnx.load_model(model_uri)
     print("model.type:", type(model))
