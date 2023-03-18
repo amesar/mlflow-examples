@@ -65,8 +65,11 @@ def spark_udf_predict(model_uri, data_path):
     spark = SparkSession.builder.appName("ServePredictions").getOrCreate()
     print("Spark Version:", spark.version)
 
-    df = spark.read.option("inferSchema",True).option("header",True).csv(data_path) if data_path.endswith(".csv") \
-    else spark.read.option("multiLine",True).json(data_path)
+    if data_path.endswith(".csv"):
+        df = spark.read.option("inferSchema",True).option("header",True).csv(data_path) 
+    else:
+        df = spark.read.option("multiLine",True).json(data_path)
+    df.printSchema()
     if "quality" in df.columns:
         df = df.drop("quality")
 
