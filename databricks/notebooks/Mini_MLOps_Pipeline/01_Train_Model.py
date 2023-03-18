@@ -94,6 +94,8 @@ def train_no_autologging(max_depth):
     context = _experiment_name.split("/")[1]
     with mlflow.start_run(run_name=f"No autolog - {context} - {now}") as run:
         mlflow.set_tag("mlflow_version", mlflow.__version__)
+        mlflow.set_tag("context", context)
+        mlflow.set_tag("experiment_name", _experiment_name)
         mlflow.log_param("max_depth", max_depth)
         model = DecisionTreeRegressor(max_depth=max_depth)
         model.fit(X_train, y_train)
