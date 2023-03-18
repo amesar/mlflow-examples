@@ -9,9 +9,9 @@
 
 # COMMAND ----------
 
-# MAGIC %pip install onnx==1.9.0
-# MAGIC %pip install skl2onnx==1.9.0
-# MAGIC %pip install onnxruntime==1.8.1
+# MAGIC %pip install onnx==1.13.1
+# MAGIC %pip install onnxruntime==1.14.1
+# MAGIC %pip install skl2onnx==1.14.0
 
 # COMMAND ----------
 
