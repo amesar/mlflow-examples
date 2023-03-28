@@ -103,15 +103,6 @@ print(tabulate(df, headers="keys", tablefmt="psql", showindex=False))
 
 # COMMAND ----------
 
-# MAGIC %scala
-# MAGIC /*
-# MAGIC import combust.mleap.BuildInfo
-# MAGIC import ml.combust.mleap.Release
-# MAGIC Release.checkSnapshotDependencies
-# MAGIC */
-
-# COMMAND ----------
-
 # Warning if Python and Scala mlflow versions do not match
 mlflow_version_scala = spark.conf.get("mlflow.version.scala")
 if mlflow.__version__ != mlflow_version_scala:
