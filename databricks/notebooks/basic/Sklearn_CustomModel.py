@@ -1,7 +1,7 @@
 # Databricks notebook source
 # MAGIC %md # Basic Sklearn MLflow train and predict with Custom Model
 # MAGIC * Demonstrate the use of MLflow [Python custom models](https://mlflow.org/docs/latest/models.html#custom-python-models).
-# MAGIC * Variant of [02a_Sklearn_Train_Predict]($02a_Sklearn_Train_Predict).
+# MAGIC * Variant of [02_Sklearn_Wine]($02_Sklearn_Wine).
 # MAGIC * Three custom models:
 # MAGIC   * CustomProbaModel - custom call to DecisionTreeClassifier.predict_proba() instead of default Pyfunc call to DecisionTreeClassifier.predict().
 # MAGIC   * CustomResponseModel - return a custom response (dict) for [Pyfunc.predict](https://mlflow.org/docs/latest/python_api/mlflow.pyfunc.html#mlflow.pyfunc.PyFuncModel.predict) response instead of standard response (pandas.DataFrame, pandas.Series, numpy.ndarray or list).
@@ -18,11 +18,8 @@
 # COMMAND ----------
 
 dbutils.widgets.text("Max Depth", "1") 
-dbutils.widgets.text("Max Leaf Nodes", "")
 max_depth = to_int(dbutils.widgets.get("Max Depth"))
-max_leaf_nodes = to_int(dbutils.widgets.get("Max Leaf Nodes"))
-
-max_depth, max_leaf_nodes
+max_depth
 
 # COMMAND ----------
 
@@ -60,22 +57,35 @@ test_y = test[colLabel]
 
 # COMMAND ----------
 
-# Return predict_proba() instead of predict()
+# MAGIC %md #### Return predict_proba() instead of predict()
+
+# COMMAND ----------
+
 class CustomProbaModel(mlflow.pyfunc.PythonModel):
    def __init__(self, model):
        self.model = model
    def predict(self, context, data):
        return self.model.predict_proba(data)
-    
-# Return a dict instead of Pandas.DataFrame, pandas.Series or numpy.ndarray 
+
+# COMMAND ----------
+
+# MAGIC %md #### Return a dict instead of Pandas.DataFrame, pandas.Series or numpy.ndarray 
+
+# COMMAND ----------
+
 class CustomResponseModel(mlflow.pyfunc.PythonModel):
    def __init__(self, model):
        self.model = model
    def predict(self, context, data):
        predictions =  self.model.predict(data)
        return{ f"{i}":p for i,p in enumerate(predictions) } 
- 
-# No sklearn model at all - custom prediction code
+
+# COMMAND ----------
+
+# MAGIC %md #### No sklearn model at all - custom prediction code
+
+# COMMAND ----------
+
 class CustomCodeModel(mlflow.pyfunc.PythonModel):
     def __init__(self):
         pass
@@ -103,16 +113,14 @@ with mlflow.start_run(run_name="sklearn") as run:
     print("  experiment_id:",run.info.experiment_id)
     print("Parameters:")
     print("  max_depth:",max_depth)
-    print("  max_leaf_nodes:",max_leaf_nodes)
     
     mlflow.set_tag("version.mlflow", mlflow.__version__)
 
-    model = DecisionTreeClassifier(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)
+    model = DecisionTreeClassifier(max_depth=max_depth)
     model.fit(train_x, train_y)
       
     predictions = model.predict(test_x)
     mlflow.log_param("max_depth", max_depth)
-    mlflow.log_param("max_leaf_nodes", max_leaf_nodes)
         
     # Log sklearn model
     mlflow.sklearn.log_model(model, "sklearn-model")
