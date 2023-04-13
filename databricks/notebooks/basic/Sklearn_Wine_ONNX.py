@@ -9,9 +9,16 @@
 
 # COMMAND ----------
 
-# MAGIC %pip install onnx==1.13.1
-# MAGIC %pip install onnxruntime==1.14.1
-# MAGIC %pip install skl2onnx==1.14.0
+# %pip install onnx==1.13.1
+# %pip install onnx==1.13.0
+
+
+# COMMAND ----------
+
+# %pip install onnx==1.13.1 # FAILS with DBR MML 12.2 because of: ImportError: cannot import name 'builder' from 'google.protobuf.internal' 
+%pip install onnx==1.12.0
+%pip install onnxruntime==1.14.1
+%pip install skl2onnx==1.14.0
 
 # COMMAND ----------
 
@@ -45,8 +52,7 @@ data_path = download_wine_file()
 
 # COMMAND ----------
 
-import pandas as pd
-data = pd.read_csv(data_path)
+data = get_wine_quality_data()
 display(data)
 
 # COMMAND ----------
