@@ -20,10 +20,11 @@
 
 # COMMAND ----------
 
+dbutils.widgets.text("1. Registered Model", "") 
+registered_model = dbutils.widgets.get("1. Registered Model")
+
 dbutils.widgets.text("2. Epochs", "2") 
 dbutils.widgets.text("3. Batch Size", "128")
-
-registered_model = dbutils.widgets.get("1. Registered Model")
 
 epochs = int(dbutils.widgets.get("2. Epochs"))
 batch_size = int(dbutils.widgets.get("3. Batch Size"))
@@ -152,7 +153,16 @@ pd.DataFrame(data=predictions)
 
 # COMMAND ----------
 
+# MAGIC %md ### Display links
+
+# COMMAND ----------
+
 display_run_uri(run.info.experiment_id, run.info.run_id)
+
+# COMMAND ----------
+
+if registered_model:
+    display_registered_model_uri(registered_model)
 
 # COMMAND ----------
 
