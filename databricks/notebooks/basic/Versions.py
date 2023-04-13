@@ -56,6 +56,13 @@ try:
     lst.append(["mleap version", mleap.__version__])
 except AttributeError as e:
     lst.append(["mleap version", None])
+
+try:
+    from google import protobuf 
+    lst.append(["protobuf version:", protobuf.__version__])
+except AttributeError as e:
+    lst.append(["protobuf version", None])
+
 lst.append(["$SCALA_VERSION:", os.environ.get("SCALA_VERSION",None)])
 lst.append(["python version:", sys.version.replace("\n"," ")])
 lst.append(["platform:", platform.platform()])
