@@ -41,7 +41,7 @@ print("sparkVersion:", get_notebook_tag("sparkVersion"))
 
 # COMMAND ----------
 
-data = get_wine_quality_data()
+data = WineQuality.get_data()
 data = spark.createDataFrame(data)
 (trainData, testData) = data.randomSplit([0.7, 0.3], 42)
 display(data)
@@ -77,12 +77,14 @@ with mlflow.start_run() as run:
     print("  maxBins:",maxBins)
     
     # Create model
-    dt = DecisionTreeRegressor(labelCol=colLabel, featuresCol=colFeatures, \
-                               maxDepth=maxDepth, maxBins=maxBins)
+    model = DecisionTreeRegressor(
+        labelCol=WineQuality.colLabel, 
+        featuresCol=WineQuality.colFeatures,
+         maxDepth=maxDepth, maxBins=maxBins)
 
     # Create pipeline
-    assembler = VectorAssembler(inputCols=data.columns[:-1], outputCol=colFeatures)
-    pipeline = Pipeline(stages=[assembler, dt])
+    assembler = VectorAssembler(inputCols=data.columns[:-1], outputCol=WineQuality.colFeatures)
+    pipeline = Pipeline(stages=[assembler, model])
     
     # Fit model
     model = pipeline.fit(trainData)
@@ -97,9 +99,10 @@ with mlflow.start_run() as run:
     predictions = model.transform(testData)
     
     for metric in metrics:
-        evaluator = RegressionEvaluator(labelCol=colLabel, predictionCol=colPrediction, metricName=metric)
+        evaluator = RegressionEvaluator(labelCol=WineQuality.colLabel, 
+            predictionCol=WineQuality.colPrediction, metricName=metric)
         v = evaluator.evaluate(predictions)
-        print("  {}: {}".format(metric,v))
+        print(f"  {metric}: {v}")
         mlflow.log_metric(metric,v)
         
     mlflow.spark.log_model(model, spark_model_name, registered_model_name=registered_model)
@@ -116,7 +119,6 @@ display_run_uri(experiment_id, run_id)
 # COMMAND ----------
 
 model_uri = f"runs:/{run_id}/{spark_model_name}"
-#model_uri = f"models:/andre_03a_SparkML_Train_Predict/production"
 model_uri
 
 # COMMAND ----------
@@ -126,11 +128,12 @@ model_uri
 # COMMAND ----------
 
 model = mlflow.spark.load_model(model_uri)
+type(model)
 
 # COMMAND ----------
 
 predictions = model.transform(data)
-display(predictions.select(colPrediction, colLabel, colFeatures))
+display(predictions.select(WineQuality.colPrediction, WineQuality.colLabel, WineQuality.colFeatures))
 
 # COMMAND ----------
 
@@ -170,5 +173,5 @@ display(pd.DataFrame(predictions))
 if udf_predict:
     model_uri = f"runs:/{run_id}/spark-model"
     udf = mlflow.pyfunc.spark_udf(spark, model_uri)
-    predictions = data.withColumn(colPrediction, udf(*data.columns))
+    predictions = data.withColumn(WineQuality.colPrediction, udf(*data.columns))
     display(predictions)

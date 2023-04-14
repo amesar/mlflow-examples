@@ -107,8 +107,9 @@ now = now()
 # COMMAND ----------
 
 class WineQuality():
-    _colLabel = "quality"
+    colLabel = "quality"
     colPrediction = "prediction"
+    colFeatures = "features"
 
     @staticmethod
     def get_data(table_name=""):
@@ -133,12 +134,12 @@ class WineQuality():
     def prep_training_data(data):
         from sklearn.model_selection import train_test_split
         train, test = train_test_split(data, test_size=0.30, random_state=42)
-        train_x = train.drop([WineQuality._colLabel], axis=1)                 
-        test_x = test.drop([WineQuality._colLabel], axis=1)
-        train_y = train[WineQuality._colLabel]
-        test_y = test[WineQuality._colLabel]
+        train_x = train.drop([WineQuality.colLabel], axis=1)                 
+        test_x = test.drop([WineQuality.colLabel], axis=1)
+        train_y = train[WineQuality.colLabel]
+        test_y = test[WineQuality.colLabel]
         return train_x, test_x, train_y, test_y
 
     @staticmethod
     def prep_prediction_data(data):
-        return data.drop(WineQuality._colLabel, axis=1)
+        return data.drop(WineQuality.colLabel, axis=1)
