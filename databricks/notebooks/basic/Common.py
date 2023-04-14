@@ -16,11 +16,9 @@ def get_notebook_tag(tag):
 
 user = get_notebook_tag("user")
 host_name = get_notebook_tag("browserHostName")
-base_dir_fuse = f"/dbfs/tmp/{user}/mlflow_demo"
 
 print("user:",user)
 print("host_name:",host_name)
-print("base_dir_fuse:",base_dir_fuse)
 
 # COMMAND ----------
 
@@ -72,15 +70,9 @@ def to_list_int(str, delimiter=" "):
 
 # COMMAND ----------
 
-colLabel = "quality"
-colPrediction = "prediction"
-colFeatures = "features"
-
-# COMMAND ----------
-
 from mlflow.exceptions import RestException
 
-def delete_registered_model(client, model_name):
+def delete_registered_model(model_name):
     """ Delete a model and all its versions """
     try:
         versions = client.get_latest_versions(model_name)
@@ -93,28 +85,60 @@ def delete_registered_model(client, model_name):
     except RestException:
         pass
 
+def register_model(model_name, model_version_stage, archive_existing_versions, run, model_artifact = "model"):
+    """ Register mode with specified stage stage """
+    try:
+       model =  client.create_registered_model(model_name)
+    except RestException as e:
+       model =  client.get_registered_model(model_name)
+    source = f"{run.info.artifact_uri}/{model_artifact}"
+    vr = client.create_model_version(model_name, source, run.info.run_id)
+    if model_version_stage:
+        client.transition_model_version_stage(model_name, vr.version, model_version_stage, archive_existing_versions)
+    return vr
+
 # COMMAND ----------
 
 import time
 def now():
     return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time()))
+now = now()
 
 # COMMAND ----------
 
-def get_wine_quality_data(table_name=""):
-    import pandas as pd
-    path = "https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv"
-    if table_name == "":
-        print(f"Reading data from '{path}'")
-        pdf = pd.read_csv(path)
-        pdf.columns = pdf.columns.str.replace(" ","_") # for consistency with Spark column names
-        return pdf
-    else:
-        if not spark.catalog._jcatalog.tableExists(table_name):
-            print(f"Creating table '{table_name}'")
+class WineQuality():
+    _colLabel = "quality"
+    colPrediction = "prediction"
+
+    @staticmethod
+    def get_data(table_name=""):
+        import pandas as pd
+        path = "https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv"
+        if table_name == "":
+            print(f"Reading data from '{path}'")
             pdf = pd.read_csv(path)
-            pdf.columns = pdf.columns.str.replace(" ","_") # make Spark legal column names
-            df = spark.createDataFrame(pdf)
-            df.write.mode("overwrite").saveAsTable(table_name)
-        print(f"Using table '{table_name}'")
-        return spark.table(table_name).toPandas()
+            pdf.columns = pdf.columns.str.replace(" ","_") # for consistency with Spark column names
+            return pdf
+        else:
+            if not spark.catalog._jcatalog.tableExists(table_name):
+                print(f"Creating table '{table_name}'")
+                pdf = pd.read_csv(path)
+                pdf.columns = pdf.columns.str.replace(" ","_") # make Spark legal column names
+                df = spark.createDataFrame(pdf)
+                df.write.mode("overwrite").saveAsTable(table_name)
+            print(f"Using table '{table_name}'")
+            return spark.table(table_name).toPandas()
+
+    @staticmethod
+    def prep_training_data(data):
+        from sklearn.model_selection import train_test_split
+        train, test = train_test_split(data, test_size=0.30, random_state=42)
+        train_x = train.drop([WineQuality._colLabel], axis=1)                 
+        test_x = test.drop([WineQuality._colLabel], axis=1)
+        train_y = train[WineQuality._colLabel]
+        test_y = test[WineQuality._colLabel]
+        return train_x, test_x, train_y, test_y
+
+    @staticmethod
+    def prep_prediction_data(data):
+        return data.drop(WineQuality._colLabel, axis=1)

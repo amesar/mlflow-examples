@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %md # Basic Sklearn MLflow train and predict
+# MAGIC %md # Sklearn MLflow train and predict
 # MAGIC * Trains and saves model as sklearn
 # MAGIC * Predicts using Sklearn, PyFunc and UDF flavors
 # MAGIC * Option to save model signature
@@ -63,17 +63,6 @@ print("max_leaf_nodes:",max_leaf_nodes)
 
 # COMMAND ----------
 
-import sklearn
-import mlflow
-
-client = mlflow.client.MlflowClient()
-
-# COMMAND ----------
-
-now = now()
-
-# COMMAND ----------
-
 if experiment_name:
     mlflow.set_experiment(experiment_name)
     exp = mlflow.get_experiment_by_name(experiment_name)
@@ -87,20 +76,9 @@ if experiment_name:
 
 # COMMAND ----------
 
-data = get_wine_quality_data(delta_table)
+data = WineQuality.get_data(delta_table)
+train_x, test_x, train_y, test_y = WineQuality.prep_training_data(data)
 display(data)
-
-# COMMAND ----------
-
-from sklearn.model_selection import train_test_split
-
-train, test = train_test_split(data, test_size=0.30, random_state=42)
-
-# The predicted column is colLabel which is a scalar from [3, 9]
-train_x = train.drop([colLabel], axis=1)
-test_x = test.drop([colLabel], axis=1)
-train_y = train[colLabel]
-test_y = test[colLabel]
 
 # COMMAND ----------
 
@@ -108,27 +86,10 @@ test_y = test[colLabel]
 
 # COMMAND ----------
 
-import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from mlflow.models.signature import infer_signature
-
-# COMMAND ----------
-
-
-def _register_model(model_name, model_version_stage, archive_existing_versions, run):
-    try:
-       model =  client.create_registered_model(model_name)
-    except RestException as e:
-       model =  client.get_registered_model(model_name)
-    model_artifact = "model"
-    source = f"{run.info.artifact_uri}/{model_artifact}"
-    version = client.create_model_version(model_name, source, run.info.run_id)
-    if model_version_stage:
-        client.transition_model_version_stage(model_name, version.version, model_version_stage, archive_existing_versions)
-    return version
 
 # COMMAND ----------
 
@@ -163,7 +124,7 @@ with mlflow.start_run(run_name=run_name) as run:
         
     mlflow.sklearn.log_model(model, "model", signature=signature)
     if model_name:
-        version = _register_model(model_name, model_version_stage, archive_existing_versions, run)
+        version = register_model(model_name, model_version_stage, archive_existing_versions, run)
     else:
         version = None
         
@@ -219,9 +180,9 @@ model_uri
 # COMMAND ----------
 
 model = mlflow.sklearn.load_model(model_uri)
-data_to_predict = data.drop(colLabel, axis=1)
+data_to_predict = WineQuality.prep_prediction_data(data)
 predictions = model.predict(data_to_predict)
-display(pd.DataFrame(predictions,columns=[colPrediction]))
+display(pd.DataFrame(predictions,columns=[WineQuality.colPrediction]))
 
 # COMMAND ----------
 
@@ -235,7 +196,7 @@ type(predictions)
 
 model = mlflow.pyfunc.load_model(model_uri)
 predictions = model.predict(data_to_predict)
-display(pd.DataFrame(predictions,columns=[colPrediction]))
+display(pd.DataFrame(predictions,columns=[WineQuality.colPrediction]))
 
 # COMMAND ----------
 

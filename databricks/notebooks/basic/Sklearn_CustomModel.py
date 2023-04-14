@@ -1,11 +1,11 @@
 # Databricks notebook source
-# MAGIC %md # Basic Sklearn MLflow train and predict with Custom Model
+# MAGIC %md # Sklearn MLflow train and predict with Custom Model
 # MAGIC * Demonstrate the use of MLflow [Python custom models](https://mlflow.org/docs/latest/models.html#custom-python-models).
 # MAGIC * Variant of [02_Sklearn_Wine]($02_Sklearn_Wine).
-# MAGIC * Three custom models:
-# MAGIC   * CustomProbaModel - custom call to DecisionTreeClassifier.predict_proba() instead of default Pyfunc call to DecisionTreeClassifier.predict().
-# MAGIC   * CustomResponseModel - return a custom response (dict) for [Pyfunc.predict](https://mlflow.org/docs/latest/python_api/mlflow.pyfunc.html#mlflow.pyfunc.PyFuncModel.predict) response instead of standard response (pandas.DataFrame, pandas.Series, numpy.ndarray or list).
-# MAGIC   * CustomCodeModel - write you own non-Sklearn code for predictions.
+# MAGIC * Three custom models examples:
+# MAGIC   1. CustomProbaModel - custom call to DecisionTreeClassifier.predict_proba() instead of default Pyfunc call to DecisionTreeClassifier.predict().
+# MAGIC   2. CustomResponseModel - return a custom response (dict) for [Pyfunc.predict](https://mlflow.org/docs/latest/python_api/mlflow.pyfunc.html#mlflow.pyfunc.PyFuncModel.predict) response instead of standard response (pandas.DataFrame, pandas.Series, numpy.ndarray or list).
+# MAGIC   3. CustomCodeModel - write you own non-Sklearn code for predictions.
 
 # COMMAND ----------
 
@@ -36,20 +36,9 @@ print("sparkVersion:", get_notebook_tag("sparkVersion"))
 
 # COMMAND ----------
 
-data = get_wine_quality_data()
+data = WineQuality.get_data(delta_table)
+train_x, test_x, train_y, test_y = WineQuality.prep_training_data(data)
 display(data)
-
-# COMMAND ----------
-
-from sklearn.model_selection import train_test_split
-
-train, test = train_test_split(data, test_size=0.30, random_state=42)
-
-# The predicted column is colLabel which is a scalar from [3, 9]
-train_x = train.drop([colLabel], axis=1)
-test_x = test.drop([colLabel], axis=1)
-train_y = train[colLabel]
-test_y = test[colLabel]
 
 # COMMAND ----------
 
@@ -57,7 +46,7 @@ test_y = test[colLabel]
 
 # COMMAND ----------
 
-# MAGIC %md #### Return predict_proba() instead of predict()
+# MAGIC %md #### 1. Return predict_proba() instead of predict()
 
 # COMMAND ----------
 
@@ -69,7 +58,7 @@ class CustomProbaModel(mlflow.pyfunc.PythonModel):
 
 # COMMAND ----------
 
-# MAGIC %md #### Return a dict instead of Pandas.DataFrame, pandas.Series or numpy.ndarray 
+# MAGIC %md #### 2. Return a dict instead of Pandas.DataFrame, pandas.Series or numpy.ndarray 
 
 # COMMAND ----------
 
@@ -82,7 +71,7 @@ class CustomResponseModel(mlflow.pyfunc.PythonModel):
 
 # COMMAND ----------
 
-# MAGIC %md #### No sklearn model at all - custom prediction code
+# MAGIC %md #### 3. No sklearn model at all - custom prediction code
 
 # COMMAND ----------
 
@@ -98,7 +87,6 @@ class CustomCodeModel(mlflow.pyfunc.PythonModel):
 
 # COMMAND ----------
 
-import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
@@ -158,9 +146,9 @@ model_uri
 # COMMAND ----------
 
 model = mlflow.sklearn.load_model(model_uri)
-data_to_predict = data.drop(colLabel, axis=1)
+data_to_predict = WineQuality.prep_prediction_data(data)
 predictions = model.predict(data_to_predict)
-display(pd.DataFrame(predictions,columns=[colPrediction]))
+display(pd.DataFrame(predictions, columns=[WineQuality.colPrediction]))
 
 # COMMAND ----------
 

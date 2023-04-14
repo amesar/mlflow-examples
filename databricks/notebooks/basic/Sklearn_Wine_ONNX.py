@@ -1,17 +1,11 @@
 # Databricks notebook source
-# MAGIC %md # Basic Sklearn MLflow train and predict with ONNX
+# MAGIC %md # Sklearn MLflow train and predict with ONNX
 # MAGIC * Trains and saves model as sklearn and ONNX
 # MAGIC * Predicts using ONNX native, ONNX PyFunc and ONNX UDF flavors
 
 # COMMAND ----------
 
 # MAGIC %md ### Setup
-
-# COMMAND ----------
-
-# %pip install onnx==1.13.1
-# %pip install onnx==1.13.0
-
 
 # COMMAND ----------
 
@@ -35,10 +29,7 @@ max_depth, max_leaf_nodes
 
 # COMMAND ----------
 
-import sklearn
 import mlflow
-import mlflow.sklearn
-import mlflow.onnx
 import onnx
 import skl2onnx
 
@@ -48,24 +39,9 @@ import skl2onnx
 
 # COMMAND ----------
 
-data_path = download_wine_file()
-
-# COMMAND ----------
-
-data = get_wine_quality_data()
+data = WineQuality.get_data()
+train_x, test_x, train_y, test_y = WineQuality.prep_training_data(data)
 display(data)
-
-# COMMAND ----------
-
-from sklearn.model_selection import train_test_split
-
-train, test = train_test_split(data, test_size=0.30, random_state=42)
-
-# The predicted column is colLabel which is a scalar from [3, 9]
-train_x = train.drop([colLabel], axis=1)
-test_x = test.drop([colLabel], axis=1)
-train_y = train[colLabel]
-test_y = test[colLabel]
 
 # COMMAND ----------
 
@@ -73,9 +49,7 @@ test_y = test[colLabel]
 
 # COMMAND ----------
 
-import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
@@ -115,16 +89,7 @@ display_run_uri(run.info.experiment_id, run_id)
 
 # COMMAND ----------
 
-# MAGIC %md ### Predict as ONNX
-
-# COMMAND ----------
-
-#model_uri = f"runs:/{run_id}/onnx-model"
-#model_uri
-
-# COMMAND ----------
-
-# MAGIC %md ### Predict ONNX
+# MAGIC %md ### Predict
 
 # COMMAND ----------
 
@@ -133,7 +98,7 @@ model_uri
 
 # COMMAND ----------
 
-data_to_predict = data.drop(colLabel, axis=1)
+data_to_predict = WineQuality.prep_prediction_data(data)
 
 # COMMAND ----------
 
