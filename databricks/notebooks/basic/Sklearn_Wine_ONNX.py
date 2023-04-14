@@ -1,7 +1,14 @@
 # Databricks notebook source
 # MAGIC %md # Sklearn MLflow train and predict with ONNX
+# MAGIC 
+# MAGIC **Overview**
 # MAGIC * Trains and saves model as sklearn and ONNX
 # MAGIC * Predicts using ONNX native, ONNX PyFunc and ONNX UDF flavors
+# MAGIC 
+# MAGIC **Note**
+# MAGIC 
+# MAGIC * Fails with latest `onnx==1.13.1` with: `ImportError: cannot import name 'builder' from 'google.protobuf.internal' `
+# MAGIC * Works wth `onnx==1.12.0`
 
 # COMMAND ----------
 

@@ -111,7 +111,7 @@ model.add(layers.Dense(10, activation='softmax'))
 
 import mlflow.keras
 
-with mlflow.start_run(run_name=f"{now()} - {mlflow.__version__}") as run:
+with mlflow.start_run(run_name=f"{now} - {mlflow.__version__}") as run:
     print("Run ID:", run.info.run_id)
     mlflow.set_tag("version.mlflow", mlflow.__version__)
     mlflow.set_tag("version.tensorflow", tf.__version__)
@@ -132,9 +132,9 @@ with mlflow.start_run(run_name=f"{now()} - {mlflow.__version__}") as run:
     mlflow.log_metric("my_acc", test_acc)
     mlflow.log_metric("my_loss", test_loss)
     mlflow.keras.log_model(model, "model", registered_model_name=registered_model) 
-    with open("model.json", "w") as f:
+    with open("/tmp/model.json", "w") as f:
         f.write(model.to_json())
-    mlflow.log_artifact("model.json")
+    mlflow.log_artifact("/tmp/model.json")
 
 # COMMAND ----------
 

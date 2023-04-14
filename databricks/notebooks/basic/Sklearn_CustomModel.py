@@ -36,7 +36,7 @@ print("sparkVersion:", get_notebook_tag("sparkVersion"))
 
 # COMMAND ----------
 
-data = WineQuality.get_data(delta_table)
+data = WineQuality.get_data()
 train_x, test_x, train_y, test_y = WineQuality.prep_training_data(data)
 display(data)
 
@@ -158,7 +158,7 @@ display(pd.DataFrame(predictions, columns=[WineQuality.colPrediction]))
 
 model = mlflow.pyfunc.load_model(model_uri)
 predictions = model.predict(data_to_predict)
-display(pd.DataFrame(predictions,columns=[colPrediction]))
+display(pd.DataFrame(predictions,columns=[WineQuality.colPrediction]))
 
 # COMMAND ----------
 

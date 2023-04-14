@@ -7,11 +7,11 @@
 # MAGIC * [XGBoost_Wine]($XGBoost_Wine)
 # MAGIC * [SparkML_Wine]($SparkML_Wine) - SparkML wine quality model
 # MAGIC * [Keras_Mnist]($Keras_Mnist) - TensorFlow Keras MNIST
-# MAGIC * [Sklearn_CustomModel]($Sklearn_CustomModel) - examples of MLflow [Python custom models](https://mlflow.org/docs/latest/models.html#custom-python-models)
+# MAGIC * [Sklearn_CustomModel]($Sklearn_CustomModel) - examples of three MLflow [Python custom models](https://mlflow.org/docs/latest/models.html#custom-python-models)
 # MAGIC 
 # MAGIC 
 # MAGIC **Other notebooks**
 # MAGIC * [Common]($Common)
 # MAGIC * [Versions]($Versions)
 # MAGIC 
-# MAGIC Last updated: 2023-04-13
+# MAGIC Last updated: 2023-04-14
