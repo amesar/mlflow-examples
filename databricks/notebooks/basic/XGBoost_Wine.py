@@ -1,7 +1,7 @@
 # Databricks notebook source
 # MAGIC %md # Basic XGBoost MLflow train and predict 
-# MAGIC * Trains and saves model as xgboost
-# MAGIC * Predicts using xgboost and pyfunc UDF flavors
+# MAGIC * Trains and saves model as XGBoost model.
+# MAGIC * Predicts using XGBoost and pyfunc UDF flavors.
 
 # COMMAND ----------
 
@@ -27,8 +27,6 @@ estimators, max_depth, min_child_weight
 
 # COMMAND ----------
 
-import mlflow
-import mlflow.xgboost
 import xgboost as xgb
 print("MLflow Version:", mlflow.__version__)
 print("XGBoost version:", xgb.__version__)
@@ -39,7 +37,8 @@ print("XGBoost version:", xgb.__version__)
 
 # COMMAND ----------
 
-data = get_wine_quality_data()
+data = WineQuality.get_data()
+train_x, test_x, train_y, test_y = WineQuality.prep_training_data(data)
 display(data)
 
 # COMMAND ----------
@@ -48,25 +47,11 @@ data.describe()
 
 # COMMAND ----------
 
-from sklearn.model_selection import train_test_split
-
-train, test = train_test_split(data, test_size=0.30, random_state=2019)
-
-# The predicted column is 'quality' which is a scalar from [3, 9]
-train_x = train.drop([colLabel], axis=1)
-test_x = test.drop([colLabel], axis=1)
-train_y = train[colLabel]
-test_y = test[colLabel]
-
-# COMMAND ----------
-
 # MAGIC %md ### Train
 
 # COMMAND ----------
 
-import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 # COMMAND ----------
@@ -99,8 +84,6 @@ with mlflow.start_run() as run:
     print(model)
     model.fit(train_x, train_y)
     mlflow.xgboost.log_model(model, "model")
-    #print(model.get_xgb_params())
-    #mlflow.log_params(model.get_params())
 
     predictions = model.predict(test_x)
     rmse = np.sqrt(mean_squared_error(test_y, predictions))
@@ -126,8 +109,8 @@ display_run_uri(run.info.experiment_id, run_id)
 # COMMAND ----------
 
 model_uri = f"runs:/{run_id}/model"
-data_to_predict = data.drop(colLabel, axis=1)
-labels = data[colLabel]
+data_to_predict = data.drop(WineQuality.colLabel, axis=1)
+labels = data[WineQuality.colLabel]
 model_uri
 
 # COMMAND ----------
@@ -148,7 +131,7 @@ except Exception as e:
 
 # COMMAND ----------
 
-display(pd.DataFrame(predictions, columns=[colPrediction]))
+display(pd.DataFrame(predictions, columns=[WineQuality.colPrediction]))
 
 # COMMAND ----------
 
@@ -157,12 +140,12 @@ display(pd.DataFrame(predictions, columns=[colPrediction]))
 # COMMAND ----------
 
 model = mlflow.pyfunc.load_model(model_uri)
-predictions = model.predict(data_to_predict)
+data_to_predict = WineQuality.prep_prediction_data(data)
 type(predictions), predictions.shape
 
 # COMMAND ----------
 
-display(pd.DataFrame(predictions, columns=[colPrediction]))
+display(pd.DataFrame(predictions, columns=[WineQuality.colPrediction]))
 
 # COMMAND ----------
 
@@ -172,7 +155,7 @@ display(pd.DataFrame(predictions, columns=[colPrediction]))
 
 df = spark.createDataFrame(data_to_predict)
 udf = mlflow.pyfunc.spark_udf(spark, model_uri)
-predictions = df.withColumn("prediction", udf(*df.columns))
+predictions = df.withColumn(WineQuality.colPrediction, udf(*df.columns))
 display(predictions)
 
 # COMMAND ----------
