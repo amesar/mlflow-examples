@@ -1,7 +1,7 @@
 # Databricks notebook source
-# MAGIC %md # Sklearn MLflow train and predict with Custom Model
+# MAGIC %md ## Sklearn MLflow Custom Model Examples
 # MAGIC * Demonstrate the use of MLflow [Python custom models](https://mlflow.org/docs/latest/models.html#custom-python-models).
-# MAGIC * Variant of [02_Sklearn_Wine]($02_Sklearn_Wine).
+# MAGIC * Variant of [Sklearn_Wine]($Sklearn_Wine).
 # MAGIC * Three custom models examples:
 # MAGIC   1. CustomProbaModel - custom call to DecisionTreeClassifier.predict_proba() instead of default Pyfunc call to DecisionTreeClassifier.predict().
 # MAGIC   2. CustomResponseModel - return a custom response (dict) for [Pyfunc.predict](https://mlflow.org/docs/latest/python_api/mlflow.pyfunc.html#mlflow.pyfunc.PyFuncModel.predict) response instead of standard response (pandas.DataFrame, pandas.Series, numpy.ndarray or list).

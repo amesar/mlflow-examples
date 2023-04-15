@@ -8,7 +8,7 @@
 # MAGIC * Epochs - Number of epochs.
 # MAGIC * Batch Size - Batch size.
 # MAGIC 
-# MAGIC Last update: 2023-02-20
+# MAGIC Last update: 2023-04-14
 
 # COMMAND ----------
 
