@@ -39,12 +39,12 @@ def display_experiment_id_info(experiment_id):
     if host_name:
         experiment = client.get_experiment(experiment_id)
         _display_experiment_info(experiment)
-    
+
 def _display_experiment_info(experiment):
     host_name = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().get("browserHostName").get()
     uri = f"https://{host_name}/#mlflow/experiments/{experiment.experiment_id}"
     displayHTML(f"""
-    <table cellpadding=5 cellspacing=0 border=1 bgcolor="#feeeee">
+    <table cellpadding=5 cellspacing=0 border=1 bgcolor="#FDFEFE" style="font-size:13px;">
     <tr><td colspan=2><b><i>Experiment</i></b></td></tr>
     <tr><td>UI link</td><td><a href="{uri}">{uri}</a></td></tr>
     <tr><td>Name</td><td>{experiment.name}</td></tr>
