@@ -28,7 +28,7 @@
 
 dbutils.widgets.text("1. Experiment name","")
 dbutils.widgets.text("2. Registered model","")
-dbutils.widgets.dropdown("3. Model version stage","None",["Production","Staging","Archived","None"])
+dbutils.widgets.dropdown("3. Model version stage","None", _model_version_stages)
 dbutils.widgets.dropdown("4. Archive existing versions","no",["yes","no"])
 dbutils.widgets.dropdown("5. Save signature","no",["yes","no"])
 dbutils.widgets.dropdown("6. SHAP","no",["yes","no"])

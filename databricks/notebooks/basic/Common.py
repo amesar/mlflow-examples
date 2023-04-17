@@ -137,3 +137,7 @@ class WineQuality():
     @staticmethod
     def prep_prediction_data(data):
         return data.drop(WineQuality.colLabel, axis=1)
+
+# COMMAND ----------
+
+_model_version_stages = ["Production","Staging","Archived","None"]
