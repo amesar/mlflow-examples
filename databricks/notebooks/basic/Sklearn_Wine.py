@@ -1,8 +1,7 @@
 # Databricks notebook source
-# MAGIC %md # Sklearn MLflow train and predict
-# MAGIC * Trains and saves model as sklearn
+# MAGIC %md ## Sklearn Wine Quality MLflow model
+# MAGIC * Trains and saves model as Sklearn flavor
 # MAGIC * Predicts using Sklearn, PyFunc and UDF flavors
-# MAGIC * Option to save model signature
 # MAGIC 
 # MAGIC ### Widgets
 # MAGIC * 1. Experiment name: if not set, use notebook experiment
@@ -15,7 +14,7 @@
 # MAGIC * 8. Max depth
 # MAGIC * 9. Max leaf nodes
 # MAGIC 
-# MAGIC Last udpate: 2023-04-14 - Repo variant
+# MAGIC Last udpated: 2023-04-17 - Repo variant
 
 # COMMAND ----------
 
@@ -51,15 +50,15 @@ if model_name=="": model_name = None
 if model_version_stage=="None": model_version_stage = None
 if experiment_name=="None": experiment_name = None
 
-print("experiment_name:",experiment_name)
-print("model_name:",model_name)
-print("model_version_stage:",model_version_stage)
-print("archive_existing_versions:",archive_existing_versions)
-print("save_signature:",save_signature)
-print("SHAP:",shap)
-print("delta_table:",delta_table)
-print("max_depth:",max_depth)
-print("max_leaf_nodes:",max_leaf_nodes)
+print("experiment_name:", experiment_name)
+print("model_name:", model_name)
+print("model_version_stage:", model_version_stage)
+print("archive_existing_versions:", archive_existing_versions)
+print("save_signature:", save_signature)
+print("SHAP:", shap)
+print("delta_table:", delta_table)
+print("max_depth:", max_depth)
+print("max_leaf_nodes:", max_leaf_nodes)
 
 # COMMAND ----------
 
@@ -149,7 +148,7 @@ print("New runName:", run.data.tags.get("mlflow.runName",None))
 
 # COMMAND ----------
 
-# MAGIC %md ### Display links
+# MAGIC %md ### Display UI links
 
 # COMMAND ----------
 
