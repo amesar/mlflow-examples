@@ -79,7 +79,7 @@ def delete_registered_model(model_name):
     except RestException:
         pass
 
-def register_model(model_name, model_version_stage, archive_existing_versions, run, model_artifact = "model"):
+def register_model(run, model_name, model_version_stage, archive_existing_versions=False, model_artifact="model"):
     """ Register mode with specified stage stage """
     try:
        model =  client.create_registered_model(model_name)
@@ -88,7 +88,7 @@ def register_model(model_name, model_version_stage, archive_existing_versions, r
     source = f"{run.info.artifact_uri}/{model_artifact}"
     vr = client.create_model_version(model_name, source, run.info.run_id)
     if model_version_stage:
-        client.transition_model_version_stage(model_name, vr.version, model_version_stage, archive_existing_versions)
+        client.transition_model_version_stage(model_name, vr.version, model_version_stage, archive_existing_versions=False)
     return vr
 
 # COMMAND ----------

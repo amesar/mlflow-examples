@@ -123,9 +123,7 @@ with mlflow.start_run(run_name=run_name) as run:
         
     mlflow.sklearn.log_model(model, "model", signature=signature)
     if model_name:
-        version = register_model(model_name, model_version_stage, archive_existing_versions, run)
-    else:
-        version = None
+        version = register_model(run, model_name, model_version_stage)
         
     rmse = np.sqrt(mean_squared_error(test_y, predictions))
     r2 = r2_score(test_y, predictions)
@@ -160,7 +158,7 @@ display_experiment_id_info(run.info.experiment_id)
 
 # COMMAND ----------
 
-if version:
+if model_name:
     display_registered_model_version_uri(model_name, version.version)
 
 # COMMAND ----------
