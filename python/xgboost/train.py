@@ -1,10 +1,12 @@
+import click
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 import xgboost as xgb
 import mlflow
-import mlflow.xgboost
+from common import opt_data_path
+
 
 print("MLflow Tracking URI:", mlflow.get_tracking_uri())
 print("MLflow Version:", mlflow.__version__)
@@ -15,7 +17,6 @@ client = mlflow.tracking.MlflowClient()
 def build_data(data_path):
     data = pd.read_csv(data_path)
     train, test = train_test_split(data, test_size=0.30, random_state=2019)
-    # The predicted column is "quality" which is a scalar from [3, 9]
     X_train = train.drop(["quality"], axis=1)
     X_test = test.drop(["quality"], axis=1)
     y_train = train["quality"]
@@ -46,9 +47,11 @@ def train(data_path, max_depth, min_child_weight, estimators, model_name):
 
         # Create and fit model
         model = xgb.XGBRegressor(
-                 max_depth=max_depth,
-                 min_child_weight=min_child_weight,
-                 random_state=42) 
+                 max_depth = max_depth,
+                 min_child_weight = min_child_weight,
+                 n_estimators = estimators,
+                 random_state = 42
+        )
         model.fit(X_train, y_train)
         print("model.type:", type(model))
         print("model:", model)
@@ -71,20 +74,47 @@ def train(data_path, max_depth, min_child_weight, estimators, model_name):
         mlflow.xgboost.log_model(model, "model", registered_model_name=model_name)
 
 
+@click.command()
+@click.option("--experiment-name",
+    help="Experiment name.",
+    type=str,
+    default=None,
+    show_default=True
+)
+@opt_data_path
+@click.option("--model-name",
+    help="Registered model name.",
+    type=str,
+    default=None,
+    show_default=True
+)
+@click.option("--max-depth",
+    help="Max depth parameter.",
+    type=int,
+    default=None,
+    show_default=True
+)
+@click.option("--min-child-weight",
+    help="Max leaf nodes parameter.",
+    type=float,
+    default=1.5,
+    show_default=True
+)
+@click.option("--estimators",
+    help="Estimators",
+    type=int,
+    default=10,
+    show_default=True
+)
+def main(experiment_name, data_path, max_depth, min_child_weight, estimators, model_name):
+    print("Options:")
+    for k,v in locals().items():
+        print(f"  {k}: {v}")
+    if experiment_name:
+        mlflow.set_experiment(experiment_name)
+    model_name = None if not model_name or model_name == "None" else model_name
+    train(data_path, max_depth, min_child_weight, estimators, model_name)
+
+
 if __name__ == "__main__":
-    from argparse import ArgumentParser
-    parser = ArgumentParser()
-    parser.add_argument("--experiment_name", dest="experiment_name", help="Experiment name", default=None)
-    parser.add_argument("--model_name", dest="model_name", help="Registered model name", default=None)
-    parser.add_argument("--data_path", dest="data_path", help="Data path", default="../../data/train/wine-quality-white.csv")
-    parser.add_argument("--estimators", dest="estimators", help="Estimators", default=10, type=int)
-    parser.add_argument("--max_depth", dest="max_depth", help="Max depth", default=3, type=int)
-    parser.add_argument("--min_child_weight", dest="min_child_weight", help="Min child weight", default=1.5, type=float)
-    args = parser.parse_args()
-    print("Arguments:")
-    for arg in vars(args):
-        print(f"  {arg}: {getattr(args, arg)}")
-    if args.experiment_name:
-        mlflow.set_experiment(args.experiment_name)
-    model_name = None if not args.model_name or args.model_name == "None" else args.model_name
-    train(args.data_path, args.max_depth, args.min_child_weight, args.estimators, model_name)
+    main()
