@@ -13,17 +13,30 @@
 
 # COMMAND ----------
 
+dbutils.widgets.removeAll()
+
+# COMMAND ----------
+
 dbutils.widgets.text("1. Experiment name","")
 experiment_name = dbutils.widgets.get("1. Experiment name")
 
-dbutils.widgets.text("2. Data path", "") 
-data_path = dbutils.widgets.get("2. Data path")
+dbutils.widgets.text("2. Registered model","")
+model_name = dbutils.widgets.get("2. Registered model")
+
+dbutils.widgets.dropdown("3. Model version stage","None", _model_version_stages)
+model_version_stage = dbutils.widgets.get("3. Model version stage")
+if model_version_stage=="None": model_version_stage = None
+
+dbutils.widgets.text("4. Data path", "") 
+data_path = dbutils.widgets.get("4. Data path")
 if data_path=="": data_path = None
 
-dbutils.widgets.text("3. Max depth", "1") 
-max_depth = to_int(dbutils.widgets.get("3. Max depth"))
+dbutils.widgets.text("5. Max depth", "1") 
+max_depth = to_int(dbutils.widgets.get("5. Max depth"))
 
 print("experiment_name:", experiment_name)
+print("model_name:", model_name)
+print("model_version_stage:", model_version_stage)
 print("data_path:", data_path)
 print("max_depth:", max_depth)
 
@@ -80,6 +93,8 @@ with mlflow.start_run(run_name=run_name) as run:
     model = DecisionTreeClassifier(max_depth=max_depth)
     model.fit(X_train, y_train)
     mlflow.sklearn.log_model(model, "model")
+    if model_name:
+        version = register_model(run, model_name, model_version_stage)
 
 # COMMAND ----------
 
@@ -92,3 +107,8 @@ display_run_uri(run.info.experiment_id, run.info.run_id)
 # COMMAND ----------
 
 display_experiment_id_info(run.info.experiment_id)
+
+# COMMAND ----------
+
+if model_name:
+    display_registered_model_version_uri(model_name, version.version)
