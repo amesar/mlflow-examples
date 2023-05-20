@@ -26,6 +26,10 @@
         <scala.version>2.12.8</scala.version>
         <scala.binary.version>2.12</scala.binary.version>
         <spark.version>3.3.1</spark.version>
+<!--
+        <spark.version>3.4.0</spark.version>
+        Caused by: java.lang.ClassNotFoundException: breeze.storage.Zero$DoubleZero$
+-->
         <xgboost4j-spark.version>1.0.0</xgboost4j-spark.version>
         <xgboost4j-spark.artifact>xgboost4j-spark_2.12</xgboost4j-spark.artifact>
       </properties>
@@ -34,10 +38,11 @@
 
   <properties>
     <mleap.version>0.20.0</mleap.version>
-<!--  NOTE: only if using Java 11 since  his mleap is compiled with Java 11
+<!--  NOTE: only if using Java 11 since this mleap is compiled with Java 11
     <mleap.version>0.21.0</mleap.version>
--->
     <mlflow.version>2.1.1</mlflow.version>
+-->
+    <mlflow.version>2.3.2</mlflow.version>
     <jcommander.version>1.82</jcommander.version>
   </properties>
 
