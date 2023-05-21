@@ -2,19 +2,20 @@
 # MAGIC %md ## Sklearn Wine Quality MLflow model
 # MAGIC * Trains and saves model as Sklearn flavor
 # MAGIC * Predicts using Sklearn, PyFunc and UDF flavors
-# MAGIC 
+# MAGIC
 # MAGIC ### Widgets
-# MAGIC * 1. Experiment name: if not set, use notebook experiment
-# MAGIC * 2. Registered model: if not set, do not register as model
-# MAGIC * 3. Model version stage: model stage
-# MAGIC * 4. Archive existing versions: 
-# MAGIC * 5. Save signature
-# MAGIC * 6. SHAP
-# MAGIC * 7. Delta table: if not set, read CSV file from internet
-# MAGIC * 8. Max depth
-# MAGIC * 9. Max leaf nodes
-# MAGIC 
-# MAGIC Last udpated: 2023-04-17 - Repo variant
+# MAGIC * 01. Experiment name: if not set, use notebook experiment
+# MAGIC * 02. Registered model: if not set, do not register as model
+# MAGIC * 03. Model version stage: model stage
+# MAGIC * 04. Archive existing versions
+# MAGIC * 05. Model alias
+# MAGIC * 06. Save signature
+# MAGIC * 07. SHAP
+# MAGIC * 08. Delta table: if not set, read CSV file from internet
+# MAGIC * 09. Max depth
+# MAGIC * 10. Max leaf nodes
+# MAGIC
+# MAGIC Last udpated: 2023-05-21 - Repo variant
 
 # COMMAND ----------
 
@@ -26,34 +27,38 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("1. Experiment name","")
-dbutils.widgets.text("2. Registered model","")
-dbutils.widgets.dropdown("3. Model version stage","None", _model_version_stages)
-dbutils.widgets.dropdown("4. Archive existing versions","no",["yes","no"])
-dbutils.widgets.dropdown("5. Save signature","no",["yes","no"])
-dbutils.widgets.dropdown("6. SHAP","no",["yes","no"])
-dbutils.widgets.text("7. Delta table", "")
-dbutils.widgets.text("8. Max depth", "1") 
-dbutils.widgets.text("9. Max leaf nodes", "")
+dbutils.widgets.text("01. Experiment name","")
+dbutils.widgets.text("02. Registered model","")
+dbutils.widgets.dropdown("03. Model version stage","None", _model_version_stages)
+dbutils.widgets.dropdown("04. Archive existing versions","no",["yes","no"])
+dbutils.widgets.text("05. Model alias","")
+dbutils.widgets.dropdown("06. Save signature","no",["yes","no"])
+dbutils.widgets.dropdown("07. SHAP","no",["yes","no"])
+dbutils.widgets.text("08. Delta table", "")
+dbutils.widgets.text("09. Max depth", "1") 
+dbutils.widgets.text("10. Max leaf nodes", "")
 
-experiment_name = dbutils.widgets.get("1. Experiment name")
-model_name = dbutils.widgets.get("2. Registered model")
-model_version_stage = dbutils.widgets.get("3. Model version stage")
-archive_existing_versions = dbutils.widgets.get("4. Archive existing versions") == "yes"
-save_signature = dbutils.widgets.get("5. Save signature") == "yes"
-shap = dbutils.widgets.get("6. SHAP") == "yes"
-delta_table = dbutils.widgets.get("7. Delta table")
-max_depth = to_int(dbutils.widgets.get("8. Max depth"))
-max_leaf_nodes = to_int(dbutils.widgets.get("9. Max leaf nodes"))
+experiment_name = dbutils.widgets.get("01. Experiment name")
+model_name = dbutils.widgets.get("02. Registered model")
+model_version_stage = dbutils.widgets.get("03. Model version stage")
+archive_existing_versions = dbutils.widgets.get("04. Archive existing versions") == "yes"
+model_alias = dbutils.widgets.get("05. Model alias")
+save_signature = dbutils.widgets.get("06. Save signature") == "yes"
+shap = dbutils.widgets.get("07. SHAP") == "yes"
+delta_table = dbutils.widgets.get("08. Delta table")
+max_depth = to_int(dbutils.widgets.get("09. Max depth"))
+max_leaf_nodes = to_int(dbutils.widgets.get("10. Max leaf nodes"))
 
 if model_name=="": model_name = None
 if model_version_stage=="None": model_version_stage = None
+if model_alias=="None": model_alias = None
 if experiment_name=="None": experiment_name = None
 
 print("experiment_name:", experiment_name)
 print("model_name:", model_name)
 print("model_version_stage:", model_version_stage)
 print("archive_existing_versions:", archive_existing_versions)
+print("model_alias:", model_alias)
 print("save_signature:", save_signature)
 print("SHAP:", shap)
 print("delta_table:", delta_table)
@@ -123,7 +128,7 @@ with mlflow.start_run(run_name=run_name) as run:
         
     mlflow.sklearn.log_model(model, "model", signature=signature)
     if model_name:
-        version = register_model(run, model_name, model_version_stage)
+        version = register_model(run, model_name, model_version_stage, archive_existing_versions, model_alias)
         
     rmse = np.sqrt(mean_squared_error(test_y, predictions))
     r2 = r2_score(test_y, predictions)

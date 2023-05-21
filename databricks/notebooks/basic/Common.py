@@ -60,7 +60,7 @@ def to_int(x):
 # COMMAND ----------
 
 def to_list_int(str, delimiter=" "): 
-    return [ int(x) for x in str.split(delimiter)]
+    return [ int(x) for x in str.split(delimiter) ]
 
 # COMMAND ----------
 
@@ -79,8 +79,14 @@ def delete_registered_model(model_name):
     except RestException:
         pass
 
-def register_model(run, model_name, model_version_stage, archive_existing_versions=False, model_artifact="model"):
-    """ Register mode with specified stage stage """
+def register_model(run, 
+        model_name, 
+        model_version_stage = None, 
+        archive_existing_versions = False, 
+        model_alias = None,
+        model_artifact = "model"
+    ):
+    """ Register mode with specified stage and alias """
     try:
        model =  client.create_registered_model(model_name)
     except RestException as e:
@@ -88,7 +94,11 @@ def register_model(run, model_name, model_version_stage, archive_existing_versio
     source = f"{run.info.artifact_uri}/{model_artifact}"
     vr = client.create_model_version(model_name, source, run.info.run_id)
     if model_version_stage:
+        print(f"Transitioning model '{model_name}/{vr.version}' to stage '{model_version_stage}'")
         client.transition_model_version_stage(model_name, vr.version, model_version_stage, archive_existing_versions=False)
+    if model_alias:
+        print(f"Setting model '{model_name}/{vr.version}' alias to '{model_alias}'")
+        client.set_registered_model_alias(model_name, model_alias, vr.version)
     return vr
 
 # COMMAND ----------
@@ -107,6 +117,7 @@ class WineQuality():
 
     @staticmethod
     def get_data(table_name=""):
+        """ Return data as Pandas dataframe """
         import pandas as pd
         path = "https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv"
         if table_name == "":
@@ -137,6 +148,20 @@ class WineQuality():
     @staticmethod
     def prep_prediction_data(data):
         return data.drop(WineQuality.colLabel, axis=1)
+
+# COMMAND ----------
+
+def mk_dbfs_path(path):
+    return path.replace("/dbfs","dbfs:")
+
+def mk_local_path(path):
+    return path.replace("dbfs:","/dbfs")
+
+# COMMAND ----------
+
+def assert_widget(value, name):
+    if len(value.rstrip())==0:
+        raise Exception(f"ERROR: '{name}' widget is required")
 
 # COMMAND ----------
 
