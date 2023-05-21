@@ -20,7 +20,7 @@ print("  Python Version:", platform.python_version())
 print("  Operating System:", platform.system()+" - "+platform.release())
 print("  Platform:", platform.platform())
 
-client = mlflow.tracking.MlflowClient()
+client = mlflow.MlflowClient()
 
 colLabel = "quality"
 

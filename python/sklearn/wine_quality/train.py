@@ -65,13 +65,18 @@ class Trainer():
         X_test = test.drop([col_label], axis=1)
         y_train = train[[col_label]]
         y_test = test[[col_label]]
-        print(">> X_test.type:",type(X_test))
-        print(">> X_test.dtypes:",X_test.dtypes)
-
         return X_train, X_test, y_train, y_test 
 
 
-    def train(self, registered_model_name, registered_model_version_stage="None", archive_existing_versions=False, output_path=None, max_depth=None, max_leaf_nodes=32):
+    def train(self, 
+            registered_model_name,
+            registered_model_version_stage = "None",
+            archive_existing_versions = False,
+            registered_model_alias = None,
+            output_path = None,
+            max_depth = None,
+            max_leaf_nodes = 32
+        ):
         run_name = f"{now} {self.run_origin} {mlflow.__version__}" if self.run_origin else None
         with mlflow.start_run(run_name=run_name) as run: # NOTE: when running with `mlflow run`, mlflow --run-name option takes precedence!
             run_id = run.info.run_id
@@ -99,7 +104,7 @@ class Trainer():
             mlflow.set_tag("version.python", platform.python_version())
 
             # Create model
-            model = DecisionTreeRegressor(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)
+            model  =  DecisionTreeRegressor(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)
             print("Model:\n ", model)
 
             # Fit and predict
@@ -137,7 +142,8 @@ class Trainer():
                     "model",
                     registered_model_name,
                     registered_model_version_stage,
-                    archive_existing_versions
+                    archive_existing_versions,
+                    registered_model_alias,
                 )
 
             # Convert sklearn model to ONNX and log model
@@ -145,11 +151,14 @@ class Trainer():
                 from wine_quality import onnx_utils
                 onnx_utils.log_model(model, "onnx-model", self.X_test)
                 if registered_model_name:
+                    if registered_model_alias:
+                        registered_model_alias = f"{registered_model_alias}_onnx"
                     mlflow_utils.register_model(run,
                         "onnx-model", 
                         f"{registered_model_name}_onnx",
                         registered_model_version_stage,
-                        archive_existing_versions
+                        archive_existing_versions,
+                        registered_model_alias
                     )
 
             # MLflow artifact - plot file
@@ -205,6 +214,11 @@ class Trainer():
     default=False,
     show_default=True
 )
+@click.option("--model-alias",
+    help="Registered model alias",
+    type=str,
+    required=False
+)
 @click.option("--save-signature", 
     help="Save model signature. Default is False.", 
     type=bool,
@@ -247,15 +261,27 @@ class Trainer():
     default=False,
     show_default=True
 )
-def main(experiment_name, data_path, model_name, model_version_stage, archive_existing_versions, 
-        save_signature, log_as_onnx, max_depth, max_leaf_nodes, run_origin, output_path, use_run_id_as_run_name):
+def main(experiment_name, 
+        data_path,
+        model_name,
+        model_version_stage,
+        archive_existing_versions,
+        model_alias,
+        save_signature,
+        log_as_onnx,
+        max_depth,
+        max_leaf_nodes,
+        run_origin,
+        output_path,
+        use_run_id_as_run_name
+    ):
     print("Options:")
     for k,v in locals().items(): 
         print(f"  {k}: {v}")
     print("Processed Options:")
     print(f"  model_name: {model_name} - type: {type(model_name)}")
     trainer = Trainer(experiment_name, data_path, log_as_onnx, save_signature, run_origin, use_run_id_as_run_name)
-    trainer.train(model_name, model_version_stage, archive_existing_versions, output_path, max_depth, max_leaf_nodes)
+    trainer.train(model_name, model_version_stage, archive_existing_versions, model_alias, output_path, max_depth, max_leaf_nodes)
 
 
 if __name__ == "__main__":

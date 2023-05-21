@@ -8,7 +8,8 @@ def register_model(
         mlflow_model_name,
         registered_model_name,
         registered_model_version_stage,
-        archive_existing_versions
+        archive_existing_versions,
+        registered_model_alias
     ):
     try:
         desc = "Skearn Wine Quality model"
@@ -23,8 +24,11 @@ def register_model(
         if  registered_model_version_stage in [ "None", "Archived" ]:
             print(f"WARNING: Cannot explicitly transition model '{registered_model_name}/{vr.version}' to stage '{registered_model_version_stage}'")
         else:
-            print(f"Transitioning '{registered_model_name}/{vr.version}' to stage '{registered_model_version_stage}'")
+            print(f"Transitioning model '{registered_model_name}/{vr.version}' to stage '{registered_model_version_stage}'")
             client.transition_model_version_stage(registered_model_name, vr.version, registered_model_version_stage, archive_existing_versions)
+    if registered_model_alias:
+        print(f"Setting model '{registered_model_name}/{vr.version}' alias to '{registered_model_alias}'")
+        client.set_registered_model_alias(registered_model_name, registered_model_alias, vr.version)
     desc = f"v{vr.version} {registered_model_version_stage} - wine"
     client.update_model_version(registered_model_name, vr.version, desc)
     client.set_model_version_tag(registered_model_name, vr.version, "registered_version_info", desc)

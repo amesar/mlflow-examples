@@ -46,13 +46,15 @@ python -m wine_quality.train --help
 
 Options:
   --experiment-name TEXT          Experiment name.
-  --data-path TEXT                Data path.  [default: ../../data/train/wine-
-                                  quality-white.csv]
+  --data-path TEXT                Data path.  [default: https://raw.githubuser
+                                  content.com/mlflow/mlflow/master/examples/sk
+                                  learn_elasticnet_wine/wine-quality.csv]
   --model-name TEXT               Registered model name.
   --model-version-stage TEXT      Registered model version stage:
                                   production|staging|archive|none.
   --archive-existing-versions BOOLEAN
                                   Archive existing versions.  [default: False]
+  --model-alias TEXT              Registered model alias
   --save-signature BOOLEAN        Save model signature. Default is False.
                                   [default: False]
   --log-as-onnx BOOLEAN           Log model as ONNX flavor. Default is false.
@@ -61,6 +63,8 @@ Options:
   --max-leaf-nodes INTEGER        Max leaf nodes parameter.  [default: 32]
   --run-origin TEXT               Run origin.  [default: none]
   --output-path TEXT              Output file containing run ID.
+  --use-run-id-as-run-name BOOLEAN
+                                  use_run_id_as_run_name  [default: False]
 ```
 
 #### Signature
@@ -282,15 +286,25 @@ You can make predictions in two ways:
   * Spark UDF - either the DataFrame API or SQL
 * Real-time predictions - use MLflow's scoring server to score individual requests.
 
+### Model URI
+
+To retrieve a model from MLflow you need to specify a "model URI" which has several forms. The most common are:
+* Model scheme:
+   * `models:/my-registered-model/production` - qualify with stage
+   * `models:/my-registered-model/123` - qualify with version number
+   * `models:/my-registered-model@my-alias` - qualify with alias (new as of MLflow 2.3.0)
+* Run scheme - `runs:/7e674524514846799310c41f10d6b99d/my-model`
+
+See MLflow [Referencing Artifacts](https://mlflow.org/docs/latest/concepts.html#referencing-artifacts) page.
 
 ### Batch Predictions
 
-You can predict with either normal Python script or as `mlflow run` project.
+You can predict with either a normal Python script or as a `mlflow run` project.
 
 **Normal Python script**
 ```
 python -um wine_quality.predict \
-  --model-uri runs:/7e674524514846799310c41f10d6b99d/model \
+  --model-uri models:/sklearn/production \
   --flavor sklearn 
 ```
 
@@ -299,7 +313,7 @@ python -um wine_quality.predict \
 See the [MLproject](MLproject) file.
 ```
 mlflow run . \
-  -P model-uri=runs:/7e674524514846799310c41f10d6b99d/model \
+  -P model-uri=models:/sklearn/production \
   -P flavor=sklearn \
   --entry-point predict 
 ```
@@ -310,7 +324,7 @@ You can use either a `runs` or `models` scheme.
 
 URI with `runs` scheme.
 ```
-python -um wine_quality.predict --model-uri runs:/7e674524514846799310c41f10d6b99d/model --flavor sklearn 
+python -um wine_quality.predict --model-uri models:/my-registered-model/production --flavor sklearn 
 
 ```
 
@@ -337,7 +351,7 @@ predictions = model.predict(data)
 #### 2. Predict with mlflow.pyfunc.load_model()
 
 ```
-python -um wine_quality.predict --model-uri runs:/7e674524514846799310c41f10d6b99d/model --flavor pyfunc
+python -um wine_quality.predict --model-uri models:/my-registered-model/staging --flavor pyfunc
 ```
 
 ```
@@ -362,7 +376,7 @@ Scroll right to see prediction column.
 
 ```
 python -um wine_quality.predict \
-  --model-uri runs:/7e674524514846799310c41f10d6b99d/model \
+  --model-uri models:/my-registered-model/production \
   --flavor spark_udf
 ```
 
@@ -482,7 +496,7 @@ curl -X POST -H "Content-Type:application/json" \
 Launch the scoring server.
 ```
 mlflow pyfunc serve -port 5001 \
-  -model-uri runs:/7e674524514846799310c41f10d6b99d/model 
+  -model-uri models:/my-registered-model/production
 ```
 
 Make predictions with curl as described above.
@@ -494,7 +508,7 @@ See [build-docker](https://mlflow.org/docs/latest/cli.html#mlflow-models-build-d
 First build the docker image.
 ```
 mlflow models build-docker \
-  --model-uri runs:/7e674524514846799310c41f10d6b99d/model \
+  --model-uri models:/my-registered-model/production \
   --name dk-wine-sklearn
 ```
 
@@ -520,14 +534,14 @@ mlflow sagemaker build-and-push-container --build --no-push --container sm-wine-
 To test locally, launch the server as a docker container.
 ```
 mlflow sagemaker run-local \
-  --model-uri runs:/7e674524514846799310c41f10d6b99d/model \
+  --model-uri models:/my-registered-model/production \
   --port 5001 --image sm-wine-sklearn
 ```
 
 You can also launch a scoring server with an ONNX model.
 ```
 mlflow sagemaker run-local \
-  --model-uri runs:/7e674524514846799310c41f10d6b99d/onnx-model \
+  --model-uri models:/my-registered-model/production \
   --port 5001 --image sm-wine-sklearn
 ```
 
