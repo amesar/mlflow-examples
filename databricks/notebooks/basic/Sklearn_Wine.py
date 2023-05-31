@@ -28,10 +28,6 @@
 
 # COMMAND ----------
 
-#dbutils.widgets.removeAll()
-
-# COMMAND ----------
-
 dbutils.widgets.text("01. Experiment name", "")
 dbutils.widgets.text("02. Registered model", "")
 dbutils.widgets.dropdown("03. Model version stage", "None", _model_version_stages)
