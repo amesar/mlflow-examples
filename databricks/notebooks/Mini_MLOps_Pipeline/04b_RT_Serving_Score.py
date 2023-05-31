@@ -56,4 +56,4 @@ rsp.text
 
 # MAGIC %md ### Next notebook
 # MAGIC
-# MAGIC When finished scoring, go to the [04c_RT_Serving_Stop]($04c_RT_Serving_Stop) notebook to shut down the serving endpoint.
+# MAGIC When finished scoring, go to the **[04c_RT_Serving_Stop]($04c_RT_Serving_Stop)** notebook to shut down the serving endpoint.

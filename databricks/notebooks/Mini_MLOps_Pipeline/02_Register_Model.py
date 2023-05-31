@@ -21,13 +21,13 @@ delete_existing_versions
 
 # COMMAND ----------
 
-# MAGIC %md ### MLflow Setup
+# MAGIC %md ### Display experiment
 
 # COMMAND ----------
 
 experiment = mlflow_client.get_experiment_by_name(_experiment_name)
 experiment_id = experiment.experiment_id
-display_experiment_uri(experiment_id)
+display_experiment_uri(experiment)
 
 # COMMAND ----------
 
@@ -43,7 +43,7 @@ display(df)
 # COMMAND ----------
 
 # MAGIC %md ### Find best run
-# MAGIC 
+# MAGIC
 # MAGIC Search for the run with lowest RMSE metric.
 
 # COMMAND ----------
@@ -55,17 +55,17 @@ best_run.info.run_id, round(best_run.data.metrics["training_rmse"],3), best_run.
 # COMMAND ----------
 
 # MAGIC %md ##### If you used a Delta table to train your model, its value is displayed here as in:
-# MAGIC 
+# MAGIC
 # MAGIC `path=dbfs:/user/hive/warehouse/andre.db/wine_quality,version=0,format=delta`
 
 # COMMAND ----------
 
-best_run.data.tags.get("sparkDatasourceInfo", None)
+best_run.data.tags.get("sparkDatasourceInfo")
 
 # COMMAND ----------
 
 # MAGIC %md ### Create registered model 
-# MAGIC 
+# MAGIC
 # MAGIC If model already exists remove all existing versions.
 
 # COMMAND ----------
@@ -155,7 +155,7 @@ type(version), version.__dict__
 # COMMAND ----------
 
 # MAGIC %md ### Next notebook
-# MAGIC 
+# MAGIC
 # MAGIC Now either go to:
 # MAGIC * **[03_Batch_Scoring]($03_Batch_Scoring)** notebook for batch scoring
 # MAGIC * **[04a_RT_Serving_Start ]($04a_RT_Serving_Start )** notebook for real-time model serving

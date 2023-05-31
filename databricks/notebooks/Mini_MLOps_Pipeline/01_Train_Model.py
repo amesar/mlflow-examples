@@ -1,12 +1,12 @@
 # Databricks notebook source
 # MAGIC %md # Train Sklearn Model
-# MAGIC 
+# MAGIC
 # MAGIC **Overview**
 # MAGIC * Option to use [MLflow Autologging](https://docs.databricks.com/applications/mlflow/databricks-autologging.html).
 # MAGIC * Train a Sklearn model several times with different `maxDepth` hyperparameter values.
 # MAGIC   * Runs will be in the notebook experiment.
 # MAGIC * Algorithm: DecisionTreeRegressor.
-# MAGIC 
+# MAGIC
 # MAGIC **Widgets**
 # MAGIC   * Autologging - yes or no.
 # MAGIC   * Delete existing runs - Deletes existing experiment runs before executing training runs.
@@ -38,7 +38,7 @@ print("delta_table:", delta_table)
 
 # COMMAND ----------
 
-experiment_id, experiment_name = init()
+experiment = init()
 
 # COMMAND ----------
 
@@ -47,7 +47,7 @@ experiment_id, experiment_name = init()
 # COMMAND ----------
 
 if do_delete_runs:
-    delete_runs(experiment_id)
+    delete_runs(experiment.experiment_id)
 
 # COMMAND ----------
 
@@ -91,11 +91,11 @@ from sklearn.metrics import mean_squared_error
 def train_no_autologging(max_depth):
     import time
     now = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time()))
-    context = _experiment_name.split("/")[1]
+    context = experiment.name.split("/")[1]
     with mlflow.start_run(run_name=f"No autolog - {context} - {now}") as run:
         mlflow.set_tag("mlflow_version", mlflow.__version__)
         mlflow.set_tag("context", context)
-        mlflow.set_tag("experiment_name", _experiment_name)
+        mlflow.set_tag("experiment_name", experiment.name)
         mlflow.log_param("max_depth", max_depth)
         model = DecisionTreeRegressor(max_depth=max_depth)
         model.fit(X_train, y_train)
@@ -138,10 +138,10 @@ for max_depth in max_depths:
 
 # COMMAND ----------
 
-display_experiment_uri(experiment_id)
+display_experiment_uri(experiment)
 
 # COMMAND ----------
 
 # MAGIC %md ### Next notebook
-# MAGIC 
-# MAGIC Now go to the **[02_Register_Model]($02_Register_Model)** notebook.
+# MAGIC
+# MAGIC Next go to the **[02_Register_Model]($02_Register_Model)** notebook.

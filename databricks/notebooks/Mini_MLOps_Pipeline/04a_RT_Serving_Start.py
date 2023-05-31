@@ -99,4 +99,4 @@ model_serving_client.get_endpoint(_endpoint_name)
 
 # MAGIC %md ### Next notebook
 # MAGIC
-# MAGIC Once the serving endpoint has started, go to the [04b_RT_Serving_Score]($04b_RT_Serving_Score) notebook to submit scoring requests.
+# MAGIC Once the serving endpoint has started, go to the **[04b_RT_Serving_Score]($04b_RT_Serving_Score)** notebook to submit scoring requests.

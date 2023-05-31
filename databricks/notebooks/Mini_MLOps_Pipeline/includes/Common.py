@@ -9,7 +9,7 @@
 
 import os
 import mlflow
-mlflow_client = mlflow.client.MlflowClient()
+mlflow_client = mlflow.MlflowClient()
 
 # COMMAND ----------
 
@@ -73,7 +73,7 @@ def init():
 
     print("Experiment ID:", experiment.experiment_id)
     print("Experiment name:", experiment.name)
-    return experiment.experiment_id, experiment_name
+    return experiment
 
 # COMMAND ----------
 
@@ -115,7 +115,7 @@ _col_prediction = "prediction"
 # COMMAND ----------
 
 _host_name = _get_notebook_tag("browserHostName")
-print("host_name:", _host_name)
+print("_host_name:", _host_name)
 
 # COMMAND ----------
 
@@ -124,15 +124,17 @@ dbutils.fs.put("file:///root/.databrickscfg",f"[DEFAULT]\nhost=https://{_host_na
 
 # COMMAND ----------
 
-def display_run_uri(experiment_id, run_id):
-    uri = f"https://{_host_name}/#mlflow/experiments/{experiment_id}/runs/{run_id}"
-    displayHTML("""<b>Run URI:</b> <a href="{}">{}</a>""".format(uri,uri))
-
-# COMMAND ----------
-
-def display_experiment_uri(experiment_id):
-    uri = "https://{}/#mlflow/experiments/{}".format(_host_name, experiment_id)
-    displayHTML("""<b>Experiment URI:</b> <a href="{}">{}</a>""".format(uri,uri))
+def display_experiment_uri(experiment):
+    host_name = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().get("browserHostName").get()
+    uri = f"https://{host_name}/#mlflow/experiments/{experiment.experiment_id}"
+    displayHTML(f"""
+    <table cellpadding=5 cellspacing=0 border=1 bgcolor="#FDFEFE" style="font-size:13px;">
+    <tr><td colspan=2><b><i>Experiment</i></b></td></tr>
+    <tr><td>UI link</td><td><a href="{uri}">{uri}</a></td></tr>
+    <tr><td>Name</td><td>{experiment.name}</td></tr>
+    <tr><td>ID</td><td>{experiment.experiment_id}</td></tr>
+    </table>
+    """)
 
 # COMMAND ----------
 
@@ -143,7 +145,7 @@ def display_registered_model_uri(model_name):
 # COMMAND ----------
 
 """
-Wait function due to eventual consistency. 
+Wait function due to cloud eventual consistency. 
 Waits until a version is in the READY status.
 """
 import time
