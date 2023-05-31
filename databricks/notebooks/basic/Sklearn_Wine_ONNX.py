@@ -1,14 +1,20 @@
 # Databricks notebook source
 # MAGIC %md # Sklearn MLflow train and predict with ONNX
-# MAGIC 
+# MAGIC
 # MAGIC **Overview**
 # MAGIC * Trains and saves model as sklearn and ONNX
 # MAGIC * Predicts using ONNX native, ONNX PyFunc and ONNX UDF flavors
-# MAGIC 
+# MAGIC
 # MAGIC **Note**
-# MAGIC 
+# MAGIC
 # MAGIC * Fails with latest `onnx==1.13.1` with: `ImportError: cannot import name 'builder' from 'google.protobuf.internal' `
 # MAGIC * Works wth `onnx==1.12.0`
+
+# COMMAND ----------
+
+# MAGIC %md Widgets:
+# MAGIC * exp: /Users/andre.mesarovic@databricks.com/experiments/Sklearn_Wine_ONNX_ws
+# MAGIC * model: Sklearn_Wine_ONNX_ws
 
 # COMMAND ----------
 
@@ -16,7 +22,7 @@
 
 # COMMAND ----------
 
-# %pip install onnx==1.13.1 # FAILS with DBR MML 12.2 because of: ImportError: cannot import name 'builder' from 'google.protobuf.internal' 
+# %pip install onnx==1.13.1 and 1.14.0 # FAILS with DBR MML 12.2 because of: ImportError: cannot import name 'builder' from 'google.protobuf.internal' 
 %pip install onnx==1.12.0
 %pip install onnxruntime==1.14.1
 %pip install skl2onnx==1.14.0
@@ -27,12 +33,34 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("Max Depth", "1") 
-dbutils.widgets.text("Max Leaf Nodes", "")
-max_depth = to_int(dbutils.widgets.get("Max Depth"))
-max_leaf_nodes = to_int(dbutils.widgets.get("Max Leaf Nodes"))
+# %run ./Load_Test_Datasources
 
-max_depth, max_leaf_nodes
+# COMMAND ----------
+
+dbutils.widgets.text("1. Experiment name","")
+dbutils.widgets.text("2. Registered model","")
+dbutils.widgets.text("3. Max Depth", "1") 
+dbutils.widgets.text("4. Max Leaf Nodes", "")
+
+experiment_name = dbutils.widgets.get("1. Experiment name")
+model_name = dbutils.widgets.get("2. Registered model")
+max_depth = to_int(dbutils.widgets.get("3. Max Depth"))
+max_leaf_nodes = to_int(dbutils.widgets.get("4. Max Leaf Nodes"))
+
+model_name = model_name or None
+experiment_name = experiment_name or None
+
+print("experiment_name:", experiment_name)
+print("model_name:", model_name)
+print("max_depth:", max_depth)
+print("max_leaf_nodes:", max_leaf_nodes)
+
+# COMMAND ----------
+
+if experiment_name:
+    mlflow.set_experiment(experiment_name)
+    exp = mlflow.get_experiment_by_name(experiment_name)
+    print("Experiment:", exp.experiment_id, exp.name)
 
 # COMMAND ----------
 
@@ -59,10 +87,11 @@ display(data)
 import numpy as np
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from mlflow.models.signature import infer_signature
 
 # COMMAND ----------
 
-with mlflow.start_run(run_name="sklearn") as run:
+with mlflow.start_run(run_name="sklearn_onnx") as run:
     run_id = run.info.run_uuid
     print("MLflow:")
     print("  run_id:",run_id)
@@ -76,15 +105,20 @@ with mlflow.start_run(run_name="sklearn") as run:
 
     sklearn_model = DecisionTreeRegressor(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)
     sklearn_model.fit(train_x, train_y)
-             
+
+    predictions = sklearn_model.predict(test_x)       
+    signature = infer_signature(train_x, predictions) 
+
     # Log Sklearn model
-    mlflow.sklearn.log_model(sklearn_model, "sklearn-model")
+    mlflow.sklearn.log_model(sklearn_model, "sklearn-model",  signature=signature)
     
     # Log ONNX model
     initial_type = [('float_input', skl2onnx.common.data_types.FloatTensorType([None, test_x.shape[1]]))]
     onnx_model = skl2onnx.convert_sklearn(sklearn_model, initial_types=initial_type)
     print("onnx_model.type:", type(onnx_model))
-    mlflow.onnx.log_model(onnx_model, "onnx-model")
+    mlflow.onnx.log_model(onnx_model, "onnx-model", 
+        signature=signature, 
+        registered_model_name=model_name)
         
     # Run predictions and log metrics
     predictions = sklearn_model.predict(test_x)
