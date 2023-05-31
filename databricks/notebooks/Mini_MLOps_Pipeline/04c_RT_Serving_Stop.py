@@ -22,3 +22,9 @@ model_serving_client.get_endpoint(_endpoint_name)
 endpoints = model_serving_client.list_endpoints()
 for e in endpoints:
     print(f"  {e['name']} - {e['creator']}")
+
+# COMMAND ----------
+
+# MAGIC %md ### Next notebook
+# MAGIC
+# MAGIC Congratulations! You have finished your Mini MLOps exercise. There is no next notebook.
