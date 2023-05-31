@@ -10,10 +10,11 @@
 # MAGIC * 04. Archive existing versions
 # MAGIC * 05. Model alias
 # MAGIC * 06. Save signature
-# MAGIC * 07. SHAP
-# MAGIC * 08. Delta table: if not set, read CSV file from internet
-# MAGIC * 09. Max depth
-# MAGIC * 10. Max leaf nodes
+# MAGIC * 07. Input example
+# MAGIC * 08. SHAP
+# MAGIC * 09. Delta table: if not set, read CSV file from internet
+# MAGIC * 10. Max depth
+# MAGIC * 11. Max leaf nodes
 # MAGIC
 # MAGIC Last udpated: 2023-05-21 - Repo variant
 
@@ -27,16 +28,21 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("01. Experiment name","")
-dbutils.widgets.text("02. Registered model","")
-dbutils.widgets.dropdown("03. Model version stage","None", _model_version_stages)
-dbutils.widgets.dropdown("04. Archive existing versions","no",["yes","no"])
+#dbutils.widgets.removeAll()
+
+# COMMAND ----------
+
+dbutils.widgets.text("01. Experiment name", "")
+dbutils.widgets.text("02. Registered model", "")
+dbutils.widgets.dropdown("03. Model version stage", "None", _model_version_stages)
+dbutils.widgets.dropdown("04. Archive existing versions", "no", ["yes","no"])
 dbutils.widgets.text("05. Model alias","")
-dbutils.widgets.dropdown("06. Save signature","no",["yes","no"])
-dbutils.widgets.dropdown("07. SHAP","no",["yes","no"])
-dbutils.widgets.text("08. Delta table", "")
-dbutils.widgets.text("09. Max depth", "1") 
-dbutils.widgets.text("10. Max leaf nodes", "")
+dbutils.widgets.dropdown("06. Save signature", "no", ["yes","no"])
+dbutils.widgets.dropdown("07. Input example", "no", ["yes","no"])
+dbutils.widgets.dropdown("08. SHAP","no", ["yes","no"])
+dbutils.widgets.text("09. Delta table", "")
+dbutils.widgets.text("10. Max depth", "1") 
+dbutils.widgets.text("11. Max leaf nodes", "")
 
 experiment_name = dbutils.widgets.get("01. Experiment name")
 model_name = dbutils.widgets.get("02. Registered model")
@@ -44,15 +50,17 @@ model_version_stage = dbutils.widgets.get("03. Model version stage")
 archive_existing_versions = dbutils.widgets.get("04. Archive existing versions") == "yes"
 model_alias = dbutils.widgets.get("05. Model alias")
 save_signature = dbutils.widgets.get("06. Save signature") == "yes"
-shap = dbutils.widgets.get("07. SHAP") == "yes"
-delta_table = dbutils.widgets.get("08. Delta table")
-max_depth = to_int(dbutils.widgets.get("09. Max depth"))
-max_leaf_nodes = to_int(dbutils.widgets.get("10. Max leaf nodes"))
+input_example = dbutils.widgets.get("07. Input example") == "yes"
+shap = dbutils.widgets.get("08. SHAP") == "yes"
+delta_table = dbutils.widgets.get("09. Delta table")
+max_depth = to_int(dbutils.widgets.get("10. Max depth"))
+max_leaf_nodes = to_int(dbutils.widgets.get("11. Max leaf nodes"))
 
-if model_name=="": model_name = None
-if model_version_stage=="None": model_version_stage = None
-if model_alias=="None": model_alias = None
-if experiment_name=="None": experiment_name = None
+model_name = model_name or None
+model_version_stage = model_version_stage or None
+model_alias = model_alias or None
+experiment_name = experiment_name or None
+input_example = input_example or None
 
 print("experiment_name:", experiment_name)
 print("model_name:", model_name)
@@ -60,6 +68,7 @@ print("model_version_stage:", model_version_stage)
 print("archive_existing_versions:", archive_existing_versions)
 print("model_alias:", model_alias)
 print("save_signature:", save_signature)
+print("input_example:", input_example)
 print("SHAP:", shap)
 print("delta_table:", delta_table)
 print("max_depth:", max_depth)
@@ -70,7 +79,7 @@ print("max_leaf_nodes:", max_leaf_nodes)
 if experiment_name:
     mlflow.set_experiment(experiment_name)
     exp = mlflow.get_experiment_by_name(experiment_name)
-    print("exp:",exp)
+    print("Experiment ID:", exp.experiment_id)
     client.set_experiment_tag(exp.experiment_id, "version_mlflow", mlflow.__version__)
     client.set_experiment_tag(exp.experiment_id, "timestamp", now)
 
@@ -116,20 +125,28 @@ with mlflow.start_run(run_name=run_name) as run:
     mlflow.set_tag("version.DATABRICKS_RUNTIME_VERSION", os.environ.get("DATABRICKS_RUNTIME_VERSION",None))
     mlflow.set_tag("version.python", platform.python_version())
     mlflow.set_tag("save_signature", save_signature)
+    mlflow.set_tag("input_example", input_example)
+
+    mlflow.log_param("max_depth", max_depth)
+    mlflow.log_param("max_leaf_nodes", max_leaf_nodes)
 
     model = DecisionTreeRegressor(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)
     model.fit(train_x, train_y)
       
     predictions = model.predict(test_x)
     signature = infer_signature(train_x, predictions) if save_signature else None
-    print("signature:",signature)
-    mlflow.log_param("max_depth", max_depth)
-    mlflow.log_param("max_leaf_nodes", max_leaf_nodes)
-        
-    mlflow.sklearn.log_model(model, "model", signature=signature)
+    print("signature:", signature)
+    print("input_example:", input_example)
+    
+    mlflow.sklearn.log_model(model, "model", signature=signature, input_example=test_x)
     if model_name:
-        version = register_model(run, model_name, model_version_stage, archive_existing_versions, model_alias)
-        
+        version = register_model(run, 
+            model_name, 
+            model_version_stage, 
+            archive_existing_versions, 
+            model_alias
+        )
+
     rmse = np.sqrt(mean_squared_error(test_y, predictions))
     r2 = r2_score(test_y, predictions)
     print("Metrics:")
@@ -137,6 +154,7 @@ with mlflow.start_run(run_name=run_name) as run:
     print("  r2:",r2)
     mlflow.log_metric("rmse", rmse)
     mlflow.log_metric("r2", r2) 
+
     if shap:
         mlflow.shap.log_explanation(model.predict, train_x)
 
