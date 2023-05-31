@@ -94,3 +94,9 @@ model_serving_client.wait_until(_endpoint_name, max=50, sleep_time=4)
 # COMMAND ----------
 
 model_serving_client.get_endpoint(_endpoint_name)
+
+# COMMAND ----------
+
+# MAGIC %md ### Next notebook
+# MAGIC
+# MAGIC Once the serving endpoint has started, go to the [04b_RT_Serving_Score]($04b_RT_Serving_Score) notebook to submit scoring requests.
