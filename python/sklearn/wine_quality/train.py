@@ -136,7 +136,8 @@ class Trainer():
             print("Signature:",signature)
 
             # MLflow log model
-            mlflow.sklearn.log_model(model, "model", signature=signature)
+            input_example = self.X_test
+            mlflow.sklearn.log_model(model, "model", signature=signature, input_example = input_example)
             if registered_model_name:
                 mlflow_utils.register_model(run,
                     "model",
@@ -149,7 +150,7 @@ class Trainer():
             # Convert sklearn model to ONNX and log model
             if self.log_as_onnx:
                 from wine_quality import onnx_utils
-                onnx_utils.log_model(model, "onnx-model", self.X_test, signature)
+                onnx_utils.log_model(model, "onnx-model", self.X_test, signature, input_example)
                 if registered_model_name:
                     if registered_model_alias:
                         registered_model_alias = f"{registered_model_alias}_onnx"

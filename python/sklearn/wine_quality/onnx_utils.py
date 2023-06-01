@@ -4,7 +4,7 @@ import mlflow.onnx
 
 
 #def log_model(model, mlflow_model_name, registered_model_name, data):
-def log_model(model, mlflow_model_name, data, signature=None):
+def log_model(model, mlflow_model_name, data, signature=None, input_example=None):
     import onnx
     from skl2onnx import convert_sklearn
     from skl2onnx.common.data_types import FloatTensorType
@@ -15,10 +15,7 @@ def log_model(model, mlflow_model_name, data, signature=None):
     mlflow.set_tag("version.onnx", onnx.__version__)
     print("ONNX version:", onnx.__version__)
 
-    #registered_model_name = f"{registered_model_name}_onnx" if registered_model_name else None
-    #mlflow.onnx.log_model(onnx_model, mlflow_model_name, registered_model_name=registered_model_name)
-    mlflow.onnx.log_model(onnx_model, mlflow_model_name, signature=signature)
-
+    mlflow.onnx.log_model(onnx_model, mlflow_model_name, signature=signature, input_example=input_example)
     return onnx_model
 
 
