@@ -149,7 +149,7 @@ class Trainer():
             # Convert sklearn model to ONNX and log model
             if self.log_as_onnx:
                 from wine_quality import onnx_utils
-                onnx_utils.log_model(model, "onnx-model", self.X_test)
+                onnx_utils.log_model(model, "onnx-model", self.X_test, signature)
                 if registered_model_name:
                     if registered_model_alias:
                         registered_model_alias = f"{registered_model_alias}_onnx"
