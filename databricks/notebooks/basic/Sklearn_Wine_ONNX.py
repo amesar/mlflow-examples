@@ -2,19 +2,13 @@
 # MAGIC %md # Sklearn MLflow train and predict with ONNX
 # MAGIC
 # MAGIC **Overview**
-# MAGIC * Trains and saves model as sklearn and ONNX
+# MAGIC * Trains and saves model as Sklearn and ONNX
 # MAGIC * Predicts using ONNX native, ONNX PyFunc and ONNX UDF flavors
 # MAGIC
 # MAGIC **Note**
 # MAGIC
 # MAGIC * Fails with latest `onnx==1.13.1` with: `ImportError: cannot import name 'builder' from 'google.protobuf.internal' `
 # MAGIC * Works wth `onnx==1.12.0`
-
-# COMMAND ----------
-
-# MAGIC %md Widgets:
-# MAGIC * exp: /Users/andre.mesarovic@databricks.com/experiments/Sklearn_Wine_ONNX_ws
-# MAGIC * model: Sklearn_Wine_ONNX_ws
 
 # COMMAND ----------
 
@@ -33,12 +27,12 @@
 
 # COMMAND ----------
 
-# %run ./Load_Test_Datasources
+# MAGIC %run ./Load_Test_Datasources
 
 # COMMAND ----------
 
-dbutils.widgets.text("1. Experiment name","")
-dbutils.widgets.text("2. Registered model","")
+dbutils.widgets.text("1. Experiment name", "")
+dbutils.widgets.text("2. Registered model", "")
 dbutils.widgets.text("3. Max Depth", "1") 
 dbutils.widgets.text("4. Max Leaf Nodes", "")
 
@@ -110,15 +104,20 @@ with mlflow.start_run(run_name="sklearn_onnx") as run:
     signature = infer_signature(train_x, predictions) 
 
     # Log Sklearn model
-    mlflow.sklearn.log_model(sklearn_model, "sklearn-model",  signature=signature)
+    mlflow.sklearn.log_model(sklearn_model, "sklearn-model",  
+        signature = signature, 
+        input_example = test_x
+    )
     
     # Log ONNX model
     initial_type = [('float_input', skl2onnx.common.data_types.FloatTensorType([None, test_x.shape[1]]))]
     onnx_model = skl2onnx.convert_sklearn(sklearn_model, initial_types=initial_type)
     print("onnx_model.type:", type(onnx_model))
     mlflow.onnx.log_model(onnx_model, "onnx-model", 
-        signature=signature, 
-        registered_model_name=model_name)
+        signature = signature, 
+        input_example = test_x,
+        registered_model_name=model_name
+    )
         
     # Run predictions and log metrics
     predictions = sklearn_model.predict(test_x)
