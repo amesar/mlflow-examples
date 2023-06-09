@@ -1,5 +1,5 @@
 {
-    "spark_version": "9.0.x-cpu-ml-scala2.12",
+    "spark_version": "11.3.x-cpu-ml-scala2.12",
     "node_type_id": "i3.xlarge",
     "num_workers": 1
 }
