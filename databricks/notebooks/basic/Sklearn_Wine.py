@@ -5,18 +5,18 @@
 # MAGIC
 # MAGIC ### Widgets
 # MAGIC * 01. Experiment name: if not set, use notebook experiment
-# MAGIC * 02. Registered model: if not set, do not register as model
-# MAGIC * 03. Model version stage: model stage
+# MAGIC * 02. Registered model: if set, register as model
+# MAGIC * 03. Model version stage
 # MAGIC * 04. Archive existing versions
 # MAGIC * 05. Model alias
 # MAGIC * 06. Save signature
 # MAGIC * 07. Input example
-# MAGIC * 08. SHAP
-# MAGIC * 09. Delta table: if not set, read CSV file from internet
-# MAGIC * 10. Max depth
-# MAGIC * 11. Max leaf nodes
+# MAGIC * 08. Log input - MLflow 2.4.0
+# MAGIC * 09. SHAP
+# MAGIC * 10. Delta table: if not set, read CSV file from DBFS
+# MAGIC * 11. Max depth
 # MAGIC
-# MAGIC Last udpated: 2023-05-21 - Repo variant
+# MAGIC Last udpated: 2023-06-09
 
 # COMMAND ----------
 
@@ -35,10 +35,10 @@ dbutils.widgets.dropdown("04. Archive existing versions", "no", ["yes","no"])
 dbutils.widgets.text("05. Model alias","")
 dbutils.widgets.dropdown("06. Save signature", "no", ["yes","no"])
 dbutils.widgets.dropdown("07. Input example", "no", ["yes","no"])
-dbutils.widgets.dropdown("08. SHAP","no", ["yes","no"])
-dbutils.widgets.text("09. Delta table", "")
-dbutils.widgets.text("10. Max depth", "1") 
-dbutils.widgets.text("11. Max leaf nodes", "")
+dbutils.widgets.dropdown("08. Log input", "no", ["yes","no"])
+dbutils.widgets.dropdown("09. SHAP","no", ["yes","no"])
+dbutils.widgets.text("10. Delta table", "")
+dbutils.widgets.text("11. Max depth", "1") 
 
 experiment_name = dbutils.widgets.get("01. Experiment name")
 model_name = dbutils.widgets.get("02. Registered model")
@@ -47,10 +47,10 @@ archive_existing_versions = dbutils.widgets.get("04. Archive existing versions")
 model_alias = dbutils.widgets.get("05. Model alias")
 save_signature = dbutils.widgets.get("06. Save signature") == "yes"
 input_example = dbutils.widgets.get("07. Input example") == "yes"
-shap = dbutils.widgets.get("08. SHAP") == "yes"
-delta_table = dbutils.widgets.get("09. Delta table")
-max_depth = to_int(dbutils.widgets.get("10. Max depth"))
-max_leaf_nodes = to_int(dbutils.widgets.get("11. Max leaf nodes"))
+log_input = dbutils.widgets.get("08. Log input") == "yes"
+shap = dbutils.widgets.get("09. SHAP") == "yes"
+delta_table = dbutils.widgets.get("10. Delta table")
+max_depth = to_int(dbutils.widgets.get("11. Max depth"))
 
 model_name = model_name or None
 model_version_stage = model_version_stage or None
@@ -65,10 +65,10 @@ print("archive_existing_versions:", archive_existing_versions)
 print("model_alias:", model_alias)
 print("save_signature:", save_signature)
 print("input_example:", input_example)
+print("log_input:", log_input)
 print("SHAP:", shap)
 print("delta_table:", delta_table)
 print("max_depth:", max_depth)
-print("max_leaf_nodes:", max_leaf_nodes)
 
 # COMMAND ----------
 
@@ -85,9 +85,17 @@ if experiment_name:
 
 # COMMAND ----------
 
-data = WineQuality.get_data(delta_table)
-train_x, test_x, train_y, test_y = WineQuality.prep_training_data(data)
+df, data_source = WineQuality.get_data(delta_table)
+data_source
+
+# COMMAND ----------
+
+data =  df.toPandas()
 display(data)
+
+# COMMAND ----------
+
+train_x, test_x, train_y, test_y = WineQuality.prep_training_data(data)
 
 # COMMAND ----------
 
@@ -112,7 +120,6 @@ with mlflow.start_run(run_name=run_name) as run:
     print("  experiment_id:", run.info.experiment_id)
     print("Parameters:")
     print("  max_depth:", max_depth)
-    print("  max_leaf_nodes:", max_leaf_nodes)
     
     mlflow.set_tag("mlflow.runName", run_id) # ignored unlike OSS MLflow
     mlflow.set_tag("timestamp", now)
@@ -122,18 +129,24 @@ with mlflow.start_run(run_name=run_name) as run:
     mlflow.set_tag("version.python", platform.python_version())
     mlflow.set_tag("save_signature", save_signature)
     mlflow.set_tag("input_example", input_example)
+    mlflow.set_tag("log_input", log_input)
+    mlflow.set_tag("data_source", data_source)
 
     mlflow.log_param("max_depth", max_depth)
-    mlflow.log_param("max_leaf_nodes", max_leaf_nodes)
 
-    model = DecisionTreeRegressor(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)
+    model = DecisionTreeRegressor(max_depth=max_depth)
     model.fit(train_x, train_y)
+    mlflow.set_tag("algorithm", type(model))
       
     predictions = model.predict(test_x)
+
     signature = infer_signature(train_x, predictions) if save_signature else None
     print("signature:", signature)
     print("input_example:", input_example)
-    
+
+    # new in MLflow 2.4.0
+    log_data_input(run, log_input, data_source, train_x)
+
     mlflow.sklearn.log_model(model, "model", signature=signature, input_example=test_x)
     if model_name:
         version = register_model(run, 
@@ -158,10 +171,10 @@ with mlflow.start_run(run_name=run_name) as run:
 
 # Set run name to the run ID
 
-print("Old runName:", run.data.tags.get("mlflow.runName",None))
+print("Old runName:", run.data.tags.get("mlflow.runName"))
 client.set_tag(run_id, "mlflow.runName", run_id)
 run = client.get_run(run_id)
-print("New runName:", run.data.tags.get("mlflow.runName",None))
+print("New runName:", run.data.tags.get("mlflow.runName"))
 
 # COMMAND ----------
 
@@ -182,6 +195,21 @@ if model_name:
 
 # COMMAND ----------
 
+# MAGIC %md ### Show input data - new in MLflow 2.4.0
+
+# COMMAND ----------
+
+run = client.get_run(run_id)
+if hasattr(run, "inputs") and run.inputs:
+    for input in run.inputs:
+        print(input)
+
+# COMMAND ----------
+
+run_id, run.info.run_id
+
+# COMMAND ----------
+
 # MAGIC %md ### Predict
 
 # COMMAND ----------
@@ -198,7 +226,7 @@ model_uri
 model = mlflow.sklearn.load_model(model_uri)
 data_to_predict = WineQuality.prep_prediction_data(data)
 predictions = model.predict(data_to_predict)
-display(pd.DataFrame(predictions,columns=[WineQuality.colPrediction]))
+display(pd.DataFrame(predictions, columns=[WineQuality.colPrediction]))
 
 # COMMAND ----------
 

@@ -12,18 +12,28 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("Max Depth", "5")
-dbutils.widgets.text("Max Bins", "32")
-dbutils.widgets.dropdown("UDF predict","no",["yes","no"])
-dbutils.widgets.text("Registered Model","")
+dbutils.widgets.text("1. Registered Model","")
+dbutils.widgets.text("2. Delta table", "")
+dbutils.widgets.dropdown("3. UDF predict","no",["yes","no"])
+dbutils.widgets.dropdown("4. Log input", "no", ["yes","no"])
+dbutils.widgets.text("5. Max Depth", "5")
+dbutils.widgets.text("6. Max Bins", "32")
 
-maxDepth = int(dbutils.widgets.get("Max Depth"))
-maxBins = float(dbutils.widgets.get("Max Bins"))
-udf_predict = dbutils.widgets.get("UDF predict") == "yes"
-registered_model = dbutils.widgets.get("Registered Model")
+registered_model = dbutils.widgets.get("1. Registered Model")
+delta_table = dbutils.widgets.get("2. Delta table")
+udf_predict = dbutils.widgets.get("3. UDF predict") == "yes"
+log_input = dbutils.widgets.get("4. Log input") == "yes"
+maxDepth = int(dbutils.widgets.get("5. Max Depth"))
+maxBins = float(dbutils.widgets.get("6. Max Bins"))
+
 if registered_model=="": registered_model = None
 
-maxDepth, maxBins, udf_predict, registered_model
+print("registered_model:", registered_model)
+print("delta_table:", delta_table)
+print("udf_predict:", udf_predict)
+print("log_input:", log_input)
+print("maxDepth:", maxDepth)
+print("maxBins:", maxBins) 
 
 # COMMAND ----------
 
@@ -41,10 +51,16 @@ print("sparkVersion:", get_notebook_tag("sparkVersion"))
 
 # COMMAND ----------
 
-data = WineQuality.get_data()
-data = spark.createDataFrame(data)
-(trainData, testData) = data.randomSplit([0.7, 0.3], 42)
+data, data_source = WineQuality.get_data(delta_table)
+data_source
+
+# COMMAND ----------
+
 display(data)
+
+# COMMAND ----------
+
+(X_train, X_test) = data.randomSplit([0.7, 0.3], 42)
 
 # COMMAND ----------
 
@@ -81,13 +97,14 @@ with mlflow.start_run() as run:
         labelCol=WineQuality.colLabel, 
         featuresCol=WineQuality.colFeatures,
          maxDepth=maxDepth, maxBins=maxBins)
+    mlflow.set_tag("algorithm", type(model))
 
     # Create pipeline
     assembler = VectorAssembler(inputCols=data.columns[:-1], outputCol=WineQuality.colFeatures)
     pipeline = Pipeline(stages=[assembler, model])
     
     # Fit model
-    model = pipeline.fit(trainData)
+    model = pipeline.fit(X_train)
     
     spark_model_name = "model"
     mlflow.log_param("maxDepth",maxDepth)
@@ -96,7 +113,7 @@ with mlflow.start_run() as run:
     # Log MLflow training metrics
     metrics = ["rmse","r2", "mae"]
     print("Metrics:")
-    predictions = model.transform(testData)
+    predictions = model.transform(X_test)
     
     for metric in metrics:
         evaluator = RegressionEvaluator(labelCol=WineQuality.colLabel, 
@@ -106,11 +123,24 @@ with mlflow.start_run() as run:
         mlflow.log_metric(metric,v)
         
     mlflow.spark.log_model(model, spark_model_name, registered_model_name=registered_model)
-    print("Model:",spark_model_name)
+    print("Model:", spark_model_name)
+
+    log_data_input(run, log_input, data_source, X_train)
 
 # COMMAND ----------
 
 display_run_uri(experiment_id, run_id)
+
+# COMMAND ----------
+
+# MAGIC %md ### Show input data
+
+# COMMAND ----------
+
+run = client.get_run(run_id)
+if hasattr(run, "inputs") and run.inputs:
+    for input in run.inputs:
+        print(input)
 
 # COMMAND ----------
 
@@ -160,7 +190,7 @@ display(pd.DataFrame(predictions))
 # COMMAND ----------
 
 # MAGIC %md #### Predict as Spark UDF
-# MAGIC 
+# MAGIC
 # MAGIC Error:
 # MAGIC ```
 # MAGIC py4j.protocol.Py4JJavaError: An error occurred while calling o55.transform.

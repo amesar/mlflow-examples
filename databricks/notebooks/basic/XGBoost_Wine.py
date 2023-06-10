@@ -37,9 +37,12 @@ print("XGBoost version:", xgb.__version__)
 
 # COMMAND ----------
 
-data = WineQuality.get_data()
-train_x, test_x, train_y, test_y = WineQuality.prep_training_data(data)
+data = WineQuality.load_pandas_data()
 display(data)
+
+# COMMAND ----------
+
+train_x, test_x, train_y, test_y = WineQuality.prep_training_data(data)
 
 # COMMAND ----------
 
@@ -76,14 +79,14 @@ with mlflow.start_run() as run:
     mlflow.set_tag("dbr_version", os.environ.get('DATABRICKS_RUNTIME_VERSION',None))
     
     model = xgb.XGBRegressor(
-        n_estimators=estimators,
-        max_depth=max_depth,
-        min_child_weight=min_child_weight,
-        random_state=42)
-    model = xgb.XGBRegressor()
-    print(model)
+        n_estimators = estimators,
+        max_depth = max_depth,
+        min_child_weight = min_child_weight,
+        random_state = 42)
     model.fit(train_x, train_y)
     mlflow.xgboost.log_model(model, "model")
+    print(model)
+    mlflow.set_tag("algorithm", type(model))
 
     predictions = model.predict(test_x)
     rmse = np.sqrt(mean_squared_error(test_y, predictions))
@@ -118,6 +121,7 @@ model_uri
 # MAGIC %md #### Predict as xgboost
 
 # COMMAND ----------
+
 
 # Started failing with new XGBoost releases: Unknown data type: <class 'xgboost.core.DMatrix'>, trying to convert it to csr_matrix
 

@@ -2,11 +2,10 @@
 # MAGIC %md # Sklearn MLflow train and predict with ONNX
 # MAGIC
 # MAGIC **Overview**
-# MAGIC * Trains and saves model as Sklearn and ONNX
+# MAGIC * Trains and saves model as Sklearn and ONNX flavor
 # MAGIC * Predicts using ONNX native, ONNX PyFunc and ONNX UDF flavors
 # MAGIC
 # MAGIC **Note**
-# MAGIC
 # MAGIC * Fails with latest `onnx==1.13.1` with: `ImportError: cannot import name 'builder' from 'google.protobuf.internal' `
 # MAGIC * Works wth `onnx==1.12.0`
 
@@ -27,7 +26,7 @@
 
 # COMMAND ----------
 
-# MAGIC %run ./Load_Test_Datasources
+# %run ./Load_Test_Datasources
 
 # COMMAND ----------
 
@@ -68,7 +67,7 @@ import skl2onnx
 
 # COMMAND ----------
 
-data = WineQuality.get_data()
+data = WineQuality.get_pandas_data()
 train_x, test_x, train_y, test_y = WineQuality.prep_training_data(data)
 display(data)
 

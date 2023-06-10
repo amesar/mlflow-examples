@@ -4,45 +4,45 @@
 # COMMAND ----------
 
 import mlflow
-client = mlflow.client.MlflowClient()
+client = mlflow.MlflowClient()
 
 # COMMAND ----------
 
 from mlflow.utils import databricks_utils
-host_name = databricks_utils.get_browser_hostname()
-print("host_name:", host_name)
+_host_name = databricks_utils.get_browser_hostname()
+print("_host_name:", _host_name)
 
 # COMMAND ----------
 
 def display_run_uri(experiment_id, run_id):
-    if host_name:
-        uri = f"https://{host_name}/#mlflow/experiments/{experiment_id}/runs/{run_id}"
+    if _host_name:
+        uri = f"https://{_host_name}/#mlflow/experiments/{experiment_id}/runs/{run_id}"
         displayHTML("""<b>Run URI:</b> <a href="{}">{}</a>""".format(uri,uri))
 
 # COMMAND ----------
 
 def display_registered_model_uri(model_name):
-    if host_name:
-        uri = f"https://{host_name}/#mlflow/models/{model_name}"
+    if _host_name:
+        uri = f"https://{_host_name}/#mlflow/models/{model_name}"
         displayHTML("""<b>Registered Model URI:</b> <a href="{}">{}</a>""".format(uri,uri))
 
 # COMMAND ----------
 
 def display_registered_model_version_uri(model_name, version):
-    if host_name:
-        uri = f"https://{host_name}/#mlflow/models/{model_name}/versions/{version}"
+    if _host_name:
+        uri = f"https://{_host_name}/#mlflow/models/{model_name}/versions/{version}"
         displayHTML("""<b>Registered Model Version URI:</b> <a href="{}">{}</a>""".format(uri,uri))
 
 # COMMAND ----------
 
 def display_experiment_id_info(experiment_id):
-    if host_name:
+    if _host_name:
         experiment = client.get_experiment(experiment_id)
         _display_experiment_info(experiment)
 
 def _display_experiment_info(experiment):
-    host_name = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().get("browserHostName").get()
-    uri = f"https://{host_name}/#mlflow/experiments/{experiment.experiment_id}"
+    _host_name = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().get("browserHostName").get()
+    uri = f"https://{_host_name}/#mlflow/experiments/{experiment.experiment_id}"
     displayHTML(f"""
     <table cellpadding=5 cellspacing=0 border=1 bgcolor="#FDFEFE" style="font-size:13px;">
     <tr><td colspan=2><b><i>Experiment</i></b></td></tr>
@@ -61,6 +61,31 @@ def to_int(x):
 
 def to_list_int(str, delimiter=" "): 
     return [ int(x) for x in str.split(delimiter) ]
+
+# COMMAND ----------
+
+import time
+def now():
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time()))
+now = now()
+
+# COMMAND ----------
+
+def mk_dbfs_path(path):
+    return path.replace("/dbfs","dbfs:")
+
+def mk_local_path(path):
+    return path.replace("dbfs:","/dbfs")
+
+# COMMAND ----------
+
+def assert_widget(value, name):
+    if len(value.rstrip())==0:
+        raise Exception(f"ERROR: '{name}' widget is required")
+
+# COMMAND ----------
+
+_model_version_stages = ["Production","Staging","Archived","None"]
 
 # COMMAND ----------
 
@@ -103,37 +128,43 @@ def register_model(run,
 
 # COMMAND ----------
 
-import time
-def now():
-    return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time()))
-now = now()
-
-# COMMAND ----------
-
 class WineQuality():
     colLabel = "quality"
     colPrediction = "prediction"
     colFeatures = "features"
+    data_path = "dbfs:/databricks-datasets/wine-quality/winequality-white.csv"
 
     @staticmethod
+    def load_pandas_data():
+        data_path = mk_local_path(WineQuality.data_path)
+        print(f"Reading data from '{data_path}' as Pandas dataframe")
+        df = pd.read_csv(data_path, delimiter=";")
+        df.columns = df.columns.str.replace(" ","_")
+        return df
+    
+    @staticmethod
+    def _load_spark_data():
+        print(f"Reading data from '{WineQuality.data_path}' as Spark dataframe")
+        return (spark.read.format("csv")
+            .option("header", True)
+            .option("inferSchema", True)
+            .option("delimiter",";")
+            .load(WineQuality.data_path) )
+    
+    @staticmethod
     def get_data(table_name=""):
-        """ Return data as Pandas dataframe """
-        import pandas as pd
-        path = "https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv"
+        path = WineQuality.data_path
         if table_name == "":
-            print(f"Reading data from '{path}'")
-            pdf = pd.read_csv(path)
-            pdf.columns = pdf.columns.str.replace(" ","_") # for consistency with Spark column names
-            return pdf
+            df = WineQuality._load_spark_data()
+            return df, path
         else:
             if not spark.catalog._jcatalog.tableExists(table_name):
                 print(f"Creating table '{table_name}'")
-                pdf = pd.read_csv(path)
-                pdf.columns = pdf.columns.str.replace(" ","_") # make Spark legal column names
-                df = spark.createDataFrame(pdf)
+                df = WineQuality._load_spark_data()
                 df.write.mode("overwrite").saveAsTable(table_name)
-            print(f"Using table '{table_name}'")
-            return spark.table(table_name).toPandas()
+            df = spark.table(table_name)
+            print(f"Reading table '{table_name}'")
+            return df, table_name
 
     @staticmethod
     def prep_training_data(data):
@@ -151,18 +182,19 @@ class WineQuality():
 
 # COMMAND ----------
 
-def mk_dbfs_path(path):
-    return path.replace("/dbfs","dbfs:")
-
-def mk_local_path(path):
-    return path.replace("dbfs:","/dbfs")
-
-# COMMAND ----------
-
-def assert_widget(value, name):
-    if len(value.rstrip())==0:
-        raise Exception(f"ERROR: '{name}' widget is required")
-
-# COMMAND ----------
-
-_model_version_stages = ["Production","Staging","Archived","None"]
+# new in MLflow 2.4.0
+def log_data_input(run, log_input, data_source, df, name="winequality-white"):
+    if log_input and hasattr(run, "inputs"):
+        print(f"Logging input data_source '{data_source}'")
+        if data_source.startswith("dbfs"):
+            if isinstance(df, pandas.core.frame.DataFrame):
+                dataset = mlflow.data.from_pandas(df, source=mk_local_path(data_source), name=name)
+            else:
+                dataset = mlflow.data.from_spark(df, path=data_source, name=name)
+            print(f"Logging input with Spark - dataset: '{dataset}'")
+        else:
+            dataset = mlflow.data.load_delta(table_name=data_source, name=name)
+            print(f"Logging input with Delta - dataset: '{dataset}'")
+        mlflow.log_input(dataset, context="training")
+    else:
+        print("Skipped logging input")
