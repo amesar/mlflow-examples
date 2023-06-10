@@ -135,8 +135,16 @@ class Trainer():
             signature = infer_signature(self.X_train, predictions) if self.save_signature else None
             print("Signature:",signature)
 
-            # MLflow log model
+            # input_example
             input_example = self.X_test
+
+            # new in MLflow 2.4.0
+            if hasattr(run, "inputs"): 
+                dataset = mlflow.data.from_pandas(self.X_train, source=self.data_path, name="wine_quality_white")
+                print("Log input:", dataset)
+                mlflow.log_input(dataset, context="training")
+
+            # MLflow log model
             mlflow.sklearn.log_model(model, "model", signature=signature, input_example = input_example)
             if registered_model_name:
                 mlflow_utils.register_model(run,
