@@ -67,7 +67,7 @@ import skl2onnx
 
 # COMMAND ----------
 
-data = WineQuality.get_pandas_data()
+data = WineQuality.load_pandas_data()
 train_x, test_x, train_y, test_y = WineQuality.prep_training_data(data)
 display(data)
 
