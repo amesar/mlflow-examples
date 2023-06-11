@@ -114,6 +114,10 @@ def main(experiment_name, model_name, data_path, max_depth, max_bins, describe, 
         mlflow.set_tag("version.spark", spark.version)
         mlflow.set_tag("version.pyspark", pyspark.__version__)
         mlflow.set_tag("version.os", platform.system()+" - "+platform.release())
+        mlflow.set_tag("option.model_name", model_name)
+        mlflow.set_tag("option.experiment_name", experiment_name)
+        mlflow.set_tag("option.data_path", data_path)
+        mlflow.set_tag("option.spark_autolog", spark_autolog)
         model_name = None if model_name is None or model_name == "None" else model_name
         train(run.info.run_id, data, max_depth, max_bins, model_name, log_as_mleap, log_as_onnx, spark_autolog)
 
