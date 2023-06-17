@@ -72,10 +72,10 @@ now = now()
 # COMMAND ----------
 
 def mk_dbfs_path(path):
-    return path.replace("/dbfs","dbfs:")
+    return path.replace("/dbfs","dbfs:") if path else None
 
 def mk_local_path(path):
-    return path.replace("dbfs:","/dbfs")
+    return path.replace("dbfs:","/dbfs") if path else None
 
 # COMMAND ----------
 
@@ -132,7 +132,9 @@ class WineQuality():
     colLabel = "quality"
     colPrediction = "prediction"
     colFeatures = "features"
-    data_path = "dbfs:/databricks-datasets/wine-quality/winequality-white.csv"
+    _wine_color = "white"
+    #_wine_color = "red"
+    data_path = f"dbfs:/databricks-datasets/wine-quality/winequality-{_wine_color}.csv"
 
     @staticmethod
     def load_pandas_data():
@@ -145,11 +147,14 @@ class WineQuality():
     @staticmethod
     def _load_spark_data():
         print(f"Reading data from '{WineQuality.data_path}' as Spark dataframe")
-        return (spark.read.format("csv")
+        df = (spark.read.format("csv")
             .option("header", True)
             .option("inferSchema", True)
             .option("delimiter",";")
             .load(WineQuality.data_path) )
+        columns = [ col.replace(" ","_") for col in df.columns ]
+        df = df.toDF(*columns)
+        return df
     
     @staticmethod
     def get_data(table_name=""):
