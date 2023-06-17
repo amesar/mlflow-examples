@@ -4,19 +4,20 @@
 # MAGIC * Predicts using Sklearn, PyFunc and UDF flavors
 # MAGIC
 # MAGIC ### Widgets
-# MAGIC * 01. Experiment name: if not set, use notebook experiment
-# MAGIC * 02. Registered model: if set, register as model
-# MAGIC * 03. Model version stage
-# MAGIC * 04. Archive existing versions
-# MAGIC * 05. Model alias
-# MAGIC * 06. Save signature
-# MAGIC * 07. Input example
-# MAGIC * 08. Log input - MLflow 2.4.0
-# MAGIC * 09. SHAP
-# MAGIC * 10. Delta table: if not set, read CSV file from DBFS
-# MAGIC * 11. Max depth
+# MAGIC * 01. Run name
+# MAGIC * 02. Experiment name: if not set, use notebook experiment
+# MAGIC * 03. Registered model: if set, register as model
+# MAGIC * 04. Model version stage
+# MAGIC * 05. Archive existing versions
+# MAGIC * 06. Model alias
+# MAGIC * 07. Save signature
+# MAGIC * 08. Input example
+# MAGIC * 09. Log input - MLflow 2.4.0
+# MAGIC * 10. SHAP
+# MAGIC * 11. Delta table: if not set, read CSV file from DBFS
+# MAGIC * 12. Max depth
 # MAGIC
-# MAGIC Last udpated: 2023-06-09
+# MAGIC Last udpated: 2023-06-17
 
 # COMMAND ----------
 
@@ -28,36 +29,40 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("01. Experiment name", "")
-dbutils.widgets.text("02. Registered model", "")
-dbutils.widgets.dropdown("03. Model version stage", "None", _model_version_stages)
-dbutils.widgets.dropdown("04. Archive existing versions", "no", ["yes","no"])
-dbutils.widgets.text("05. Model alias","")
-dbutils.widgets.dropdown("06. Save signature", "no", ["yes","no"])
-dbutils.widgets.dropdown("07. Input example", "no", ["yes","no"])
-dbutils.widgets.dropdown("08. Log input", "no", ["yes","no"])
-dbutils.widgets.dropdown("09. SHAP","no", ["yes","no"])
-dbutils.widgets.text("10. Delta table", "")
-dbutils.widgets.text("11. Max depth", "1") 
+dbutils.widgets.text("01. Run name", "")
+dbutils.widgets.text("02. Experiment name", "")
+dbutils.widgets.text("03. Registered model", "")
+dbutils.widgets.dropdown("04. Model version stage", "None", _model_version_stages)
+dbutils.widgets.dropdown("05. Archive existing versions", "no", ["yes","no"])
+dbutils.widgets.text("06. Model alias","")
+dbutils.widgets.dropdown("07. Save signature", "no", ["yes","no"])
+dbutils.widgets.dropdown("08. Input example", "no", ["yes","no"])
+dbutils.widgets.dropdown("09. Log input", "no", ["yes","no"])
+dbutils.widgets.dropdown("10. SHAP","no", ["yes","no"])
+dbutils.widgets.text("11. Delta table", "")
+dbutils.widgets.text("12. Max depth", "1") 
 
-experiment_name = dbutils.widgets.get("01. Experiment name")
-model_name = dbutils.widgets.get("02. Registered model")
-model_version_stage = dbutils.widgets.get("03. Model version stage")
-archive_existing_versions = dbutils.widgets.get("04. Archive existing versions") == "yes"
-model_alias = dbutils.widgets.get("05. Model alias")
-save_signature = dbutils.widgets.get("06. Save signature") == "yes"
-input_example = dbutils.widgets.get("07. Input example") == "yes"
-log_input = dbutils.widgets.get("08. Log input") == "yes"
-shap = dbutils.widgets.get("09. SHAP") == "yes"
-delta_table = dbutils.widgets.get("10. Delta table")
-max_depth = to_int(dbutils.widgets.get("11. Max depth"))
+run_name = dbutils.widgets.get("01. Run name")
+experiment_name = dbutils.widgets.get("02. Experiment name")
+model_name = dbutils.widgets.get("03. Registered model")
+model_version_stage = dbutils.widgets.get("04. Model version stage")
+archive_existing_versions = dbutils.widgets.get("05. Archive existing versions") == "yes"
+model_alias = dbutils.widgets.get("06. Model alias")
+save_signature = dbutils.widgets.get("07. Save signature") == "yes"
+input_example = dbutils.widgets.get("08. Input example") == "yes"
+log_input = dbutils.widgets.get("09. Log input") == "yes"
+shap = dbutils.widgets.get("10. SHAP") == "yes"
+delta_table = dbutils.widgets.get("11. Delta table")
+max_depth = to_int(dbutils.widgets.get("12. Max depth"))
 
+run_name = run_name or None
+experiment_name = experiment_name or None
 model_name = model_name or None
 model_version_stage = model_version_stage or None
 model_alias = model_alias or None
-experiment_name = experiment_name or None
 input_example = input_example or None
 
+print("run_name:", run_name)
 print("experiment_name:", experiment_name)
 print("model_name:", model_name)
 print("model_version_stage:", model_version_stage)
@@ -99,6 +104,28 @@ train_x, test_x, train_y, test_y = WineQuality.prep_training_data(data)
 
 # COMMAND ----------
 
+# MAGIC %md ### Set run name
+
+# COMMAND ----------
+
+def set_run_name_to_current_time(run_name):
+    if run_name:
+        return run_name
+    else:
+        return f"{now} - {mlflow.__version__}" 
+_run_name = set_run_name_to_current_time(run_name)
+run_name, _run_name
+
+# COMMAND ----------
+
+def set_run_name_to_run_id(run):
+    print("Old runName:", run.data.tags.get("mlflow.runName"))
+    client.set_tag(run_id, "mlflow.runName", run_id)
+    run = client.get_run(run_id)
+    print("New runName:", run.data.tags.get("mlflow.runName"))
+
+# COMMAND ----------
+
 # MAGIC %md ### Train
 
 # COMMAND ----------
@@ -112,8 +139,8 @@ from mlflow.models.signature import infer_signature
 
 import os, platform
 
-run_name=f"{now} - {mlflow.__version__}" 
-with mlflow.start_run(run_name=run_name) as run:
+with mlflow.start_run(run_name=_run_name) as run:
+#with mlflow.start_run(run_name=None) as run:
     run_id = run.info.run_id
     print("MLflow:")
     print("  run_id:", run_id)
@@ -121,7 +148,8 @@ with mlflow.start_run(run_name=run_name) as run:
     print("Parameters:")
     print("  max_depth:", max_depth)
     
-    mlflow.set_tag("mlflow.runName", run_id) # ignored unlike OSS MLflow
+    ##mlflow.set_tag("mlflow.runName", run_id+"FOO") # ignored unlike OSS MLflow
+    mlflow.set_tag("run_name", _run_name)
     mlflow.set_tag("timestamp", now)
     mlflow.set_tag("version.mlflow", mlflow.__version__)
     mlflow.set_tag("version.sklearn", sklearn.__version__)
@@ -169,12 +197,8 @@ with mlflow.start_run(run_name=run_name) as run:
 
 # COMMAND ----------
 
-# Set run name to the run ID
-
-print("Old runName:", run.data.tags.get("mlflow.runName"))
-client.set_tag(run_id, "mlflow.runName", run_id)
-run = client.get_run(run_id)
-print("New runName:", run.data.tags.get("mlflow.runName"))
+if not run_name:
+    set_run_name_to_run_id(run):
 
 # COMMAND ----------
 
