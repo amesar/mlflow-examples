@@ -69,6 +69,7 @@ class Trainer():
 
 
     def train(self, 
+            run_name,
             registered_model_name,
             registered_model_version_stage = "None",
             archive_existing_versions = False,
@@ -77,7 +78,8 @@ class Trainer():
             max_depth = None,
             max_leaf_nodes = 32
         ):
-        run_name = f"{now} {self.run_origin} {mlflow.__version__}" if self.run_origin else None
+        if not run_name:
+            run_name = f"{now} {self.run_origin} {mlflow.__version__}" if self.run_origin else None
         with mlflow.start_run(run_name=run_name) as run: # NOTE: when running with `mlflow run`, mlflow --run-name option takes precedence!
             run_id = run.info.run_id
             experiment_id = run.info.experiment_id
@@ -143,6 +145,9 @@ class Trainer():
                 dataset = mlflow.data.from_pandas(self.X_train, source=self.data_path, name="wine_quality_white")
                 print("Log input:", dataset)
                 mlflow.log_input(dataset, context="training")
+                mlflow.set_tag("use_mlflow.data", True)
+            else:
+                mlflow.set_tag("use_mlflow.data", False)
 
             # MLflow log model
             mlflow.sklearn.log_model(model, "model", signature=signature, input_example = input_example)
@@ -198,6 +203,11 @@ class Trainer():
     type=str,
     default=None,
     show_default=True
+)
+@click.option("--run-name", 
+    help="Run name",
+    type=str,
+    required=False
 )
 @click.option("--data-path", 
     help="Data path.", 
@@ -271,6 +281,7 @@ class Trainer():
     show_default=True
 )
 def main(experiment_name, 
+        run_name,
         data_path,
         model_name,
         model_version_stage,
@@ -290,7 +301,7 @@ def main(experiment_name,
     print("Processed Options:")
     print(f"  model_name: {model_name} - type: {type(model_name)}")
     trainer = Trainer(experiment_name, data_path, log_as_onnx, save_signature, run_origin, use_run_id_as_run_name)
-    trainer.train(model_name, model_version_stage, archive_existing_versions, model_alias, output_path, max_depth, max_leaf_nodes)
+    trainer.train(run_name, model_name, model_version_stage, archive_existing_versions, model_alias, output_path, max_depth, max_leaf_nodes)
 
 
 if __name__ == "__main__":
