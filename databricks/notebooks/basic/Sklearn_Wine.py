@@ -140,7 +140,6 @@ from mlflow.models.signature import infer_signature
 import os, platform
 
 with mlflow.start_run(run_name=_run_name) as run:
-#with mlflow.start_run(run_name=None) as run:
     run_id = run.info.run_id
     print("MLflow:")
     print("  run_id:", run_id)
@@ -148,7 +147,6 @@ with mlflow.start_run(run_name=_run_name) as run:
     print("Parameters:")
     print("  max_depth:", max_depth)
     
-    ##mlflow.set_tag("mlflow.runName", run_id+"FOO") # ignored unlike OSS MLflow
     mlflow.set_tag("run_name", _run_name)
     mlflow.set_tag("timestamp", now)
     mlflow.set_tag("version.mlflow", mlflow.__version__)
@@ -198,7 +196,7 @@ with mlflow.start_run(run_name=_run_name) as run:
 # COMMAND ----------
 
 if not run_name:
-    set_run_name_to_run_id(run):
+    set_run_name_to_run_id(run)
 
 # COMMAND ----------
 

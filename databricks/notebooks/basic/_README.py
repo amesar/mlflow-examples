@@ -20,4 +20,4 @@
 # MAGIC * [Common]($Common) - shared logic
 # MAGIC * [Versions]($Versions) - show version information
 # MAGIC
-# MAGIC Last updated: 2023-06-17
+# MAGIC Last updated: 2023-06-20
