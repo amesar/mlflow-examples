@@ -2,6 +2,12 @@
 
 MLflow examples - basic and advanced.
 
+This repo consists of two sets of code artifacts:
+* Regular Python scripts using open source MLflow
+* [Databricks notebooks](databricks/notebooks) using Databricks MLflow
+
+Last updated: _2023-07-03_
+
 ## Examples
 
 **Python examples**
@@ -40,8 +46,8 @@ The sklearn and Spark ML examples also demonstrate:
 * [onnx](scala/onnx) - Score an ONNX model (that was created in Scikit-learn) in Java.
 
 **Databricks**
-* [databricks_notebooks](databricks_notebooks) - Databricks notebooks
-* [Notebook CICD](databricks_notebooks/cicd) - Lighweight CICD example with Databricks notebook
+* [Databricks notebooks](databricks/notebooks) - current.
+* [Notebook CICD](databricks/notebooks/cicd) - Lighweight CICD example with Databricks notebook. Legacy.
 
 **Docker**
 * [docker/docker-server](docker/docker-server) - MLflow tracking server and MySQL database containers.
