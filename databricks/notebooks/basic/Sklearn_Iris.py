@@ -1,7 +1,9 @@
 # Databricks notebook source
 # MAGIC %md ## Sklearn Iris MLflow model
-# MAGIC 
-# MAGIC Simple Sklearn model.
+# MAGIC
+# MAGIC Simple Iris Sklearn model.
+# MAGIC
+# MAGIC TODO: Sync up data reading with Sklearn_Iris_Autolog.
 
 # COMMAND ----------
 
@@ -10,10 +12,6 @@
 # COMMAND ----------
 
 # MAGIC %run ./Common
-
-# COMMAND ----------
-
-dbutils.widgets.removeAll()
 
 # COMMAND ----------
 
@@ -58,11 +56,13 @@ from sklearn.model_selection import train_test_split
 
 def get_data(data_path=None):
     if not data_path:
+        print("Loading default data")
         dataset = datasets.load_iris()
         X_train, X_test, y_train, y_test = train_test_split(dataset.data, dataset.target, test_size=0.3)
     else:
+        print(f"Loading data from {data_path}")
         import pandas as pd
-        df = pd.read_csv(data_path)
+        df = pd.read_csv(mk_local_path(data_path))
         train, test = train_test_split(df, test_size=0.30, random_state=42)
         col_label = "species"
         X_train = train.drop([col_label], axis=1)
