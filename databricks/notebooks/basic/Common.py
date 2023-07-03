@@ -23,14 +23,28 @@ def display_run_uri(experiment_id, run_id):
 
 def display_registered_model_uri(model_name):
     if _host_name:
-        uri = f"https://{_host_name}/#mlflow/models/{model_name}"
+        if "." in model_name:
+            model_name = model_name.replace(".","/")
+            uri = f"https://{_host_name}/explore/data/models/{model_name}"
+        else:
+            uri = f"https://{_host_name}/#mlflow/models/{model_name}"
         displayHTML("""<b>Registered Model URI:</b> <a href="{}">{}</a>""".format(uri,uri))
+
+# COMMAND ----------
+
+# Test
+#display_registered_model_uri("Sklearn_Wine")
+display_registered_model_uri("andre_catalog.ml_models.Sklearn_Wine_ws")
 
 # COMMAND ----------
 
 def display_registered_model_version_uri(model_name, version):
     if _host_name:
-        uri = f"https://{_host_name}/#mlflow/models/{model_name}/versions/{version}"
+        if "." in model_name:
+            model_name = model_name.replace(".","/")
+            uri = f"https://{_host_name}/explore/data/models/{model_name}/version/{version}"
+        else:
+            uri = f"https://{_host_name}/#mlflow/models/{model_name}/versions/{version}"
         displayHTML("""<b>Registered Model Version URI:</b> <a href="{}">{}</a>""".format(uri,uri))
 
 # COMMAND ----------

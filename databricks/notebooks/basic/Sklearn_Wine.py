@@ -222,7 +222,7 @@ if not run_name:
 
 # COMMAND ----------
 
-# MAGIC %md ### Display UI links
+# MAGIC %md ### Display UI links - XX
 
 # COMMAND ----------
 
@@ -234,11 +234,12 @@ display_experiment_id_info(run.info.experiment_id)
 
 # COMMAND ----------
 
+model_name
+
+# COMMAND ----------
+
 if model_name:
-    if use_uc:
-        print("TODO: UC model link coming soon")
-    else:
-        display_registered_model_version_uri(model_name, version.version)
+    display_registered_model_version_uri(model_name, version.version)
 
 # COMMAND ----------
 
