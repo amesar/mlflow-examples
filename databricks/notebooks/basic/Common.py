@@ -128,6 +128,25 @@ def register_model(run,
 
 # COMMAND ----------
 
+def register_model_uc(run, 
+        model_name, 
+        model_alias = None,
+        model_artifact = "model"
+    ):
+    """ Register mode with specified alias """
+    try:
+       model =  client.create_registered_model(model_name)
+    except RestException as e:
+       model =  client.get_registered_model(model_name)
+    source = f"{run.info.artifact_uri}/{model_artifact}"
+    vr = client.create_model_version(model_name, source, run.info.run_id)
+    if model_alias:
+        print(f"Setting model '{model_name}/{vr.version}' alias to '{model_alias}'")
+        client.set_registered_model_alias(model_name, model_alias, vr.version)
+    return vr
+
+# COMMAND ----------
+
 class WineQuality():
     colLabel = "quality"
     colPrediction = "prediction"
@@ -203,3 +222,19 @@ def log_data_input(run, log_input, data_source, df, name="winequality-white"):
         mlflow.log_input(dataset, context="training")
     else:
         print("Skipped logging input")
+
+# COMMAND ----------
+
+def show_mlflow_uris(msg):
+    print(f"{msg}:")
+    print("  mlflow.get_tracking_uri:", mlflow.get_tracking_uri())
+    print("  mlflow.get_registry_uri:", mlflow.get_registry_uri())
+    print("  mlflowClient.tracking_uri:", client.tracking_uri)
+    print("  mlflowClient.registry_uri:", client._registry_uri)
+
+# COMMAND ----------
+
+def activate_unity_catalog():
+    mlflow.set_registry_uri("databricks-uc")
+    client = mlflow.MlflowClient()
+    show_mlflow_uris("After UC settings")

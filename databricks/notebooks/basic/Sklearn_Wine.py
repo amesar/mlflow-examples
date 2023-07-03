@@ -17,7 +17,14 @@
 # MAGIC * 11. Delta table: if not set, read CSV file from DBFS
 # MAGIC * 12. Max depth
 # MAGIC
-# MAGIC Last udpated: 2023-06-17
+# MAGIC ### Notes
+# MAGIC * Experiment:
+# MAGIC   * /Users/me@databricks.com/experiments/sklearn_wine/Sklearn_Wine_ws_uc
+# MAGIC * UC
+# MAGIC   * andre_catalog.ml_data.winequality_white
+# MAGIC   * andre_catalog.ml_models.Sklearn_Wine_ws
+# MAGIC
+# MAGIC Last udpated: 2023-07-03
 
 # COMMAND ----------
 
@@ -41,6 +48,7 @@ dbutils.widgets.dropdown("09. Log input", "no", ["yes","no"])
 dbutils.widgets.dropdown("10. SHAP","no", ["yes","no"])
 dbutils.widgets.text("11. Delta table", "")
 dbutils.widgets.text("12. Max depth", "1") 
+dbutils.widgets.dropdown("13. Unity Catalog", "no", ["yes","no"])
 
 run_name = dbutils.widgets.get("01. Run name")
 experiment_name = dbutils.widgets.get("02. Experiment name")
@@ -54,6 +62,7 @@ log_input = dbutils.widgets.get("09. Log input") == "yes"
 shap = dbutils.widgets.get("10. SHAP") == "yes"
 delta_table = dbutils.widgets.get("11. Delta table")
 max_depth = to_int(dbutils.widgets.get("12. Max depth"))
+use_uc = dbutils.widgets.get("13. Unity Catalog") == "yes"
 
 run_name = run_name or None
 experiment_name = experiment_name or None
@@ -74,6 +83,7 @@ print("log_input:", log_input)
 print("SHAP:", shap)
 print("delta_table:", delta_table)
 print("max_depth:", max_depth)
+print("use_uc:", use_uc)
 
 # COMMAND ----------
 
@@ -83,6 +93,11 @@ if experiment_name:
     print("Experiment ID:", exp.experiment_id)
     client.set_experiment_tag(exp.experiment_id, "version_mlflow", mlflow.__version__)
     client.set_experiment_tag(exp.experiment_id, "timestamp", now)
+
+# COMMAND ----------
+
+if use_uc:
+    activate_unity_catalog()
 
 # COMMAND ----------
 
@@ -175,12 +190,15 @@ with mlflow.start_run(run_name=_run_name) as run:
 
     mlflow.sklearn.log_model(model, "model", signature=signature, input_example=test_x)
     if model_name:
-        version = register_model(run, 
-            model_name, 
-            model_version_stage, 
-            archive_existing_versions, 
-            model_alias
-        )
+        if use_uc:
+            version = register_model_uc(run, model_name, model_alias)
+        else:
+            version = register_model(run, 
+                model_name, 
+                model_version_stage, 
+                archive_existing_versions, 
+                model_alias
+            )
 
     rmse = np.sqrt(mean_squared_error(test_y, predictions))
     r2 = r2_score(test_y, predictions)
@@ -213,7 +231,10 @@ display_experiment_id_info(run.info.experiment_id)
 # COMMAND ----------
 
 if model_name:
-    display_registered_model_version_uri(model_name, version.version)
+    if use_uc:
+        print("TODO: UC model link coming soon")
+    else:
+        display_registered_model_version_uri(model_name, version.version)
 
 # COMMAND ----------
 
@@ -232,7 +253,7 @@ run_id, run.info.run_id
 
 # COMMAND ----------
 
-# MAGIC %md ### Predict
+# MAGIC %md ### Predict with `runs` URI
 
 # COMMAND ----------
 
