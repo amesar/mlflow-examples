@@ -1,7 +1,8 @@
 # Databricks notebook source
 # MAGIC %md ## Sklearn Wine Quality MLflow model
 # MAGIC * Trains and saves model as Sklearn flavor
-# MAGIC * Predicts using Sklearn, PyFunc and UDF flavors
+# MAGIC * Predicts using Sklearn, Pyfunc and UDF flavors
+# MAGIC * Support Unity Catalog MLflow 
 # MAGIC
 # MAGIC ### Widgets
 # MAGIC * 01. Run name
@@ -97,7 +98,8 @@ if experiment_name:
 # COMMAND ----------
 
 if use_uc:
-    activate_unity_catalog()
+    client = activate_unity_catalog()
+    print("New client._registry_uri:",client._registry_uri)
 
 # COMMAND ----------
 
@@ -192,6 +194,7 @@ with mlflow.start_run(run_name=_run_name) as run:
     if model_name:
         if use_uc:
             version = register_model_uc(run, model_name, model_alias)
+            print(f"Registered UC model '{model_name}' as version {version.version}")
         else:
             version = register_model(run, 
                 model_name, 
@@ -199,7 +202,7 @@ with mlflow.start_run(run_name=_run_name) as run:
                 archive_existing_versions, 
                 model_alias
             )
-
+            print(f"Registered model '{model_name}' as version {version.version}")
     rmse = np.sqrt(mean_squared_error(test_y, predictions))
     r2 = r2_score(test_y, predictions)
     print("Metrics:")
@@ -210,6 +213,7 @@ with mlflow.start_run(run_name=_run_name) as run:
 
     if shap:
         mlflow.shap.log_explanation(model.predict, train_x)
+    print("version:", version.version)
 
 # COMMAND ----------
 
@@ -253,7 +257,7 @@ run_id, run.info.run_id
 
 # COMMAND ----------
 
-# MAGIC %md ### Predict with `runs` URI
+# MAGIC %md ### Predict with `runs:/` URI
 
 # COMMAND ----------
 
@@ -277,7 +281,7 @@ type(predictions)
 
 # COMMAND ----------
 
-# MAGIC %md #### Predict as PyFunc
+# MAGIC %md #### Predict as Pyfunc
 
 # COMMAND ----------
 
@@ -303,3 +307,44 @@ display(predictions)
 # COMMAND ----------
 
 type(predictions)
+
+# COMMAND ----------
+
+# MAGIC %md ### Predict with `models:/` URI
+
+# COMMAND ----------
+
+model_name
+
+# COMMAND ----------
+
+if not model_name:
+    print("No registered model specified")
+    exit(0)
+
+# COMMAND ----------
+
+model_uri = f"models:/{model_name}/{version.version}"
+model_uri
+
+
+# COMMAND ----------
+
+# MAGIC %md #### Predict as Pyfunc
+
+# COMMAND ----------
+
+model = mlflow.pyfunc.load_model(model_uri)
+predictions = model.predict(data_to_predict)
+display(pd.DataFrame(predictions,columns=[WineQuality.colPrediction]))
+
+# COMMAND ----------
+
+# MAGIC %md #### Predict as Spark UDF
+
+# COMMAND ----------
+
+df = spark.createDataFrame(data_to_predict)
+udf = mlflow.pyfunc.spark_udf(spark, model_uri)
+predictions = df.withColumn("prediction", udf(*df.columns)).select("prediction")
+display(predictions)

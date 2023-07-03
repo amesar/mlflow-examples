@@ -236,5 +236,6 @@ def show_mlflow_uris(msg):
 
 def activate_unity_catalog():
     mlflow.set_registry_uri("databricks-uc")
-    client = mlflow.MlflowClient()
     show_mlflow_uris("After UC settings")
+    client = mlflow.MlflowClient()
+    return client
