@@ -20,4 +20,7 @@
 # MAGIC * [Common]($Common) - shared logic
 # MAGIC * [Versions]($Versions) - show version information
 # MAGIC
-# MAGIC Last updated: 2023-06-20
+# MAGIC **Scala SparkML Interop Notebooks**
+# MAGIC * [README]($scala_sparkml_interop/00_README)
+# MAGIC
+# MAGIC Last updated: 2023-07-03
