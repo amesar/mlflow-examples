@@ -4,14 +4,13 @@ MLflow examples - basic and advanced.
 
 This repo consists of two sets of code artifacts:
 * Regular Python scripts using open source MLflow
-* [Databricks notebooks](databricks/notebooks) using Databricks MLflow
+* [Databricks notebooks](databricks/notebooks/README.md) using Databricks MLflow
 
 Last updated: _2023-07-03_
 
 ## Examples
 
 **Python examples**
-* [hello_world](python/hello_world) - Hello World - no training or scoring.
 * [sklearn](python/sklearn) - Scikit-learn model - train and score. 
   * Canonical example that shows multiple ways to train and score.
   * Options to log ONNX model, autolog and save model signature.
@@ -46,7 +45,7 @@ The sklearn and Spark ML examples also demonstrate:
 * [onnx](scala/onnx) - Score an ONNX model (that was created in Scikit-learn) in Java.
 
 **Databricks**
-* [Databricks notebooks](databricks/notebooks) - current.
+* [Databricks notebooks](databricks/notebooks/README.md) - current.
 * [Notebook CICD](databricks/notebooks/cicd) - Lighweight CICD example with Databricks notebook. Legacy.
 
 **Docker**
@@ -54,17 +53,13 @@ The sklearn and Spark ML examples also demonstrate:
 
 ## Setup
 
-Use Python 3.7.5
+Use Python 3.8.
 
 * For Python environment use either:
   * Miniconda with [conda.yaml](python/conda.yaml).
   * Virtual environment with PyPi.
-* Install Spark 2.4.2 on your machine.
-* For ONNX examples also install:
-  * onnx==1.6.0
-  * onnxmltools==1.6.0
-  * skl2onnx==1.6.0
-  * onnxruntime==1.1.0
+* Install Spark 3.4.0.
+* For ONNX install see: [python/sklearn/conda.yaml](python/sklearn/conda.yaml).
 
 ### Miniconda
 
@@ -102,7 +97,6 @@ First activate the virtual environment.
 cd $HOME/mlflow-server
 source $HOME/virtualenvs/mlflow-examples/bin/activate
 ```
-
 
 #### File Store
 
@@ -144,7 +138,6 @@ Before running an experiment
 ```
 export MLFLOW_TRACKING_URI=http://localhost:5000
 ```
-
 
 ## Data
 

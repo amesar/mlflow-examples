@@ -1,7 +1,7 @@
 # Databricks notebooks
 
 Current stuff
-* [Basic MLflow examples](basic) - Sklearm, XGboost, Keras/TensorFlow, SparkML
+* [Basic MLflow examples](basic) - Sklearm, XGboost, Keras/TensorFlow, SparkML and MLflow custom model.
 * [Mini_MLOps_Pipeline](Mini_MLOps_Pipeline) 
 
 Older stuff
