@@ -17,13 +17,14 @@
 # MAGIC * 10. SHAP
 # MAGIC * 11. Delta table: if not set, read CSV file from DBFS
 # MAGIC * 12. Max depth
+# MAGIC * 13. Unity Catalog
 # MAGIC
 # MAGIC ### Notes
 # MAGIC * Experiment:
 # MAGIC   * /Users/me@databricks.com/experiments/sklearn_wine/Sklearn_Wine_ws_uc
 # MAGIC * UC
-# MAGIC   * andre_catalog.ml_data.winequality_white
-# MAGIC   * andre_catalog.ml_models.Sklearn_Wine_ws
+# MAGIC   * Data: andre_catalog.ml_data.winequality_white
+# MAGIC   * Model: andre_catalog.ml_models.Sklearn_Wine_ws
 # MAGIC
 # MAGIC Last udpated: 2023-07-03
 
@@ -43,7 +44,7 @@ dbutils.widgets.text("03. Registered model", "")
 dbutils.widgets.dropdown("04. Model version stage", "None", _model_version_stages)
 dbutils.widgets.dropdown("05. Archive existing versions", "no", ["yes","no"])
 dbutils.widgets.text("06. Model alias","")
-dbutils.widgets.dropdown("07. Save signature", "no", ["yes","no"])
+dbutils.widgets.dropdown("07. Save signature", "yes", ["yes","no"])
 dbutils.widgets.dropdown("08. Input example", "no", ["yes","no"])
 dbutils.widgets.dropdown("09. Log input", "no", ["yes","no"])
 dbutils.widgets.dropdown("10. SHAP","no", ["yes","no"])
@@ -349,3 +350,18 @@ df = spark.createDataFrame(data_to_predict)
 udf = mlflow.pyfunc.spark_udf(spark, model_uri)
 predictions = df.withColumn("prediction", udf(*df.columns)).select("prediction")
 display(predictions)
+
+# COMMAND ----------
+
+# MAGIC %md ### Predict with `models:/` URI and alias
+
+# COMMAND ----------
+
+if model_alias:
+    model_uri = f"models:/{model_name}@{model_alias}"
+    print("model_uri:", model_uri)
+    model = mlflow.pyfunc.load_model(model_uri)
+    predictions = model.predict(data_to_predict)
+    display(pd.DataFrame(predictions,columns=[WineQuality.colPrediction]))
+else:
+    print("No model alias")
