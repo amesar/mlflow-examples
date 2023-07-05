@@ -23,7 +23,7 @@ def display_run_uri(experiment_id, run_id):
 
 def display_registered_model_uri(model_name):
     if _host_name:
-        if "." in model_name:
+        if "." in model_name: # is unity catalog model
             model_name = model_name.replace(".","/")
             uri = f"https://{_host_name}/explore/data/models/{model_name}"
         else:
@@ -40,7 +40,7 @@ display_registered_model_uri("andre_catalog.ml_models.Sklearn_Wine_ws")
 
 def display_registered_model_version_uri(model_name, version):
     if _host_name:
-        if "." in model_name:
+        if "." in model_name: # is unity catalog model
             model_name = model_name.replace(".","/")
             uri = f"https://{_host_name}/explore/data/models/{model_name}/version/{version}"
         else:
