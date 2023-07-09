@@ -34,7 +34,7 @@ def display_registered_model_uri(model_name):
 
 # Test
 #display_registered_model_uri("Sklearn_Wine")
-display_registered_model_uri("andre_catalog.ml_models.Sklearn_Wine_ws")
+#display_registered_model_uri("andre_catalog.ml_models.Sklearn_Wine_ws")
 
 # COMMAND ----------
 
