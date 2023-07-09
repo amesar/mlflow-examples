@@ -21,12 +21,16 @@
 # MAGIC
 # MAGIC ### Notes
 # MAGIC * Experiment:
-# MAGIC   * /Users/me@databricks.com/experiments/sklearn_wine/Sklearn_Wine_ws_uc
-# MAGIC * UC
-# MAGIC   * Data: andre_catalog.ml_data.winequality_white
-# MAGIC   * Model: andre_catalog.ml_models.Sklearn_Wine_ws
+# MAGIC   * /Users/me@databricks.com/experiments/sklearn_wine/Sklearn_Wine_ws
+# MAGIC   * /Users/me@databricks.com/experiments/best/Sklearn_Wine_repo
+# MAGIC * Delta table: andre.wine_quality
 # MAGIC
-# MAGIC Last udpated: 2023-07-03
+# MAGIC * UC
+# MAGIC   * Model: andre_catalog.ml_models.Sklearn_Wine_best
+# MAGIC   * Experiment: /Users/me@databricks.com/experiments/best/Sklearn_Wine_repo_uc
+# MAGIC   * Delta table: andre_catalog.ml_data.winequality_white
+# MAGIC
+# MAGIC Last udpated: 2023-07-07
 
 # COMMAND ----------
 
@@ -204,6 +208,7 @@ with mlflow.start_run(run_name=_run_name) as run:
                 model_alias
             )
             print(f"Registered model '{model_name}' as version {version.version}")
+            print("version:", version.version)
     rmse = np.sqrt(mean_squared_error(test_y, predictions))
     r2 = r2_score(test_y, predictions)
     print("Metrics:")
@@ -214,7 +219,6 @@ with mlflow.start_run(run_name=_run_name) as run:
 
     if shap:
         mlflow.shap.log_explanation(model.predict, train_x)
-    print("version:", version.version)
 
 # COMMAND ----------
 
@@ -223,7 +227,7 @@ if not run_name:
 
 # COMMAND ----------
 
-# MAGIC %md ### Display UI links - XX
+# MAGIC %md ### Display UI links
 
 # COMMAND ----------
 
@@ -321,7 +325,7 @@ model_name
 # COMMAND ----------
 
 if not model_name:
-    print("No registered model specified")
+    print("No registered model specified. Exiting")
     exit(0)
 
 # COMMAND ----------
