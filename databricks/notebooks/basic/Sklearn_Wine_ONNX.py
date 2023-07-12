@@ -3,11 +3,22 @@
 # MAGIC
 # MAGIC **Overview**
 # MAGIC * Trains and saves model as Sklearn and ONNX flavor
-# MAGIC * Predicts using ONNX native, ONNX PyFunc and ONNX UDF flavors
+# MAGIC * Predicts using ONNX native, ONNX Pyfunc and ONNX UDF flavors
 # MAGIC
-# MAGIC **Note**
-# MAGIC * Fails with latest `onnx==1.13.1` with: `ImportError: cannot import name 'builder' from 'google.protobuf.internal' `
-# MAGIC * Works wth `onnx==1.12.0`
+# MAGIC **Last successful run - 2023-07-12**
+# MAGIC   ```
+# MAGIC +-------------------------------+---------------------------------------------------+
+# MAGIC | Name                          | Version                                           |
+# MAGIC |-------------------------------+---------------------------------------------------|
+# MAGIC | mlflow version:               | 2.4.2                                             |
+# MAGIC | $DATABRICKS_RUNTIME_VERSION:  | 13.2                                              |                                           |
+# MAGIC | sklearn version:              | 1.2.2                                             |
+# MAGIC | onnx version:                 | 1.14.0                                            |
+# MAGIC | onnxmltools version:          | 1.11.1                                            |
+# MAGIC | onnxruntime version:          | 1.15.1                                            |
+# MAGIC | skl2onnx version:             | 1.14.1                                            |
+# MAGIC +-------------------------------+---------------------------------------------------+
+# MAGIC ```
 
 # COMMAND ----------
 
@@ -15,10 +26,9 @@
 
 # COMMAND ----------
 
-# %pip install onnx==1.13.1 and 1.14.0 # FAILS with DBR MML 12.2 because of: ImportError: cannot import name 'builder' from 'google.protobuf.internal' 
-%pip install onnx==1.12.0
-%pip install onnxruntime==1.14.1
-%pip install skl2onnx==1.14.0
+# MAGIC %pip install onnx==1.14.0
+# MAGIC %pip install onnxruntime==1.15.1
+# MAGIC %pip install skl2onnx==1.14.1
 
 # COMMAND ----------
 
