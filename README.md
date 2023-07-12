@@ -6,7 +6,7 @@ This repo consists of two sets of code artifacts:
 * Regular Python scripts using open source MLflow
 * [Databricks notebooks](databricks/notebooks/README.md) using Databricks MLflow
 
-Last updated: _2023-07-03_
+Last updated: _2023-07-12_
 
 ## Examples
 
@@ -26,7 +26,7 @@ Last updated: _2023-07-03_
 * [xgboost](python/xgboost) - XGBoost (sklearn wrapper) model - train and score.
 * [catboost](python/catboost) - Catboost (using sklearn) model - train and score. ONNX working too.
 * [pytorch](python/pytorch) - Pytorch  - train and score. ONNX too.
-* [onnx](python/onnx) - Convert sklearn model to ONNX flavor - train and score.
+* [onnx_sklearn](python/onnx_sklearn) - ONNX - Sklearn to ONNX train and score.
 * [h2o](python/h2o) - H2O model - train and score - with AutoML. ONNX too.
 * [model_registry](python/model_registry) - Jupyter notebook sampling the Model Registry API.
 * [e2e-ml-pipeline](python/e2e-ml-pipeline) - End-to-end ML pipeline - training to real-time scoring.
