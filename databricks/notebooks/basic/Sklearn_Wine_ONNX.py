@@ -5,7 +5,7 @@
 # MAGIC * Trains and saves model as Sklearn and ONNX flavor
 # MAGIC * Predicts using ONNX native, ONNX Pyfunc and ONNX UDF flavors
 # MAGIC
-# MAGIC **Last successful run - 2023-07-12**
+# MAGIC **Successful run - 2023-07-12**
 # MAGIC   ```
 # MAGIC +-------------------------------+---------------------------------------------------+
 # MAGIC | Name                          | Version                                           |
@@ -40,15 +40,17 @@
 
 # COMMAND ----------
 
+dbutils.widgets.removeAll()
+
+# COMMAND ----------
+
 dbutils.widgets.text("1. Experiment name", "")
 dbutils.widgets.text("2. Registered model", "")
 dbutils.widgets.text("3. Max Depth", "1") 
-dbutils.widgets.text("4. Max Leaf Nodes", "")
 
 experiment_name = dbutils.widgets.get("1. Experiment name")
 model_name = dbutils.widgets.get("2. Registered model")
 max_depth = to_int(dbutils.widgets.get("3. Max Depth"))
-max_leaf_nodes = to_int(dbutils.widgets.get("4. Max Leaf Nodes"))
 
 model_name = model_name or None
 experiment_name = experiment_name or None
@@ -56,7 +58,6 @@ experiment_name = experiment_name or None
 print("experiment_name:", experiment_name)
 print("model_name:", model_name)
 print("max_depth:", max_depth)
-print("max_leaf_nodes:", max_leaf_nodes)
 
 # COMMAND ----------
 
@@ -104,9 +105,8 @@ with mlflow.start_run(run_name="sklearn_onnx") as run:
     mlflow.set_tag("version.onnx", onnx.__version__)
 
     mlflow.log_param("max_depth", max_depth)
-    mlflow.log_param("max_leaf_nodes", max_leaf_nodes)
 
-    sklearn_model = DecisionTreeRegressor(max_depth=max_depth, max_leaf_nodes=max_leaf_nodes)
+    sklearn_model = DecisionTreeRegressor(max_depth=max_depth)
     sklearn_model.fit(train_x, train_y)
 
     predictions = sklearn_model.predict(test_x)       
