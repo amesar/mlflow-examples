@@ -40,10 +40,6 @@
 
 # COMMAND ----------
 
-dbutils.widgets.removeAll()
-
-# COMMAND ----------
-
 dbutils.widgets.text("1. Experiment name", "")
 dbutils.widgets.text("2. Registered model", "")
 dbutils.widgets.text("3. Max Depth", "1") 
@@ -135,6 +131,10 @@ with mlflow.start_run(run_name="sklearn_onnx") as run:
 # COMMAND ----------
 
 display_run_uri(run.info.experiment_id, run_id)
+
+# COMMAND ----------
+
+display_experiment_id_info(run.info.experiment_id)
 
 # COMMAND ----------
 
