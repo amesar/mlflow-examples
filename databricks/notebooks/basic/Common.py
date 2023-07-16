@@ -132,7 +132,7 @@ def register_model(run,
        model =  client.get_registered_model(model_name)
     source = f"{run.info.artifact_uri}/{model_artifact}"
     vr = client.create_model_version(model_name, source, run.info.run_id)
-    if model_version_stage:
+    if model_version_stage and model_version_stage != "None":
         print(f"Transitioning model '{model_name}/{vr.version}' to stage '{model_version_stage}'")
         client.transition_model_version_stage(model_name, vr.version, model_version_stage, archive_existing_versions=False)
     if model_alias:
@@ -143,20 +143,20 @@ def register_model(run,
 # COMMAND ----------
 
 def register_model_uc(run, 
-        model_name, 
-        model_alias = None,
-        model_artifact = "model"
+        reg_model_name, 
+        reg_model_alias = None,
+        run_model_artifact = "model"
     ):
     """ Register mode with specified alias """
     try:
-       model =  client.create_registered_model(model_name)
+       model =  client.create_registered_model(reg_model_name)
     except RestException as e:
-       model =  client.get_registered_model(model_name)
-    source = f"{run.info.artifact_uri}/{model_artifact}"
-    vr = client.create_model_version(model_name, source, run.info.run_id)
-    if model_alias:
-        print(f"Setting model '{model_name}/{vr.version}' alias to '{model_alias}'")
-        client.set_registered_model_alias(model_name, model_alias, vr.version)
+       model =  client.get_registered_model(reg_model_name)
+    source = f"{run.info.artifact_uri}/{run_model_artifact}"
+    vr = client.create_model_version(reg_model_name, source, run.info.run_id)
+    if reg_model_alias:
+        print(f"Setting model '{reg_model_name}/{vr.version}' alias to '{reg_model_alias}'")
+        client.set_registered_model_alias(reg_model_name, reg_model_alias, vr.version)
     return vr
 
 # COMMAND ----------

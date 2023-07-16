@@ -1,35 +1,27 @@
 # Databricks notebook source
-# MAGIC %md ## Sklearn Wine Quality MLflow model
+# MAGIC %md ## Sklearn Wine Quality MLflow model - Unity Catalog
 # MAGIC * Trains and saves model as Sklearn flavor
 # MAGIC * Predicts using Sklearn, Pyfunc and UDF flavors
-# MAGIC * See [Sklearn_Wine_UC]($Sklearn_Wine_UC) notebook for Unity Catalog version
+# MAGIC * Supports Unity Catalog 
 # MAGIC
-# MAGIC ### Widgets
+# MAGIC #### Widgets
 # MAGIC * 01. Run name
 # MAGIC * 02. Experiment name: if not set, use notebook experiment
 # MAGIC * 03. Registered model: if set, register as model
-# MAGIC * 04. Model version stage
-# MAGIC * 05. Archive existing versions
-# MAGIC * 06. Model alias
-# MAGIC * 07. Save signature
-# MAGIC * 08. Input example
-# MAGIC * 09. Log input - MLflow 2.4.0
-# MAGIC * 10. SHAP
-# MAGIC * 11. Delta table: if not set, read CSV file from DBFS
-# MAGIC * 12. Max depth
-# MAGIC * 13. Unity Catalog
+# MAGIC * 04. Model alias
+# MAGIC * 05. Save signature
+# MAGIC * 06. Input example
+# MAGIC * 07. Log input - MLflow 2.4.0
+# MAGIC * 08. SHAP
+# MAGIC * 09. Delta table: if not set, read CSV file from DBFS
+# MAGIC * 10. Max depth
+# MAGIC * 11. Unity Catalog
 # MAGIC
-# MAGIC #### Notes
+# MAGIC #### Sample widget values
 # MAGIC
-# MAGIC * Registered model:
-# MAGIC   * Sklearn_Wine_test
-# MAGIC   
-# MAGIC * Experiment:
-# MAGIC   * /Users/me@databricks.com/experiments/sklearn_wine/Sklearn_Wine_ws
-# MAGIC   * /Users/me@databricks.com/experiments/best/Sklearn_Wine_repo
-# MAGIC
+# MAGIC * Model: andre_catalog.ml_models.Sklearn_Wine_best
+# MAGIC * Experiment: /Users/me@databricks.com/experiments/best/Sklearn_Wine_repo_uc
 # MAGIC * Delta tables: 
-# MAGIC   * andre.wine_quality
 # MAGIC   * andre_catalog.ml_data.winequality_white
 # MAGIC   * andre_catalog.ml_data.winequality_red
 # MAGIC
@@ -48,43 +40,36 @@
 dbutils.widgets.text("01. Run name", "")
 dbutils.widgets.text("02. Experiment name", "")
 dbutils.widgets.text("03. Registered model", "")
-dbutils.widgets.dropdown("04. Model version stage", "None", _model_version_stages)
-dbutils.widgets.dropdown("05. Archive existing versions", "no", ["yes","no"])
-dbutils.widgets.text("06. Model alias","")
-dbutils.widgets.dropdown("07. Save signature", "yes", ["yes","no"])
-dbutils.widgets.dropdown("08. Input example", "no", ["yes","no"])
-dbutils.widgets.dropdown("09. Log input", "no", ["yes","no"])
-dbutils.widgets.dropdown("10. SHAP","no", ["yes","no"])
-dbutils.widgets.text("11. Delta table", "")
-dbutils.widgets.text("12. Max depth", "1") 
-dbutils.widgets.dropdown("13. Unity Catalog", "no", ["yes","no"])
+dbutils.widgets.text("04. Model alias","")
+dbutils.widgets.dropdown("05. Save signature", "yes", ["yes","no"])
+dbutils.widgets.dropdown("06. Input example", "no", ["yes","no"])
+dbutils.widgets.dropdown("07. Log input", "no", ["yes","no"])
+dbutils.widgets.dropdown("08. SHAP","no", ["yes","no"])
+dbutils.widgets.text("09. Delta table", "")
+dbutils.widgets.text("10. Max depth", "1") 
+dbutils.widgets.dropdown("11. Unity Catalog", "yes", ["yes","no"])
 
 run_name = dbutils.widgets.get("01. Run name")
 experiment_name = dbutils.widgets.get("02. Experiment name")
 model_name = dbutils.widgets.get("03. Registered model")
-model_version_stage = dbutils.widgets.get("04. Model version stage")
-archive_existing_versions = dbutils.widgets.get("05. Archive existing versions") == "yes"
-model_alias = dbutils.widgets.get("06. Model alias")
-save_signature = dbutils.widgets.get("07. Save signature") == "yes"
-input_example = dbutils.widgets.get("08. Input example") == "yes"
-log_input = dbutils.widgets.get("09. Log input") == "yes"
-shap = dbutils.widgets.get("10. SHAP") == "yes"
-delta_table = dbutils.widgets.get("11. Delta table")
-max_depth = to_int(dbutils.widgets.get("12. Max depth"))
-use_uc = dbutils.widgets.get("13. Unity Catalog") == "yes"
+model_alias = dbutils.widgets.get("04. Model alias")
+save_signature = dbutils.widgets.get("05. Save signature") == "yes"
+input_example = dbutils.widgets.get("06. Input example") == "yes"
+log_input = dbutils.widgets.get("07. Log input") == "yes"
+shap = dbutils.widgets.get("08. SHAP") == "yes"
+delta_table = dbutils.widgets.get("09. Delta table")
+max_depth = to_int(dbutils.widgets.get("10. Max depth"))
+use_uc = dbutils.widgets.get("11. Unity Catalog") == "yes"
 
 run_name = run_name or None
 experiment_name = experiment_name or None
 model_name = model_name or None
-model_version_stage = model_version_stage or None
 model_alias = model_alias or None
 input_example = input_example or None
 
 print("run_name:", run_name)
 print("experiment_name:", experiment_name)
 print("model_name:", model_name)
-print("model_version_stage:", model_version_stage)
-print("archive_existing_versions:", archive_existing_versions)
 print("model_alias:", model_alias)
 print("save_signature:", save_signature)
 print("input_example:", input_example)
@@ -223,12 +208,7 @@ if not run_name:
 # COMMAND ----------
 
 if model_name:
-    version = register_model(run, 
-        model_name, 
-        model_version_stage, 
-        archive_existing_versions, 
-        model_alias
-    )
+    version = register_model_uc(run, model_name, model_alias)
     print(f"Registered model '{model_name}' as version {version.version}")
 
 # COMMAND ----------
@@ -242,6 +222,10 @@ display_run_uri(run.info.experiment_id, run_id)
 # COMMAND ----------
 
 display_experiment_id_info(run.info.experiment_id)
+
+# COMMAND ----------
+
+model_name
 
 # COMMAND ----------
 
@@ -324,7 +308,7 @@ type(predictions)
 
 if model_name:  
     model_uri = f"models:/{model_name}/{version.version}"
-    print(model_uri)
+    model_uri
 else:
     print("No registered model specified")
 
@@ -334,7 +318,7 @@ else:
 
 # COMMAND ----------
 
-if model_name: 
+if model_name:      
     model = mlflow.pyfunc.load_model(model_uri)
     predictions = model.predict(data_to_predict)
     display(pd.DataFrame(predictions,columns=[WineQuality.colPrediction]))
@@ -345,7 +329,7 @@ if model_name:
 
 # COMMAND ----------
 
-if model_name: 
+if model_name:  
     df = spark.createDataFrame(data_to_predict)
     udf = mlflow.pyfunc.spark_udf(spark, model_uri)
     predictions = df.withColumn("prediction", udf(*df.columns)).select("prediction")
