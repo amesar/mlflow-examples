@@ -20,11 +20,13 @@ dbutils.widgets.text("1. Experiment name", "")
 dbutils.widgets.text("2. Registered model", "")
 dbutils.widgets.text("3. Feature table", "")
 dbutils.widgets.text("4. Max depth", "3")
+dbutils.widgets.dropdown("5. Unity Catalog", "no", ["yes","no"])
 
 experiment_name = dbutils.widgets.get("1. Experiment name")
 model_name = dbutils.widgets.get("2. Registered model")
 fs_table_name = dbutils.widgets.get("3. Feature table")
 max_depth = int(dbutils.widgets.get("4. Max depth"))
+use_uc = dbutils.widgets.get("5. Unity Catalog") == "yes"
 
 fs_datapath = "/databricks-datasets/wine-quality/winequality-white.csv"
 
@@ -36,6 +38,7 @@ print("model_name:", model_name)
 print("fs_table_name:", fs_table_name)
 print("fs_datapath:", fs_datapath)
 print("max_depth:", max_depth)
+print("use_uc:", use_uc)
 
 # COMMAND ----------
 
@@ -47,6 +50,12 @@ if experiment_name:
     mlflow.set_experiment(experiment_name)
     exp = mlflow.get_experiment_by_name(experiment_name)
     print("Experiment:", exp.experiment_id, exp.name)
+
+# COMMAND ----------
+
+if use_uc:
+    client = activate_unity_catalog()
+    print("New client._registry_uri:",client._registry_uri)
 
 # COMMAND ----------
 
@@ -106,10 +115,6 @@ X_train.head()
 
 # COMMAND ----------
 
-import mlflow
-
-# COMMAND ----------
-
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 
@@ -123,6 +128,10 @@ def train_model(fs_client, X_train, X_test, y_train, y_test, training_set):
  
         mlflow.log_metric("test_mse", mean_squared_error(y_test, y_pred))
         mlflow.log_metric("test_r2_score", r2_score(y_test, y_pred))
+        mlflow.set_tag("fs_table", fs_table_name)
+        mlflow.set_tag("fs_data_path", fs_datapath)
+        if model_name:
+            mlflow.set_tag("registered_model", model_name)
 
         fs_client.log_model(
             model = model,
@@ -163,7 +172,7 @@ if model_name:
 # COMMAND ----------
 
 #model_uri = f"models:/{model_name}/latest"
-model_uri = f"runs:/{run.info.run_id}/fs-model"
+model_uri = f"runs:/{run.info.run_id}/model"
 model_uri
 
 # COMMAND ----------
@@ -183,7 +192,8 @@ display(predictions_df["wine_id", "prediction"])
 # COMMAND ----------
 
 model_info = mlflow.models.get_model_info(model_uri)
-dump_obj_as_json(model_info)
+#dump_obj_as_json(model_info) # fails if UC
+dump_obj(model_info)
 
 # COMMAND ----------
 

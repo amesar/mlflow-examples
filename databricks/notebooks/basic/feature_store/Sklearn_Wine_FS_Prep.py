@@ -15,20 +15,30 @@ fs_default_datapath = "/databricks-datasets/wine-quality/winequality-white.csv"
 dbutils.widgets.text("1. Database", "")
 dbutils.widgets.text("2. Datapath", fs_default_datapath)
 dbutils.widgets.dropdown("3. Overwrite table","yes",["yes","no"])
+dbutils.widgets.dropdown("4. Unity Catalog", "no", ["yes","no"])
 
 fs_database = dbutils.widgets.get("1. Database")
 fs_datapath = dbutils.widgets.get("2. Datapath")
 overwrite_table = dbutils.widgets.get("3. Overwrite table")
+use_uc = dbutils.widgets.get("4. Unity Catalog") == "yes"
 
 fs_table = f"{fs_database}.wine_features"
 
+print("fs_database:", fs_database)
 print("fs_datapath:", fs_datapath)
 print("fs_table:", fs_table)
 print("overwrite_table:", overwrite_table)
+print("use_uc:", use_uc)
 
 # COMMAND ----------
 
 assert_widget(fs_database, "1. Database table")
+
+# COMMAND ----------
+
+if use_uc:
+    client = activate_unity_catalog()
+    print("New client._registry_uri:",client._registry_uri)
 
 # COMMAND ----------
 
@@ -108,3 +118,7 @@ if not fs_table_exists(fs_table):
 # COMMAND ----------
 
 display(spark.sql(f"describe extended {fs_table}"))
+
+# COMMAND ----------
+
+
