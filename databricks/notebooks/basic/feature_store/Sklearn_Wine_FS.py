@@ -126,7 +126,7 @@ def train_model(fs_client, X_train, X_test, y_train, y_test, training_set):
 
         fs_client.log_model(
             model = model,
-            artifact_path = "fs-model",
+            artifact_path = "model",
             flavor = mlflow.sklearn,
             training_set = training_set
         )
@@ -153,7 +153,7 @@ display_experiment_id_info(run.info.experiment_id)
 # COMMAND ----------
 
 if model_name:
-    verion = client.get_registered_model(model_name)
+    version = register_model(run, model_name)
     display_registered_model_version_uri(model_name, version.version)
 
 # COMMAND ----------
