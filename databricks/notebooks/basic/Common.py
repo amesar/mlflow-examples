@@ -68,6 +68,18 @@ def _display_experiment_info(experiment):
 
 # COMMAND ----------
 
+def dump_obj(obj, title="Object"):
+    print(f"{title}:")
+    if obj:
+        for k,v in obj.__dict__.items():
+            print(f"  {k[1:]}: {v}")
+
+def dump_obj_as_json(obj):
+    import json
+    print(json.dumps(obj.__dict__, indent=2))
+
+# COMMAND ----------
+
 def to_int(x):
   return None if x is None or x=="" else int(x)
 
