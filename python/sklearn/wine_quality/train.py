@@ -9,6 +9,7 @@ import platform
 import time
 import pandas as pd
 import numpy as np
+import json
 import click
 import shortuuid
 
@@ -47,7 +48,7 @@ class Trainer():
         self.log_as_onnx = log_as_onnx
         self.save_signature = save_signature
         self.use_run_id_as_run_name = use_run_id_as_run_name
-        self.X_train, self.X_test, self.y_train, self.y_test = self._build_data(data_path)
+        self.X_train, self.X_test, self.y_train, self.y_test, self.columns = self._build_data(data_path)
 
         if self.experiment_name:
             mlflow.set_experiment(experiment_name)
@@ -58,6 +59,7 @@ class Trainer():
 
     def _build_data(self, data_path):
         data = pd.read_csv(data_path)
+        columns = list(data.columns)
         train, test = train_test_split(data, test_size=0.30, random_state=42)
     
         # The predicted column is "quality" which is a scalar from [3, 9]
@@ -65,7 +67,7 @@ class Trainer():
         X_test = test.drop([col_label], axis=1)
         y_train = train[[col_label]]
         y_test = test[[col_label]]
-        return X_train, X_test, y_train, y_test 
+        return X_train, X_test, y_train, y_test, list(data.columns)
 
 
     def train(self, 
@@ -132,6 +134,7 @@ class Trainer():
             mlflow.log_metric("rmse", rmse)
             mlflow.log_metric("r2", r2)
             mlflow.log_metric("mae", mae)
+
         
             # Create signature
             signature = infer_signature(self.X_train, predictions) if self.save_signature else None
@@ -151,6 +154,22 @@ class Trainer():
 
             # MLflow log model
             mlflow.sklearn.log_model(model, "model", signature=signature, input_example = input_example)
+
+            model_uri = mlflow.get_artifact_uri("model")
+            print("model_uri:",model_uri)
+            test_data = pd.concat([self.X_test, self.y_test], axis=1)
+            result = mlflow.evaluate(
+                model_uri,
+                test_data,
+                targets="quality",
+                model_type="regressor",
+                evaluators="default",
+                feature_names=self.columns,
+                evaluator_config={"explainability_nsamples": 1000},
+            )
+            result_metrics = json.dumps(result.metrics, indent=2, cls=mlflow_utils.NumpyEncoder)
+            mlflow.set_tag("result.metrics", result_metrics)
+
             if registered_model_name:
                 mlflow_utils.register_model(run,
                     "model",

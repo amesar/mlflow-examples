@@ -1,7 +1,10 @@
+import numpy as np
+import json
 import mlflow
 from mlflow.exceptions import RestException
 
 client = mlflow.client.MlflowClient()
+
 
 def register_model(
         run,
@@ -32,3 +35,14 @@ def register_model(
     desc = f"v{vr.version} {registered_model_version_stage} - wine"
     client.update_model_version(registered_model_name, vr.version, desc)
     client.set_model_version_tag(registered_model_name, vr.version, "registered_version_info", desc)
+ 
+
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, np.integer):
+            return int(o)
+        if isinstance(o, np.floating):
+            return float(o)
+        if isinstance(o, np.ndarray):
+            return o.tolist()
+        return super(NumpyEncoder, self).default(o)
