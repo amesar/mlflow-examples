@@ -35,7 +35,17 @@ def register_model(
     desc = f"v{vr.version} {registered_model_version_stage} - wine"
     client.update_model_version(registered_model_name, vr.version, desc)
     client.set_model_version_tag(registered_model_name, vr.version, "registered_version_info", desc)
- 
+
+
+def log_dict(dct, artifact_name):
+    import os
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        path = os.path.join(tmp_dir, artifact_name)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(json.dumps(dct, cls=NumpyEncoder))
+        mlflow.log_artifact(path)
+
 
 class NumpyEncoder(json.JSONEncoder):
     def default(self, o):

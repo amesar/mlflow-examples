@@ -9,7 +9,6 @@ import platform
 import time
 import pandas as pd
 import numpy as np
-import json
 import click
 import shortuuid
 
@@ -60,7 +59,6 @@ class Trainer():
     def _build_data(self, data_path):
         data = pd.read_csv(data_path)
         data.columns = data.columns.str.replace(" ","_")
-        columns = list(data.columns)
         train, test = train_test_split(data, test_size=0.30, random_state=42)
     
         # The predicted column is "quality" which is a scalar from [3, 9]
@@ -157,6 +155,7 @@ class Trainer():
             # MLflow log model
             mlflow.sklearn.log_model(model, "model", signature=signature, input_example = input_example)
 
+            # mlflow.evaluate - automatically adds metrics to run
             model_uri = mlflow.get_artifact_uri("model")
             print("model_uri:",model_uri)
             test_data = pd.concat([self.X_test, self.y_test], axis=1)
@@ -169,8 +168,7 @@ class Trainer():
                 feature_names=self.columns,
                 evaluator_config={"explainability_nsamples": 1000},
             )
-            result_metrics = json.dumps(result.metrics, indent=2, cls=mlflow_utils.NumpyEncoder)
-            mlflow.set_tag("result.metrics", result_metrics)
+            mlflow_utils.log_dict(result.metrics, "evaluation_metrics.json")
 
             if registered_model_name:
                 mlflow_utils.register_model(run,
