@@ -46,6 +46,7 @@ python -m wine_quality.train --help
 
 Options:
   --experiment-name TEXT          Experiment name.
+  --run-name TEXT                 Run name
   --data-path TEXT                Data path.  [default: https://raw.githubuser
                                   content.com/mlflow/mlflow/master/examples/sk
                                   learn_elasticnet_wine/wine-quality.csv]
@@ -65,6 +66,8 @@ Options:
   --output-path TEXT              Output file containing run ID.
   --use-run-id-as-run-name BOOLEAN
                                   use_run_id_as_run_name  [default: False]
+  --log-shap BOOLEAN              Log mlflow.shap.log_explanation  [default:
+                                  False]
 ```
 
 #### Signature

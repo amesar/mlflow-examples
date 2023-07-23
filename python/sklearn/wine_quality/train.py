@@ -59,6 +59,7 @@ class Trainer():
 
     def _build_data(self, data_path):
         data = pd.read_csv(data_path)
+        data.columns = data.columns.str.replace(" ","_")
         columns = list(data.columns)
         train, test = train_test_split(data, test_size=0.30, random_state=42)
     
@@ -78,7 +79,8 @@ class Trainer():
             registered_model_alias = None,
             output_path = None,
             max_depth = None,
-            max_leaf_nodes = 32
+            max_leaf_nodes = 32,
+            log_shap = False
         ):
         if not run_name:
             run_name = f"{now} {self.run_origin} {mlflow.__version__}" if self.run_origin else None
@@ -205,7 +207,8 @@ class Trainer():
                 output_path = output_path.replace("dbfs:","/dbfs")
                 with open(output_path, "w", encoding="utf-8") as f:
                     f.write(run_id)
-            #mlflow.shap.log_explanation(model.predict, self.X_train, "shap") # TODO: errors out
+            if log_shap:
+                mlflow.shap.log_explanation(model.predict, self.X_train, "shap") # TODO: loops forever
 
         run = client.get_run(run_id)
         client.set_tag(run_id, "run.info.start_time", run.info.start_time)
@@ -299,6 +302,12 @@ class Trainer():
     default=False,
     show_default=True
 )
+@click.option("--log-shap",
+    help="Log mlflow.shap.log_explanation",
+    type=bool,
+    default=False,
+    show_default=True
+)
 def main(experiment_name, 
         run_name,
         data_path,
@@ -312,7 +321,8 @@ def main(experiment_name,
         max_leaf_nodes,
         run_origin,
         output_path,
-        use_run_id_as_run_name
+        use_run_id_as_run_name,
+        log_shap
     ):
     print("Options:")
     for k,v in locals().items(): 
@@ -320,7 +330,7 @@ def main(experiment_name,
     print("Processed Options:")
     print(f"  model_name: {model_name} - type: {type(model_name)}")
     trainer = Trainer(experiment_name, data_path, log_as_onnx, save_signature, run_origin, use_run_id_as_run_name)
-    trainer.train(run_name, model_name, model_version_stage, archive_existing_versions, model_alias, output_path, max_depth, max_leaf_nodes)
+    trainer.train(run_name, model_name, model_version_stage, archive_existing_versions, model_alias, output_path, max_depth, max_leaf_nodes, log_shap)
 
 
 if __name__ == "__main__":
