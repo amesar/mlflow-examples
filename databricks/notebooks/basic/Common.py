@@ -68,11 +68,12 @@ def _display_experiment_info(experiment):
 
 # COMMAND ----------
 
-def dump_obj(obj, title="Object"):
+def dump_obj(obj, title=None):
+    title = title or type(obj).__name__
     print(f"{title}:")
     if obj:
         for k,v in obj.__dict__.items():
-            print(f"  {k[1:]}: {v}")
+            print(f"  {k}: {v}")
 
 def dump_obj_as_json(obj):
     import json
@@ -263,5 +264,16 @@ def show_mlflow_uris(msg):
 def activate_unity_catalog():
     mlflow.set_registry_uri("databricks-uc")
     show_mlflow_uris("After UC settings")
-    client = mlflow.MlflowClient()
+    client = mlflow.MlflowClient() 
     return client
+
+# COMMAND ----------
+
+def is_unity_catalog(name):
+    return len(name.split(".")) == 3
+
+def toggle_unity_catalog(name):
+    tracking_uri = "databricks-uc" if is_unity_catalog(name) else "databricks"
+    print(f"Setting new tracking URI: {tracking_uri}")
+    mlflow.set_registry_uri(tracking_uri)
+    print(f"New tracking URI: {mlflow.get_tracking_uri()}")
