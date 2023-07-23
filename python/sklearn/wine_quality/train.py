@@ -78,6 +78,7 @@ class Trainer():
             output_path = None,
             max_depth = None,
             max_leaf_nodes = 32,
+            log_evaluation_metrics = False,
             log_shap = False
         ):
         if not run_name:
@@ -156,19 +157,20 @@ class Trainer():
             mlflow.sklearn.log_model(model, "model", signature=signature, input_example = input_example)
 
             # mlflow.evaluate - automatically adds metrics to run
-            model_uri = mlflow.get_artifact_uri("model")
-            print("model_uri:",model_uri)
-            test_data = pd.concat([self.X_test, self.y_test], axis=1)
-            result = mlflow.evaluate(
-                model_uri,
-                test_data,
-                targets="quality",
-                model_type="regressor",
-                evaluators="default",
-                feature_names=self.columns,
-                evaluator_config={"explainability_nsamples": 1000},
-            )
-            mlflow_utils.log_dict(result.metrics, "evaluation_metrics.json")
+            if log_evaluation_metrics:
+                model_uri = mlflow.get_artifact_uri("model")
+                print("model_uri:",model_uri)
+                test_data = pd.concat([self.X_test, self.y_test], axis=1)
+                result = mlflow.evaluate(
+                    model_uri,
+                    test_data,
+                    targets="quality",
+                    model_type="regressor",
+                    evaluators="default",
+                    feature_names=self.columns,
+                    evaluator_config={"explainability_nsamples": 1000},
+                )
+                mlflow_utils.log_dict(result.metrics, "evaluation_metrics.json")
 
             if registered_model_name:
                 mlflow_utils.register_model(run,
@@ -300,6 +302,12 @@ class Trainer():
     default=False,
     show_default=True
 )
+@click.option("--log-evaluation-metrics",
+    help="Log metrics from mlflow.evaluate",
+    type=bool,
+    default=False,
+    show_default=True
+)
 @click.option("--log-shap",
     help="Log mlflow.shap.log_explanation",
     type=bool,
@@ -320,6 +328,7 @@ def main(experiment_name,
         run_origin,
         output_path,
         use_run_id_as_run_name,
+        log_evaluation_metrics,
         log_shap
     ):
     print("Options:")
@@ -328,7 +337,9 @@ def main(experiment_name,
     print("Processed Options:")
     print(f"  model_name: {model_name} - type: {type(model_name)}")
     trainer = Trainer(experiment_name, data_path, log_as_onnx, save_signature, run_origin, use_run_id_as_run_name)
-    trainer.train(run_name, model_name, model_version_stage, archive_existing_versions, model_alias, output_path, max_depth, max_leaf_nodes, log_shap)
+    trainer.train(run_name, model_name, model_version_stage, archive_existing_versions, model_alias, output_path, 
+        max_depth, max_leaf_nodes, log_evaluation_metrics, log_shap
+    )
 
 
 if __name__ == "__main__":

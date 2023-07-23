@@ -66,6 +66,9 @@ Options:
   --output-path TEXT              Output file containing run ID.
   --use-run-id-as-run-name BOOLEAN
                                   use_run_id_as_run_name  [default: False]
+  --log-evaluation-metrics BOOLEAN
+                                  Log metrics from mlflow.evaluate  [default:
+                                  False]
   --log-shap BOOLEAN              Log mlflow.shap.log_explanation  [default:
                                   False]
 ```
