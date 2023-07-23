@@ -1,8 +1,15 @@
 # Databricks notebook source
 # MAGIC %md ## Sklearn feature store data preparation
 # MAGIC
+# MAGIC **Overview**
 # MAGIC * Creates  feature table.
 # MAGIC * Run this notebook once before running [Sklearn_Wine_FS]($Sklearn_Wine_FS).
+# MAGIC
+# MAGIC **Widgets**
+# MAGIC * `1. Database` 
+# MAGIC * `2. Datapath` 
+# MAGIC * `3. Overwrite table`
+# MAGIC * `4. Unity Catalog`
 
 # COMMAND ----------
 
@@ -118,7 +125,3 @@ if not fs_table_exists(fs_table):
 # COMMAND ----------
 
 display(spark.sql(f"describe extended {fs_table}"))
-
-# COMMAND ----------
-
-

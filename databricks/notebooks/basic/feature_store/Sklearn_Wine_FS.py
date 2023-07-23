@@ -9,6 +9,8 @@
 # MAGIC * `1. Experiment name` - if not set, use notebook experiment
 # MAGIC * `2. Registered model` - if set, register as model
 # MAGIC * `3. Feature table` - feature table
+# MAGIC * `3. Max depth` 
+# MAGIC * `5. Unity Catalog` 
 
 # COMMAND ----------
 

@@ -25,4 +25,4 @@
 # MAGIC **Scala SparkML Interop Notebooks**
 # MAGIC * [README]($scala_sparkml_interop/00_README)
 # MAGIC
-# MAGIC Last updated: 2023-07-22
+# MAGIC Last updated: 2023-07-23
