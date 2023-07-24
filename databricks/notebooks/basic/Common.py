@@ -221,11 +221,11 @@ class WineQuality():
     def prep_training_data(data):
         from sklearn.model_selection import train_test_split
         train, test = train_test_split(data, test_size=0.30, random_state=42)
-        train_x = train.drop([WineQuality.colLabel], axis=1)                 
-        test_x = test.drop([WineQuality.colLabel], axis=1)
-        train_y = train[WineQuality.colLabel]
-        test_y = test[WineQuality.colLabel]
-        return train_x, test_x, train_y, test_y
+        X_train = train.drop([WineQuality.colLabel], axis=1)                 
+        X_test = test.drop([WineQuality.colLabel], axis=1)
+        y_train = train[WineQuality.colLabel]
+        y_test = test[WineQuality.colLabel]
+        return X_train, X_test, y_train, y_test
 
     @staticmethod
     def prep_prediction_data(data):

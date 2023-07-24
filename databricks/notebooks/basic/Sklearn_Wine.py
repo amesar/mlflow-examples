@@ -14,10 +14,11 @@
 # MAGIC * 07. Save signature
 # MAGIC * 08. Input example
 # MAGIC * 09. Log input - MLflow 2.4.0
-# MAGIC * 10. SHAP
-# MAGIC * 11. Delta table: if not set, read CSV file from DBFS
-# MAGIC * 12. Max depth
-# MAGIC * 13. Unity Catalog
+# MAGIC * 10. Log evaluation metric
+# MAGIC * 11. Log SHAP
+# MAGIC * 12. Delta table: if not set, read CSV file from DBFS
+# MAGIC * 13. Max depth
+# MAGIC * 14. Unity Catalog
 # MAGIC
 # MAGIC #### Notes
 # MAGIC
@@ -33,7 +34,7 @@
 # MAGIC   * andre_catalog.ml_data.winequality_white
 # MAGIC   * andre_catalog.ml_data.winequality_red
 # MAGIC
-# MAGIC Last udpated: 2023-07-16
+# MAGIC Last udpated: 2023-07-24
 
 # COMMAND ----------
 
@@ -54,10 +55,11 @@ dbutils.widgets.text("06. Model alias","")
 dbutils.widgets.dropdown("07. Save signature", "yes", ["yes","no"])
 dbutils.widgets.dropdown("08. Input example", "no", ["yes","no"])
 dbutils.widgets.dropdown("09. Log input", "no", ["yes","no"])
-dbutils.widgets.dropdown("10. SHAP","no", ["yes","no"])
-dbutils.widgets.text("11. Delta table", "")
-dbutils.widgets.text("12. Max depth", "1") 
-dbutils.widgets.dropdown("13. Unity Catalog", "no", ["yes","no"])
+dbutils.widgets.dropdown("10. Log evaluation metrics", "no", ["yes","no"])
+dbutils.widgets.dropdown("11. Log SHAP", "no", ["yes","no"])
+dbutils.widgets.text("12. Delta table", "")
+dbutils.widgets.text("13. Max depth", "1") 
+dbutils.widgets.dropdown("14. Unity Catalog", "no", ["yes","no"])
 
 run_name = dbutils.widgets.get("01. Run name")
 experiment_name = dbutils.widgets.get("02. Experiment name")
@@ -68,10 +70,11 @@ model_alias = dbutils.widgets.get("06. Model alias")
 save_signature = dbutils.widgets.get("07. Save signature") == "yes"
 input_example = dbutils.widgets.get("08. Input example") == "yes"
 log_input = dbutils.widgets.get("09. Log input") == "yes"
-shap = dbutils.widgets.get("10. SHAP") == "yes"
-delta_table = dbutils.widgets.get("11. Delta table")
-max_depth = to_int(dbutils.widgets.get("12. Max depth"))
-use_uc = dbutils.widgets.get("13. Unity Catalog") == "yes"
+log_evaluation_metrics = dbutils.widgets.get("10. Log evaluation metrics") == "yes"
+log_shap = dbutils.widgets.get("11. Log SHAP") == "yes"
+delta_table = dbutils.widgets.get("12. Delta table")
+max_depth = to_int(dbutils.widgets.get("13. Max depth"))
+use_uc = dbutils.widgets.get("14. Unity Catalog") == "yes"
 
 run_name = run_name or None
 experiment_name = experiment_name or None
@@ -89,7 +92,8 @@ print("model_alias:", model_alias)
 print("save_signature:", save_signature)
 print("input_example:", input_example)
 print("log_input:", log_input)
-print("SHAP:", shap)
+print("log_evaluation_metrics:", log_evaluation_metrics)
+print("log_shap:", log_shap)
 print("delta_table:", delta_table)
 print("max_depth:", max_depth)
 print("use_uc:", use_uc)
@@ -115,17 +119,17 @@ if use_uc:
 
 # COMMAND ----------
 
-df, data_source = WineQuality.get_data(delta_table)
+df_data, data_source = WineQuality.get_data(delta_table)
 data_source
 
 # COMMAND ----------
 
-data =  df.toPandas()
-display(data)
+pdf_data =  df_data.toPandas()
+display(pdf_data)
 
 # COMMAND ----------
 
-train_x, test_x, train_y, test_y = WineQuality.prep_training_data(data)
+X_train, X_test, train_y, y_test = WineQuality.prep_training_data(pdf_data)
 
 # COMMAND ----------
 
@@ -186,30 +190,44 @@ with mlflow.start_run(run_name=_run_name) as run:
     mlflow.log_param("max_depth", max_depth)
 
     model = DecisionTreeRegressor(max_depth=max_depth)
-    model.fit(train_x, train_y)
+    model.fit(X_train, train_y)
     mlflow.set_tag("algorithm", type(model))
       
-    predictions = model.predict(test_x)
+    predictions = model.predict(X_test)
 
-    signature = infer_signature(train_x, predictions) if save_signature else None
+    signature = infer_signature(X_train, predictions) if save_signature else None
     print("signature:", signature)
     print("input_example:", input_example)
 
     # new in MLflow 2.4.0
-    log_data_input(run, log_input, data_source, train_x)
+    log_data_input(run, log_input, data_source, X_train)
 
-    mlflow.sklearn.log_model(model, "model", signature=signature, input_example=test_x)
+    mlflow.sklearn.log_model(model, "model", signature=signature, input_example=X_test)
 
-    rmse = np.sqrt(mean_squared_error(test_y, predictions))
-    r2 = r2_score(test_y, predictions)
+    rmse = np.sqrt(mean_squared_error(y_test, predictions))
+    r2 = r2_score(y_test, predictions)
     print("Metrics:")
     print("  rmse:",rmse)
     print("  r2:",r2)
     mlflow.log_metric("rmse", rmse)
     mlflow.log_metric("r2", r2) 
 
-    if shap:
-        mlflow.shap.log_explanation(model.predict, train_x)
+    if log_evaluation_metrics:
+        model_uri = mlflow.get_artifact_uri("model")
+        print("model_uri:",model_uri)
+        test_data = pd.concat([X_test, y_test], axis=1)
+        result = mlflow.evaluate(
+            model_uri,
+            test_data,
+            targets = "quality",
+            model_type ="regressor",
+            evaluators = "default",
+            feature_names = list(pdf_data.columns),
+            evaluator_config={"explainability_nsamples": 1000},
+        )
+
+    if log_shap:
+        mlflow.shap.log_explanation(model.predict, X_train)
 
 # COMMAND ----------
 
