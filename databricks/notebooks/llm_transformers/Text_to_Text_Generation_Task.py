@@ -32,8 +32,6 @@
 # MAGIC
 # MAGIC #### Based upon
 # MAGIC * [github.com/mlflow/mlflow/examples/transformers/simple.py](https://github.com/mlflow/mlflow/blob/master/examples/transformers/simple.py)
-# MAGIC
-# MAGIC _Last updated: 2023-07-29_
 
 # COMMAND ----------
 
@@ -59,7 +57,7 @@ hf_model_name, registered_model_name, run_name
 
 # COMMAND ----------
 
-assert_widget(registered_model_name, ". Registered model")
+#assert_widget(registered_model_name, ". Registered model")
 
 # COMMAND ----------
 
@@ -142,12 +140,8 @@ dump_obj(run.info)
 
 # COMMAND ----------
 
-create_registered_model(client, registered_model_name)
-
-# COMMAND ----------
-
 source = f"{run.info.artifact_uri}/text_generator"
-vr = client.create_model_version(registered_model_name, source, run.info.run_id, tags=hf_tags)
+vr = create_model_version(client, registered_model_name, source, run.info.run_id, tags=hf_tags)
 
 # COMMAND ----------
 

@@ -32,6 +32,10 @@ def create_registered_model(client,  model_name):
     except mlflow.exceptions.RestException as e:
         print(f"Registered model '{model_name}' already exists")
 
+def create_model_version(client, model_name, source, run_id, tags=None):
+    create_registered_model(client, model_name)
+    return client.create_model_version(model_name, source, run_id, tags=tags)
+
 # COMMAND ----------
 
 
