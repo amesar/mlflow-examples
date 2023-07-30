@@ -37,7 +37,7 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("1. Registered model", "examples_transfors_simple")
+dbutils.widgets.text("1. Registered model", "")
 registered_model_name = dbutils.widgets.get("1. Registered model")
 registered_model_name
 
@@ -83,14 +83,6 @@ dump_obj(model_info)
 # COMMAND ----------
 
 dump_flavor(model_info)
-
-# COMMAND ----------
-
-# MAGIC %md ### Add transformer flavor as run tags
-
-# COMMAND ----------
-
-add_transformer_tags(client, model_info)
 
 # COMMAND ----------
 

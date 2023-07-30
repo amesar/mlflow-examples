@@ -43,7 +43,7 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("1. Registered model", "examples_transfors_simple")
+dbutils.widgets.text("1. Registered model", "")
 registered_model_name = dbutils.widgets.get("1. Registered model")
 
 dbutils.widgets.text("2. Run name", "")
@@ -54,10 +54,6 @@ dbutils.widgets.text("3. Transformer", "declare-lab/flan-alpaca-base")
 hf_model_name = dbutils.widgets.get("3. Transformer")
 
 hf_model_name, registered_model_name, run_name
-
-# COMMAND ----------
-
-#assert_widget(registered_model_name, ". Registered model")
 
 # COMMAND ----------
 
