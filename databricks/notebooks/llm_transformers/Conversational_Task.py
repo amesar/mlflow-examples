@@ -63,7 +63,7 @@ signature = mlflow.models.infer_signature(
 
 # COMMAND ----------
 
-with mlflow.start_run():
+with mlflow.start_run() as run:
     model_info = mlflow.transformers.log_model(
         transformers_model=conversational_pipeline,
         artifact_path="chatbot",
@@ -94,6 +94,23 @@ add_transformer_tags(client, model_info)
 
 # COMMAND ----------
 
+# MAGIC %md ### Add transformer flavor as run tags
+
+# COMMAND ----------
+
+hf_tags = add_transformer_tags(client, model_info)
+hf_tags
+
+# COMMAND ----------
+
+# MAGIC %md ### Register model
+
+# COMMAND ----------
+
+version = create_model_version(client, registered_model_name, model_info.artifact_path, run, hf_tags)
+
+# COMMAND ----------
+
 # MAGIC %md ### Predict
 
 # COMMAND ----------
@@ -115,15 +132,8 @@ print(f"Response: {second}")
 
 # COMMAND ----------
 
-# MAGIC %md ### Return value
+# MAGIC %md ### Return
 
 # COMMAND ----------
 
-rsp = {
-  "run_uri": model_info.model_uri
-}
-rsp
-
-# COMMAND ----------
-
-dbutils.notebook.exit(dict_as_json(rsp))
+dbutils.notebook.exit(create_results(model_info, version))

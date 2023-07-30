@@ -32,9 +32,20 @@ def create_registered_model(client,  model_name):
     except mlflow.exceptions.RestException as e:
         print(f"Registered model '{model_name}' already exists")
 
-def create_model_version(client, model_name, source, run_id, tags=None):
+def _create_model_version(client, model_name, source, run_id, tags=None):
     create_registered_model(client, model_name)
     return client.create_model_version(model_name, source, run_id, tags=tags)
+
+# COMMAND ----------
+
+def create_model_version(client, model_name, artifact_path, run, tags=None):
+    if model_name:
+        source = f"{run.info.artifact_uri}/{artifact_path}"
+        version = _create_model_version(client, model_name, source, run.info.run_id, tags)
+        dump_obj(version)
+        return version
+    else:
+        return None
 
 # COMMAND ----------
 
@@ -74,3 +85,11 @@ def add_transformer_tags(client, model_info):
     for k,v in tags.items():
         client.set_tag(model_info.run_id, k, v)
     return tags
+
+# COMMAND ----------
+
+def create_results(model_info, version):
+    dct = { "run_uri": model_info.model_uri }
+    if version:
+        dct["model_uri"] = f"models:/{version.name}/{version.version}"
+    return dict_as_json(dct)

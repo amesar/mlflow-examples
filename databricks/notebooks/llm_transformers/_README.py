@@ -7,9 +7,9 @@
 # MAGIC |-----|-----|-------|
 # MAGIC | text2text-generation | [declare-lab/flan-alpaca-base](https://huggingface.co/declare-lab/flan-alpaca-base) | [Text_to_Text_Generation_Task]($Text_to_Text_Generation_Task)  |
 # MAGIC | conversational | [microsoft/DialoGPT-medium](https://huggingface.co/microsoft/DialoGPT-medium) | [Conversational_Task]($Conversational_Task)  |
-# MAGIC | feature-extraction | [sentence-transformers/all-MiniLM-L12-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L12-v2) | [Sentence_Transformer_Task]($Sentence_Transformer_Task)  |
+# MAGIC | feature-extraction | [sentence-transformers/all-MiniLM-L12-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L12-v2) | [Sentence_Transformer_Model]($Sentence_Transformer_Model)  |
 # MAGIC | translation_en_to_fr | [t5-small](https://huggingface.co/t5-small) | [Translation_Task]($Translation_Task)  |
-# MAGIC | automatic-speech-recognition | [openai/whisper-tiny](https://huggingface.co/openai/whisper-tiny) | [Whisper]($Whisper)  |
+# MAGIC | automatic-speech-recognition | [openai/whisper-tiny](https://huggingface.co/openai/whisper-tiny) | [Whisper_Model]($Whisper_Model)  |
 # MAGIC
 # MAGIC ##### Other notebooks
 # MAGIC * [Common]($Common)

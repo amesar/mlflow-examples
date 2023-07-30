@@ -136,16 +136,7 @@ hf_tags
 
 # COMMAND ----------
 
-dump_obj(run.info)
-
-# COMMAND ----------
-
-source = f"{run.info.artifact_uri}/text_generator"
-vr = create_model_version(client, registered_model_name, source, run.info.run_id, tags=hf_tags)
-
-# COMMAND ----------
-
-dump_obj(vr)
+version = create_model_version(client, registered_model_name, model_info.artifact_path, run, hf_tags)
 
 # COMMAND ----------
 
@@ -175,16 +166,8 @@ print(
 
 # COMMAND ----------
 
-# MAGIC %md ### Return value
+# MAGIC %md ### Return
 
 # COMMAND ----------
 
-rsp = {
-  "run_uri": model_info.model_uri,
-  "model_uri": f"models:/{vr.name}/{vr.version}"
-}
-rsp
-
-# COMMAND ----------
-
-dbutils.notebook.exit(dict_as_json(rsp))
+dbutils.notebook.exit(create_results(model_info, version))
