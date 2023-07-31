@@ -43,6 +43,10 @@ registered_model_name
 
 # COMMAND ----------
 
+client = get_client(registered_model_name)
+
+# COMMAND ----------
+
 # MAGIC %md ### Setup transformer 
 
 # COMMAND ----------
