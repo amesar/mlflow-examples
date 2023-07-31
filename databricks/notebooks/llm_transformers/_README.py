@@ -12,6 +12,7 @@
 # MAGIC | [Speech_Recognition_Task]($Speech_Recognition_Task) | [automatic-speech-recognition](https://huggingface.co/tasks/automatic-speech-recognition) | [openai/whisper-tiny](https://huggingface.co/openai/whisper-tiny) | 
 # MAGIC
 # MAGIC ##### Other notebooks
+# MAGIC * [Run_Task_Notebooks]($Run_Task_Notebooks) - Run the task notebook suite.
 # MAGIC * [Common]($Common)
 # MAGIC * [Template]($Template) - template for new transformer notebooks.
 # MAGIC
