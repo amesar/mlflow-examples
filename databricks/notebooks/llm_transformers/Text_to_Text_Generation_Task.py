@@ -53,7 +53,9 @@ run_name = None if run_name=="" else run_name
 dbutils.widgets.text("3. Transformer", "declare-lab/flan-alpaca-base")
 hf_model_name = dbutils.widgets.get("3. Transformer")
 
-hf_model_name, registered_model_name, run_name
+print("registered_model_name:", registered_model_name)
+print("hf_model_name:", hf_model_name)
+print("run_name:", run_name)
 
 # COMMAND ----------
 
