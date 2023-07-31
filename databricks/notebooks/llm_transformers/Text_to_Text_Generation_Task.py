@@ -136,6 +136,10 @@ version = create_model_version(client, registered_model_name, model_info.artifac
 
 # COMMAND ----------
 
+dump_obj(version)
+
+# COMMAND ----------
+
 # MAGIC %md ### Predict
 
 # COMMAND ----------

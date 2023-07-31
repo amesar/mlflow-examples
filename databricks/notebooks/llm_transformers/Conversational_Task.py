@@ -74,32 +74,15 @@ with mlflow.start_run() as run:
 
 # COMMAND ----------
 
-# MAGIC %md ### Show ModelInfo
-
-# COMMAND ----------
-
-dump_obj(model_info)
-
-# COMMAND ----------
-
-dump_flavor(model_info)
-
-# COMMAND ----------
-
-# MAGIC %md ### Add transformer flavor as run tags
-
-# COMMAND ----------
-
-hf_tags = add_transformer_tags(client, model_info)
-hf_tags
-
-# COMMAND ----------
-
 # MAGIC %md ### Register model
 
 # COMMAND ----------
 
-version = create_model_version(client, registered_model_name, model_info.artifact_path, run, hf_tags)
+version = register_model(client, registered_model_name, model_info, run)
+
+# COMMAND ----------
+
+dump_obj(version)
 
 # COMMAND ----------
 

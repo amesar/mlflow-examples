@@ -42,10 +42,19 @@ def create_model_version(client, model_name, artifact_path, run, tags=None):
     if model_name:
         source = f"{run.info.artifact_uri}/{artifact_path}"
         version = _create_model_version(client, model_name, source, run.info.run_id, tags)
-        dump_obj(version)
+        #dump_obj(version)
         return version
     else:
         return None
+
+# COMMAND ----------
+
+def register_model(client, model_name, model_info, run):
+    #dump_obj(model_info)
+    dump_flavor(model_info)
+    tags = add_transformer_tags(client, model_info)
+    version = create_model_version(client, model_name, model_info.artifact_path, run, tags)
+    return version
 
 # COMMAND ----------
 
@@ -58,14 +67,18 @@ def dump_dict_as_json(dct):
     print(dict_as_json(dct))
 
 def dump_obj(obj):
-    title = type(obj).__name__
-    print(f"{title}:")
-    for k,v in obj.__dict__.items():
-        print(f"  {k}: {v}")
+    if not obj:
+        print("Object is None")
+    else:
+        title = type(obj).__name__
+        print(f"{title}:")
+        for k,v in obj.__dict__.items():
+            print(f"  {k}: {v}")
 
 def dump_flavor(model_info, flavor_name="transformers"):
     flavors = model_info.flavors
     flavor = flavors.get(flavor_name)
+    print("Transformers Flavor")
     dump_dict_as_json(flavor)
 
 # COMMAND ----------
