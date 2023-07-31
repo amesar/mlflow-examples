@@ -1,6 +1,11 @@
 # Databricks notebook source
 # MAGIC %md ### Hugging Face Transformers
 # MAGIC
+# MAGIC ##### Overview
+# MAGIC * Log various Hugging Face models for different tasks as MLflow runs and register them as a model.
+# MAGIC * The `transformers` flavor attributes are logged as run and model versions tags (staring with `hf_`). See [example](https://github.com/amesar/mlflow-reports/blob/master/samples/databricks/model_reports/transformers/Conversational_Task/report.json#L469).
+# MAGIC * Sample UC and non-UC models: [Conversational_Task](https://github.com/amesar/mlflow-reports/blob/master/samples/databricks/model_reports/transformers/Conversational_Task) - JSON and markdown report.
+# MAGIC
 # MAGIC ##### Transformer model notebooks
 # MAGIC
 # MAGIC | Notebook | Hugging Face Task | Hugging Face Model |
