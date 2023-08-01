@@ -6,9 +6,24 @@
 # MAGIC * Model: [openai/whisper-tiny](https://huggingface.co/openai/whisper-tiny)
 # MAGIC * Description: automatic speech recognition (ASR) and speech translation
 # MAGIC
-# MAGIC ##### MLflow `transormers` flaver
+# MAGIC ##### MLflow `transformers` flaver
 # MAGIC ```
-# MAGIC TODO
+# MAGIC {
+# MAGIC   "transformers_version": "4.28.1",
+# MAGIC   "code": null,
+# MAGIC   "task": "automatic-speech-recognition",
+# MAGIC   "instance_type": "AutomaticSpeechRecognitionPipeline",
+# MAGIC   "source_model_name": "openai/whisper-tiny",
+# MAGIC   "pipeline_model_type": "WhisperForConditionalGeneration",
+# MAGIC   "framework": "pt",
+# MAGIC   "feature_extractor_type": "WhisperFeatureExtractor",
+# MAGIC   "tokenizer_type": "WhisperTokenizer",
+# MAGIC   "components": [
+# MAGIC     "feature_extractor",
+# MAGIC     "tokenizer"
+# MAGIC   ],
+# MAGIC   "model_binary": "model"
+# MAGIC }
 # MAGIC ```
 # MAGIC
 # MAGIC #### Based upon

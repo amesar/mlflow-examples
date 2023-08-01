@@ -12,7 +12,7 @@
 # MAGIC
 # MAGIC ##### Sample registered model names
 # MAGIC * examples_transfors_simple
-# MAGIC * andre_catalog.llm_models.examples_transfors_simple
+# MAGIC * andre_catalog.transformer_models.Text_to_Text_Generation_Task
 # MAGIC
 # MAGIC ##### MLflow `transformers` flaver
 # MAGIC ```
@@ -53,9 +53,9 @@ run_name = None if run_name=="" else run_name
 dbutils.widgets.text("3. Transformer", "declare-lab/flan-alpaca-base")
 hf_model_name = dbutils.widgets.get("3. Transformer")
 
-print("registered_model_name:", registered_model_name)
-print("hf_model_name:", hf_model_name)
-print("run_name:", run_name)
+print(f"registered_model_name: '{registered_model_name}'")
+print(f"hf_model_name: '{hf_model_name}'")
+print(f"run_name: '{run_name}'")
 
 # COMMAND ----------
 
