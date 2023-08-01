@@ -14,7 +14,7 @@
 # MAGIC * examples_transfors_simple
 # MAGIC * andre_catalog.transformer_models.Text_to_Text_Generation_Task
 # MAGIC
-# MAGIC ##### MLflow `transformers` flaver
+# MAGIC ##### MLflow `transformers` flavor
 # MAGIC ```
 # MAGIC {
 # MAGIC   "transformers_version": "4.28.1",

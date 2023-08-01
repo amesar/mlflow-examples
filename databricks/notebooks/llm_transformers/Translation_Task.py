@@ -6,7 +6,7 @@
 # MAGIC * Model: [t5-small](https://huggingface.co/t5-small)
 # MAGIC * Description: Text-To-Text Transfer Transformer 
 # MAGIC
-# MAGIC ##### MLflow `transformers` flaver
+# MAGIC ##### MLflow `transformers` flavor
 # MAGIC ```
 # MAGIC {
 # MAGIC   "transformers_version": "4.28.1",

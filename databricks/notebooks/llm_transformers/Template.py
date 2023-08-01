@@ -6,7 +6,7 @@
 # MAGIC * Model: [t5-small](https://huggingface.co/t5-small)
 # MAGIC * Description:
 # MAGIC
-# MAGIC ##### MLflow `transformers` flaver
+# MAGIC ##### MLflow `transformers` flavor
 # MAGIC ```
 # MAGIC TODO
 # MAGIC ```

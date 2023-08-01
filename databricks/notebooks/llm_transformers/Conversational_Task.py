@@ -6,7 +6,7 @@
 # MAGIC * Model: [microsoft/DialoGPT-medium ](https://huggingface.co/microsoft/DialoGPT-medium)
 # MAGIC * Description: Pretrained dialogue response generation model for multiturn conversations
 # MAGIC
-# MAGIC ##### MLflow `transformers` flaver
+# MAGIC ##### MLflow `transformers` flavor
 # MAGIC ```
 # MAGIC {
 # MAGIC   "transformers_version": "4.28.1",

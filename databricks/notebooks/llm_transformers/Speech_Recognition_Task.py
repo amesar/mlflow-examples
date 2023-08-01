@@ -6,7 +6,7 @@
 # MAGIC * Model: [openai/whisper-tiny](https://huggingface.co/openai/whisper-tiny)
 # MAGIC * Description: automatic speech recognition (ASR) and speech translation
 # MAGIC
-# MAGIC ##### MLflow `transformers` flaver
+# MAGIC ##### MLflow `transformers` flavor
 # MAGIC ```
 # MAGIC {
 # MAGIC   "transformers_version": "4.28.1",

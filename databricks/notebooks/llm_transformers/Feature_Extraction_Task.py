@@ -6,7 +6,7 @@
 # MAGIC * Model: [sentence-transformers/all-MiniLM-L12-v2 ](https://huggingface.co/sentence-transformers/all-MiniLM-L12-v2)
 # MAGIC * Description: TODO
 # MAGIC
-# MAGIC ##### MLflow `transformers` flaver
+# MAGIC ##### MLflow `transformers` flavor
 # MAGIC ```
 # MAGIC {
 # MAGIC   "transformers_version": "4.28.1",
