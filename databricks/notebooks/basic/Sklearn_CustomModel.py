@@ -95,7 +95,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 # COMMAND ----------
 
 with mlflow.start_run(run_name="sklearn") as run:
-    run_id = run.info.run_uuid
+    run_id = run.info.run_id
     print("MLflow:")
     print("  run_id:",run_id)
     print("  experiment_id:",run.info.experiment_id)

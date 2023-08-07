@@ -174,6 +174,8 @@ def register_model_uc(run,
 
 # COMMAND ----------
 
+import pandas as pd
+
 class WineQuality():
     colLabel = "quality"
     colPrediction = "prediction"
