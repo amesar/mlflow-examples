@@ -25,7 +25,7 @@
 # MAGIC   * andre_catalog.ml_data.winequality_white
 # MAGIC   * andre_catalog.ml_data.winequality_red
 # MAGIC
-# MAGIC Last udpated: 2023-07-16
+# MAGIC Last udpated: 2023-08-11
 
 # COMMAND ----------
 
@@ -291,9 +291,12 @@ type(predictions)
 
 # COMMAND ----------
 
-df = spark.createDataFrame(data_to_predict)
+df_to_predict = spark.createDataFrame(data_to_predict)
+
+# COMMAND ----------
+
 udf = mlflow.pyfunc.spark_udf(spark, model_uri)
-predictions = df.withColumn("prediction", udf(*df.columns)).select("prediction")
+predictions = df_to_predict.withColumn("prediction", udf(*df_to_predict.columns)).select("prediction")
 display(predictions)
 
 # COMMAND ----------
@@ -330,9 +333,12 @@ if model_name:
 # COMMAND ----------
 
 if model_name:  
-    df = spark.createDataFrame(data_to_predict)
+    ##df = spark.createDataFrame(data_to_predict)
+    ##udf = mlflow.pyfunc.spark_udf(spark, model_uri)
+    ##predictions = df.withColumn("prediction", udf(*df.columns)).select("prediction")
+    ## display(predictions)
     udf = mlflow.pyfunc.spark_udf(spark, model_uri)
-    predictions = df.withColumn("prediction", udf(*df.columns)).select("prediction")
+    predictions = df_to_predict.withColumn("prediction", udf(*df_to_predict.columns)).select("prediction")
     display(predictions)
 
 # COMMAND ----------
@@ -347,5 +353,16 @@ if model_alias:
     model = mlflow.pyfunc.load_model(model_uri)
     predictions = model.predict(data_to_predict)
     display(pd.DataFrame(predictions,columns=[WineQuality.colPrediction]))
+else:
+    print("No model alias")
+
+# COMMAND ----------
+
+if model_alias:
+    model_uri = f"models:/{model_name}@{model_alias}"
+    print("model_uri:", model_uri)
+    udf = mlflow.pyfunc.spark_udf(spark, model_uri)
+    predictions = df_to_predict.withColumn("prediction", udf(*df_to_predict.columns)).select("prediction")
+    display(predictions)
 else:
     print("No model alias")
