@@ -9,7 +9,7 @@ def get_notebook_tag(tag):
 
 # COMMAND ----------
 
-import os, sys, pyspark, sklearn, tensorflow, xgboost, torch, mleap.version, mlflow, platform, cloudpickle
+import os, sys, pyspark, sklearn, tensorflow, xgboost, torch, mlflow, platform, cloudpickle
 import numpy
 import pandas
 try:
@@ -53,8 +53,9 @@ lst.append(["pandas version:", pandas.__version__])
 lst.append(["numpy version:", numpy.__version__])
 
 try:
+    import mleap.version
     lst.append(["mleap version", mleap.__version__])
-except AttributeError as e:
+except Exception as e: # ModuleNotFoundError
     lst.append(["mleap version", None])
 
 try:
