@@ -297,7 +297,7 @@ model_uri
 # COMMAND ----------
 
 model = mlflow.sklearn.load_model(model_uri)
-data_to_predict = WineQuality.prep_prediction_data(data)
+data_to_predict = WineQuality.prep_prediction_data(pdf_data)
 predictions = model.predict(data_to_predict)
 display(pd.DataFrame(predictions, columns=[WineQuality.colPrediction]))
 
