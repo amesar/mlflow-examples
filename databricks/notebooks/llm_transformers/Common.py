@@ -58,7 +58,6 @@ def register_model(client, model_name, model_info, run):
 
 # COMMAND ----------
 
-
 def dict_as_json(dct, sort_keys=None):
     import json
     return json.dumps(dct, sort_keys=sort_keys, indent=2)
