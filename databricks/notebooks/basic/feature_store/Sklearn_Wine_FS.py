@@ -203,13 +203,8 @@ dump_obj(model_info)
 
 # COMMAND ----------
 
+# FAILS: ModuleNotFoundError: No module named 'databricks.feature_store.mlflow_model'
 #from databricks.feature_store import mlflow_model
-
-# COMMAND ----------
-
-from databricks import feature_store 
-
-# COMMAND ----------
 
 model = mlflow.pyfunc.load_model(model_uri)
 model

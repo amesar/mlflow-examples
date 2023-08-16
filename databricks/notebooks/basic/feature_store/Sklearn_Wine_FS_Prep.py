@@ -39,7 +39,7 @@ print("use_uc:", use_uc)
 
 # COMMAND ----------
 
-assert_widget(fs_database, "1. Database table")
+assert_widget(fs_database, "1. Database")
 
 # COMMAND ----------
 
