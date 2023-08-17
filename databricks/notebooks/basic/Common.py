@@ -181,20 +181,19 @@ class WineQuality():
     colPrediction = "prediction"
     colFeatures = "features"
     _wine_color = "white"
-    #_wine_color = "red"
     data_path = f"dbfs:/databricks-datasets/wine-quality/winequality-{_wine_color}.csv"
 
     @staticmethod
     def load_pandas_data():
         data_path = mk_local_path(WineQuality.data_path)
-        print(f"Reading data from '{data_path}' as Pandas dataframe")
+        print(f"Reading data as Pandas dataframe from '{data_path}'")
         df = pd.read_csv(data_path, delimiter=";")
         df.columns = df.columns.str.replace(" ","_")
         return df
     
     @staticmethod
     def _load_spark_data():
-        print(f"Reading data from '{WineQuality.data_path}' as Spark dataframe")
+        print(f"Reading data as Spark dataframe from '{WineQuality.data_path}'")
         df = (spark.read.format("csv")
             .option("header", True)
             .option("inferSchema", True)
@@ -235,18 +234,19 @@ class WineQuality():
 
 # COMMAND ----------
 
-# new in MLflow 2.4.0
-def log_data_input(run, log_input, data_source, df, name="winequality-white"):
+def log_data_input(run, log_input, data_source, df):
     if log_input and hasattr(run, "inputs"):
         print(f"Logging input data_source '{data_source}'")
         if data_source.startswith("dbfs"):
+            dataset_name = data_source.split("/")[-1]
             if isinstance(df, pandas.core.frame.DataFrame):
-                dataset = mlflow.data.from_pandas(df, source=mk_local_path(data_source), name=name)
+                dataset = mlflow.data.from_pandas(df, source=mk_local_path(data_source), name=dataset_name)
             else:
-                dataset = mlflow.data.from_spark(df, path=data_source, name=name)
+                dataset = mlflow.data.from_spark(df, path=data_source, name=dataset_name)
             print(f"Logging input with Spark - dataset: '{dataset}'")
         else:
-            dataset = mlflow.data.load_delta(table_name=data_source, name=name)
+            dataset_name = data_source.split(".")[-1]
+            dataset = mlflow.data.load_delta(table_name=data_source, name=dataset_name)
             print(f"Logging input with Delta - dataset: '{dataset}'")
         mlflow.log_input(dataset, context="training")
     else:

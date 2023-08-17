@@ -11,7 +11,7 @@
 # MAGIC * 04. Model alias
 # MAGIC * 05. Save signature
 # MAGIC * 06. Input example
-# MAGIC * 07. Log input - MLflow 2.4.0
+# MAGIC * 07. Log input - new in MLflow 2.4.0
 # MAGIC * 08. SHAP
 # MAGIC * 09. Delta table: if not set, read CSV file from DBFS
 # MAGIC * 10. Max depth
@@ -105,12 +105,12 @@ data_source
 
 # COMMAND ----------
 
-data =  df.toPandas()
-display(data)
+pdf_data =  df.toPandas()
+display(pdf_data.head(10))
 
 # COMMAND ----------
 
-train_x, test_x, train_y, test_y = WineQuality.prep_training_data(data)
+X_train, X_test, y_train, y_test = WineQuality.prep_training_data(pdf_data)
 
 # COMMAND ----------
 
@@ -147,6 +147,10 @@ from mlflow.models.signature import infer_signature
 
 # COMMAND ----------
 
+max_depth
+
+# COMMAND ----------
+
 import os, platform
 
 with mlflow.start_run(run_name=_run_name) as run:
@@ -171,22 +175,23 @@ with mlflow.start_run(run_name=_run_name) as run:
     mlflow.log_param("max_depth", max_depth)
 
     model = DecisionTreeRegressor(max_depth=max_depth)
-    model.fit(train_x, train_y)
+    model.fit(X_train, y_train)
     mlflow.set_tag("algorithm", type(model))
       
-    predictions = model.predict(test_x)
+    predictions = model.predict(X_test)
 
-    signature = infer_signature(train_x, predictions) if save_signature else None
+    signature = infer_signature(X_train, predictions) if save_signature else None
     print("signature:", signature)
     print("input_example:", input_example)
 
-    # new in MLflow 2.4.0
-    log_data_input(run, log_input, data_source, train_x)
+    log_data_input(run, log_input, data_source, X_train)
 
-    mlflow.sklearn.log_model(model, "model", signature=signature, input_example=test_x)
+    model_info = mlflow.sklearn.log_model(model, "model", signature=signature, input_example=X_test)
+    print(">> TRAIN: model_info:",model_info)
+    dump_obj(model_info)
 
-    rmse = np.sqrt(mean_squared_error(test_y, predictions))
-    r2 = r2_score(test_y, predictions)
+    rmse = np.sqrt(mean_squared_error(y_test, predictions))
+    r2 = r2_score(y_test, predictions)
     print("Metrics:")
     print("  rmse:",rmse)
     print("  r2:",r2)
@@ -194,7 +199,11 @@ with mlflow.start_run(run_name=_run_name) as run:
     mlflow.log_metric("r2", r2) 
 
     if shap:
-        mlflow.shap.log_explanation(model.predict, train_x)
+        mlflow.shap.log_explanation(model.predict, X_train)
+
+# COMMAND ----------
+
+dump_obj(model_info)
 
 # COMMAND ----------
 
@@ -234,7 +243,7 @@ if model_name:
 
 # COMMAND ----------
 
-# MAGIC %md ### Show input data - new in MLflow 2.4.0
+# MAGIC %md ### Show input data
 
 # COMMAND ----------
 
@@ -263,7 +272,7 @@ model_uri
 # COMMAND ----------
 
 model = mlflow.sklearn.load_model(model_uri)
-data_to_predict = WineQuality.prep_prediction_data(data)
+data_to_predict = WineQuality.prep_prediction_data(pdf_data)
 predictions = model.predict(data_to_predict)
 display(pd.DataFrame(predictions, columns=[WineQuality.colPrediction]))
 

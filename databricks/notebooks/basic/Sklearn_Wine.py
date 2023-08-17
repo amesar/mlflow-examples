@@ -13,7 +13,7 @@
 # MAGIC * 06. Model alias
 # MAGIC * 07. Save signature
 # MAGIC * 08. Input example
-# MAGIC * 09. Log input - MLflow 2.4.0
+# MAGIC * 09. Log input - new in MLflow 2.4.0
 # MAGIC * 10. Log evaluation metric
 # MAGIC * 11. Log SHAP
 # MAGIC * 12. Delta table: if not set, read CSV file from DBFS
@@ -125,11 +125,11 @@ data_source
 # COMMAND ----------
 
 pdf_data =  df_data.toPandas()
-display(pdf_data)
+display(pdf_data.head(10))
 
 # COMMAND ----------
 
-X_train, X_test, train_y, y_test = WineQuality.prep_training_data(pdf_data)
+X_train, X_test, y_train, y_test = WineQuality.prep_training_data(pdf_data)
 
 # COMMAND ----------
 
@@ -190,7 +190,7 @@ with mlflow.start_run(run_name=_run_name) as run:
     mlflow.log_param("max_depth", max_depth)
 
     model = DecisionTreeRegressor(max_depth=max_depth)
-    model.fit(X_train, train_y)
+    model.fit(X_train, y_train)
     mlflow.set_tag("algorithm", type(model))
       
     predictions = model.predict(X_test)
@@ -199,7 +199,6 @@ with mlflow.start_run(run_name=_run_name) as run:
     print("signature:", signature)
     print("input_example:", input_example)
 
-    # new in MLflow 2.4.0
     log_data_input(run, log_input, data_source, X_train)
 
     mlflow.sklearn.log_model(model, "model", signature=signature, input_example=X_test)
@@ -268,7 +267,7 @@ if model_name:
 
 # COMMAND ----------
 
-# MAGIC %md ### Show input data - new in MLflow 2.4.0
+# MAGIC %md ### Show input data
 
 # COMMAND ----------
 
