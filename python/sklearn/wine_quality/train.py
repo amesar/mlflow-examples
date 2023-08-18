@@ -40,13 +40,12 @@ col_label = "quality"
 now = fmt_ts_seconds(round(time.time()))
 
 class Trainer():
-    def __init__(self, experiment_name, data_path, log_as_onnx, save_signature, run_origin=None, use_run_id_as_run_name=False):
+    def __init__(self, experiment_name, data_path, log_as_onnx, save_signature, run_origin=None):
         self.experiment_name = experiment_name
         self.data_path = data_path
         self.run_origin = run_origin
         self.log_as_onnx = log_as_onnx
         self.save_signature = save_signature
-        self.use_run_id_as_run_name = use_run_id_as_run_name
         self.X_train, self.X_test, self.y_train, self.y_test, self.columns = self._build_data(data_path)
 
         if self.experiment_name:
@@ -81,8 +80,6 @@ class Trainer():
             log_evaluation_metrics = False,
             log_shap = False
         ):
-        if not run_name:
-            run_name = f"{now} {self.run_origin} {mlflow.__version__}" if self.run_origin else None
         with mlflow.start_run(run_name=run_name) as run: # NOTE: when running with `mlflow run`, mlflow --run-name option takes precedence!
             run_id = run.info.run_id
             experiment_id = run.info.experiment_id
@@ -92,8 +89,6 @@ class Trainer():
             print("  experiment_name:", client.get_experiment(experiment_id).name)
 
             # MLflow tags
-            if self.use_run_id_as_run_name:
-                mlflow.set_tag("mlflow.runName", run_id)
             mlflow.set_tag("run_id", run_id)
             mlflow.set_tag("save_signature", self.save_signature)
             mlflow.set_tag("data_path", self.data_path)
@@ -296,12 +291,6 @@ class Trainer():
     default=None,
     show_default=True
 )
-@click.option("--use-run-id-as-run-name",
-    help="use_run_id_as_run_name",
-    type=bool,
-    default=False,
-    show_default=True
-)
 @click.option("--log-evaluation-metrics",
     help="Log metrics from mlflow.evaluate",
     type=bool,
@@ -327,7 +316,6 @@ def main(experiment_name,
         max_leaf_nodes,
         run_origin,
         output_path,
-        use_run_id_as_run_name,
         log_evaluation_metrics,
         log_shap
     ):
@@ -336,7 +324,7 @@ def main(experiment_name,
         print(f"  {k}: {v}")
     print("Processed Options:")
     print(f"  model_name: {model_name} - type: {type(model_name)}")
-    trainer = Trainer(experiment_name, data_path, log_as_onnx, save_signature, run_origin, use_run_id_as_run_name)
+    trainer = Trainer(experiment_name, data_path, log_as_onnx, save_signature, run_origin)
     trainer.train(run_name, model_name, model_version_stage, archive_existing_versions, model_alias, output_path, 
         max_depth, max_leaf_nodes, log_evaluation_metrics, log_shap
     )
