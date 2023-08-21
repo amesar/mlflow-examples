@@ -3,7 +3,11 @@
 # MAGIC
 # MAGIC Run all the transformer notebooks as a suite.
 # MAGIC
-# MAGIC Sample UC prefix: andre_catalog.transformer_models
+# MAGIC **Widgets**
+# MAGIC * `1. UC catalog.schema prefix`
+# MAGIC   * If empty, register the model in the Workspace Model Registry.
+# MAGIC   * If not empty, register the model in the Unity Catalog Model Registry.
+# MAGIC     * Sample prefix: `andre_catalog.transformer_models` or `andre_m.transformer_models`.
 
 # COMMAND ----------
 
@@ -39,7 +43,6 @@ notebooks = [
     "Feature_Extraction_Task",
     "Speech_Recognition_Task"
 ]
-#notebooks = [ "Text_to_Text_Generation_Task" ]
 
 # COMMAND ----------
 

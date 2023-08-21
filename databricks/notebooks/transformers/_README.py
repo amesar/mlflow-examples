@@ -17,11 +17,11 @@
 # MAGIC | [Speech_Recognition_Task]($Speech_Recognition_Task) | [automatic-speech-recognition](https://huggingface.co/tasks/automatic-speech-recognition) | [openai/whisper-tiny](https://huggingface.co/openai/whisper-tiny) |  0.154 |
 # MAGIC
 # MAGIC ##### Other notebooks
-# MAGIC * [Run_Task_Notebooks]($Run_Task_Notebooks) - Run the task notebook suite.
+# MAGIC * [Run_Task_Notebooks]($Run_Task_Notebooks) - Run all transformer notebooks.
 # MAGIC * [Common]($Common)
 # MAGIC * [Template]($Template) - template for new transformer notebooks.
 # MAGIC
-# MAGIC ##### Source origin
+# MAGIC ##### Originally from
 # MAGIC * https://github.com/mlflow/mlflow/blob/master/examples/transformers
 # MAGIC
-# MAGIC Last updated: 2023-08-18
+# MAGIC Last updated: 2023-08-20
