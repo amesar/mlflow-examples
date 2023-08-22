@@ -77,5 +77,5 @@ display(predictions.select(_col_prediction))
 # COMMAND ----------
 
 # MAGIC %md ### Next notebook
-# MAGIC 
+# MAGIC
 # MAGIC Optionally, go to the **[04a_RT_Serving_Start]($04a_RT_Serving_Start)** notebook for real-time scoring.
