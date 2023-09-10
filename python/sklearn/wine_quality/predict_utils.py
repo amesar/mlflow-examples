@@ -10,7 +10,8 @@ def read_prediction_data(data_path):
     df = pd.read_csv(data_path) if data_path.endswith(".csv") else pd.read_json(data_path)
     if "quality" in df:
         df = df.drop(["quality"], axis=1)
-    print("Data:")
+    df.columns = df.columns.str.replace(" ","_")
+    print("Data to predict:")
     print("  shape:",df.shape)
     print("  dtypes:")
     for x in zip(df.columns,df.dtypes):
