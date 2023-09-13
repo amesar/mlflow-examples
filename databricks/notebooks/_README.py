@@ -5,4 +5,4 @@
 # MAGIC * [transformers]($transformers/_README) - Basic transformer examples.
 # MAGIC * [Mini_MLOps_Pipeline]($Mini_MLOps_Pipeline/_README) - Simple end-to-end "mini" MLOps pipeline.
 # MAGIC
-# MAGIC Last updated: 2023-08-21
+# MAGIC Last updated: 2023-09-12
