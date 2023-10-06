@@ -44,6 +44,10 @@ dbutils.widgets.text("04. Model alias","")
 dbutils.widgets.dropdown("05. Save signature", "yes", ["yes","no"])
 dbutils.widgets.dropdown("06. Input example", "no", ["yes","no"])
 dbutils.widgets.dropdown("07. Log input", "no", ["yes","no"])
+
+dbutils.widgets.dropdown("10. Log evaluation metrics", "no", ["yes","no"]) # XX
+log_evaluation_metrics = dbutils.widgets.get("10. Log evaluation metrics") == "yes"
+
 dbutils.widgets.dropdown("08. SHAP","no", ["yes","no"])
 dbutils.widgets.text("09. Delta table", "")
 dbutils.widgets.text("10. Max depth", "1") 
@@ -56,7 +60,7 @@ model_alias = dbutils.widgets.get("04. Model alias")
 save_signature = dbutils.widgets.get("05. Save signature") == "yes"
 input_example = dbutils.widgets.get("06. Input example") == "yes"
 log_input = dbutils.widgets.get("07. Log input") == "yes"
-shap = dbutils.widgets.get("08. SHAP") == "yes"
+log_shap = dbutils.widgets.get("08. SHAP") == "yes"
 delta_table = dbutils.widgets.get("09. Delta table")
 max_depth = to_int(dbutils.widgets.get("10. Max depth"))
 use_uc = dbutils.widgets.get("11. Unity Catalog") == "yes"
@@ -74,7 +78,8 @@ print("model_alias:", model_alias)
 print("save_signature:", save_signature)
 print("input_example:", input_example)
 print("log_input:", log_input)
-print("SHAP:", shap)
+print("log_evaluation_metrics:", log_evaluation_metrics)
+print("SHAP:", log_shap)
 print("delta_table:", delta_table)
 print("max_depth:", max_depth)
 print("use_uc:", use_uc)
@@ -187,7 +192,6 @@ with mlflow.start_run(run_name=_run_name) as run:
     log_data_input(run, log_input, data_source, X_train)
 
     model_info = mlflow.sklearn.log_model(model, "model", signature=signature, input_example=X_test)
-    print(">> TRAIN: model_info:",model_info)
     dump_obj(model_info)
 
     rmse = np.sqrt(mean_squared_error(y_test, predictions))
@@ -198,7 +202,21 @@ with mlflow.start_run(run_name=_run_name) as run:
     mlflow.log_metric("rmse", rmse)
     mlflow.log_metric("r2", r2) 
 
-    if shap:
+    if log_evaluation_metrics:
+        model_uri = mlflow.get_artifact_uri("model")
+        print("model_uri:",model_uri)
+        test_data = pd.concat([X_test, y_test], axis=1)
+        result = mlflow.evaluate(
+            model_uri,
+            test_data,
+            targets = "quality",
+            model_type ="regressor",
+            evaluators = "default",
+            feature_names = list(pdf_data.columns),
+            evaluator_config={"explainability_nsamples": 1000},
+        )
+
+    if log_shap:
         mlflow.shap.log_explanation(model.predict, X_train)
 
 # COMMAND ----------
