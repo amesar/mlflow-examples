@@ -15,7 +15,7 @@
 
 # COMMAND ----------
 
-dbutils.widgets.dropdown("Delete existing versions","yes",["yes","no"])
+dbutils.widgets.dropdown("Delete existing versions", "yes", ["yes","no"])
 delete_existing_versions = dbutils.widgets.get("Delete existing versions") == "yes"
 delete_existing_versions
 
@@ -66,7 +66,7 @@ best_run.data.tags.get("sparkDatasourceInfo")
 
 # MAGIC %md ### Create registered model 
 # MAGIC
-# MAGIC If model already exists remove all existing versions.
+# MAGIC If the model already exists remove, then delete all existing versions.
 
 # COMMAND ----------
 
@@ -105,16 +105,16 @@ display_registered_model_uri(_model_name)
 
 # COMMAND ----------
 
-# MAGIC %md **Create the version**
-
-# COMMAND ----------
-
 source = f"{best_run.info.artifact_uri}/model"
 source
 
 # COMMAND ----------
 
-version = mlflow_client.create_model_version(_model_name, source, best_run.info.run_id)
+version = mlflow_client.create_model_version(
+    name = _model_name, 
+    source = source, 
+    run_id = best_run.info.run_id
+)
 type(version), version.__dict__
 
 # COMMAND ----------
@@ -157,5 +157,5 @@ type(version), version.__dict__
 # MAGIC %md ### Next notebook
 # MAGIC
 # MAGIC Now either go to:
-# MAGIC * **[03_Batch_Scoring]($03_Batch_Scoring)** notebook for batch scoring
+# MAGIC * **[03a_Batch_Scoring]($03a_Batch_Scoring)** notebook for batch scoring
 # MAGIC * **[04a_RT_Serving_Start ]($04a_RT_Serving_Start )** notebook for real-time model serving

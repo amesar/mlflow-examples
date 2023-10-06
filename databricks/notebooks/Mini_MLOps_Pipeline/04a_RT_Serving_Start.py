@@ -25,9 +25,13 @@ print("registered_model_version:", registered_model_version)
 
 # COMMAND ----------
 
+import pandas as pd
+
 endpoints = model_serving_client.list_endpoints()
-for e in endpoints:
-    print(f"  {e['name']} - {e['creator']}")
+if len(endpoints) > 0:
+    lst = [ ( e["name"], e["creator"] ) for e in endpoints ]
+    df = pd.DataFrame(lst, columns = ["Name","Creator"])
+    display(spark.createDataFrame(df))
 
 # COMMAND ----------
 

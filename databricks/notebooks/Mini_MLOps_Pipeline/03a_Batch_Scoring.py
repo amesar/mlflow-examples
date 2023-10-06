@@ -1,7 +1,7 @@
 # Databricks notebook source
 # MAGIC %md #Batch Scoring
 # MAGIC * Scores the best model run from the [01_Train_Model]($01_Train_Model) notebook.
-# MAGIC * Uses the model URI: `models:/mini_mlops_pipeline/production`.
+# MAGIC * Uses the model URI: `models:/mini_mlops/production`.
 # MAGIC * Scores with native Sklearn, Pyfunc and UDF flavors.
 # MAGIC * Sklearn and Pyfunc scoring is executed only on the driver node, whereas UDF scoring leverages all nodes of the cluster.
 

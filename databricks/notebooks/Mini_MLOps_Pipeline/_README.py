@@ -5,8 +5,9 @@
 # MAGIC
 # MAGIC * Trains several model runs with different hyperparameters.
 # MAGIC * Registers the best run's model in the model registry as a production stage.
-# MAGIC * Batch scoring with Spark.
-# MAGIC * Real-time model scoring with Serverless Model Serving ([AWS](https://docs.databricks.com/machine-learning/model-inference/serverless/serverless-real-time-inference.html) - [Azure](https://learn.microsoft.com/en-us/azure/databricks/machine-learning/model-serving/)).
+# MAGIC * Scoring with either:
+# MAGIC   * Batch scoring with Spark.
+# MAGIC   * Real-time model scoring with Serverless Model Serving ([AWS](https://docs.databricks.com/machine-learning/model-inference/serverless/serverless-real-time-inference.html) - [Azure](https://learn.microsoft.com/en-us/azure/databricks/machine-learning/model-serving/)).
 # MAGIC   
 # MAGIC ##### Notebooks
 # MAGIC
@@ -27,7 +28,7 @@
 # MAGIC ##### Github 
 # MAGIC * [github.com/amesar/mlflow-examples/databricks/notebooks/Mini_MLOps_Pipeline](https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/Mini_MLOps_Pipeline)
 # MAGIC
-# MAGIC Last updated: _2023-08-21_
+# MAGIC Last updated: _2023-10-06_
 
 # COMMAND ----------
 

@@ -7,7 +7,7 @@
 
 # COMMAND ----------
 
-# Example: https://e2-erie.mist.databricks.com/serving-endpoints/mini_mlops_wine_quality/invocations
+# Example: https://e2-catfood.cloud.mycompany.com/serving-endpoints/mini_mlops/invocations
 
 endpoint_uri = f"https://{_host_name}/serving-endpoints/{_endpoint_name}/invocations"
 import os
@@ -18,6 +18,10 @@ endpoint_uri
 # COMMAND ----------
 
 # MAGIC %md ### Score with curL
+
+# COMMAND ----------
+
+echo $ENDPOINT_URI
 
 # COMMAND ----------
 

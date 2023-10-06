@@ -27,4 +27,4 @@ for e in endpoints:
 
 # MAGIC %md ### Next notebook
 # MAGIC
-# MAGIC Congratulations! You have finished your Mini MLOps exercise. There is no next notebook.
+# MAGIC **_Congratulations!_** You have finished your Mini MLOps Pipeline. There is no next notebook.

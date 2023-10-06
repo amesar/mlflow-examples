@@ -3,7 +3,7 @@
 # Global variables:
 #  * model_uri - URI of the registered model.
 #  * experiment_name - name of the 01_Train_Model notebook experiment. 
-#  * endpoint_name - mini_mlops_wine_quality
+#  * endpoint_name - mini_mlops
 
 # COMMAND ----------
 
@@ -27,9 +27,9 @@ def show_status():
 
 # COMMAND ----------
 
-_model_name = "mini_mlops_pipeline"
+_model_name = "mini_mlops"
 _model_uri = f"models:/{_model_name}/production"
-_endpoint_name = "mini_mlops_wine_quality"
+_endpoint_name = "mini_mlops"
 
 show_status()
 
