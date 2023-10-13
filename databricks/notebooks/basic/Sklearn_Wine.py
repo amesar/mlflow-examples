@@ -186,6 +186,7 @@ with mlflow.start_run(run_name=_run_name) as run:
     mlflow.set_tag("input_example", input_example)
     mlflow.set_tag("log_input", log_input)
     mlflow.set_tag("data_source", data_source)
+    mlflow.set_tag("workspace", databricks_utils.get_workspace_url())
 
     mlflow.log_param("max_depth", max_depth)
 
