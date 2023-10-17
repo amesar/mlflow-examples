@@ -40,8 +40,8 @@ default_model_name = "marketplace_staging_llama_2_models.models.llama_2_7b_chat_
 
 dbutils.widgets.text("1. Model", default_model_name)
 dbutils.widgets.text("2. Version", "1")
-dbutils.widgets.text("3. Input File or Table", "andre_m.default.llama2_in")
-dbutils.widgets.text("4. Output Table", "andre_m.default.llama2_out")
+dbutils.widgets.text("3. Input File or Table", "questions.csv")
+dbutils.widgets.text("4. Output Table", "")
 dbutils.widgets.dropdown("5. Write mode", "none", ["none", "append","overwrite"])
 
 model_name = dbutils.widgets.get("1. Model")
@@ -72,7 +72,7 @@ assert_widget(input_file_or_table, "3. Input File or Table")
 
 # COMMAND ----------
 
-df_questions = mk_df_from_file_or_table(input_file_or_table)
+df_questions = load_data(input_file_or_table)
 display(df_questions)
 
 # COMMAND ----------
@@ -92,7 +92,7 @@ model_uri
 
 # MAGIC %md ##### Load model as Spark UDF
 # MAGIC
-# MAGIC This takes a minute or so.
+# MAGIC This takes a minute or two.
 
 # COMMAND ----------
 
@@ -102,7 +102,7 @@ udf = mlflow.pyfunc.spark_udf(spark, model_uri, "string")
 
 # MAGIC %md ##### Call model with questions
 # MAGIC
-# MAGIC Takes about a minute per question.
+# MAGIC Takes about 30-60 seconds per question.
 
 # COMMAND ----------
 

@@ -23,7 +23,7 @@ def mk_absolute_path(path):
 
 from pyspark.sql.types import *
 
-def mk_df_from_csv_file(path):
+def load_from_path(path):
     print(f"Reading from file '{path}'")
     path = mk_absolute_path(path)
     print(f"Reading from file '{path}'")
@@ -35,10 +35,10 @@ def mk_df_from_csv_file(path):
 
 # COMMAND ----------
 
-def mk_df_from_file_or_table(name):
+def load_data(name):
     toks = name.split(".")
     if len(toks) == 3: # If unity catalog 3 component name
         print(f"Reading from table '{name}'")
         return spark.table(name)
     else: # otherwise assume its a CSV file
-        return mk_df_from_csv_file(name)
+        return load_from_path(name)

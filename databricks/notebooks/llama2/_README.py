@@ -9,5 +9,8 @@
 # MAGIC * [Model_Serve_Llama_2]($Model_Serve_Llama_22) - Real-time scoring.
 # MAGIC * [Common]($Common)
 # MAGIC
+# MAGIC ##### Github
+# MAGIC * https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/llama2
+# MAGIC
 # MAGIC
 # MAGIC Last updated: 2023-10-16
