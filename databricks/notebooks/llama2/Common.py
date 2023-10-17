@@ -5,6 +5,12 @@ def assert_widget(value, name):
 
 # COMMAND ----------
 
+ctx = dbutils.notebook.entry_point.getDbutils().notebook().getContext()
+host_name = ctx.tags().get("browserHostName").get()
+token = ctx.apiToken().get()
+
+# COMMAND ----------
+
 import os
 
 def mk_absolute_path(path):

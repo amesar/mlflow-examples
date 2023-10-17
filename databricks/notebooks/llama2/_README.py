@@ -6,7 +6,7 @@
 # MAGIC
 # MAGIC ##### Notebooks
 # MAGIC * [Batch_Score_Llama_2]($Batch_Score_Llama_2) - Batch scoring.
-# MAGIC * [Model_Serve_Llama_2]($Model_Serve_Llama_22) - Real-time scoring.
+# MAGIC * [Model_Serve_Llama_2]($Model_Serve_Llama_2) - Real-time scoring.
 # MAGIC * [Common]($Common)
 # MAGIC
 # MAGIC ##### Github
