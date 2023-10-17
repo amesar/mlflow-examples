@@ -21,7 +21,7 @@ endpoint_uri
 
 # COMMAND ----------
 
-echo $ENDPOINT_URI
+# MAGIC %sh echo $ENDPOINT_URI
 
 # COMMAND ----------
 
