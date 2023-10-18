@@ -75,7 +75,9 @@ class HttpClient(object):
 
     def _check_response(self, rsp, uri):
         if rsp.status_code < 200 or rsp.status_code > 299:
-            raise HttpException(f"HTTP status code: {rsp.status_code}. Reason: {rsp.reason} URL: {uri}", rsp.status_code)
+            msg = { "http_status_code": rsp.status_code, "uri": rsp.url, "reason": {rsp.reason}, "response": rsp.text }
+            raise HttpException(str(msg), rsp.status_code)
+
 
     def __repr__(self):
         return self.api_uri
@@ -87,3 +89,7 @@ class DatabricksHttpClient(HttpClient):
 class MlflowHttpClient(HttpClient):
     def __init__(self, host=None, token=None):
         super().__init__("api/2.0/mlflow", host, token)
+
+# COMMAND ----------
+
+
