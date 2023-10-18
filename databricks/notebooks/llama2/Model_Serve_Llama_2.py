@@ -1,16 +1,31 @@
 # Databricks notebook source
 # MAGIC %md ## Real-time Model Serving Llama 2
+# MAGIC
+# MAGIC ##### Overview
 # MAGIC * Launches a model serving endpoint with the REST API.
 # MAGIC * Sends questions to be scored to the endpoint.
+# MAGIC * WIP: Creating correct request to model serving endpoint in the works.
+# MAGIC
+# MAGIC ##### Docs
 # MAGIC * https://docs.databricks.com/api/workspace/servingendpoints
 # MAGIC * https://docs.databricks.com/en/machine-learning/model-serving/create-manage-serving-endpoints.html#gpu
 # MAGIC
+# MAGIC ##### Widget values
+# MAGIC _Workload type_
+# MAGIC
 # MAGIC [GPU types](https://docs.databricks.com/en/machine-learning/model-serving/create-manage-serving-endpoints.html#gpu):
 # MAGIC * GPU
-# MAGIC * GPU_MEDIUM
+# MAGIC * GPU_MEDIUM - works fine
 # MAGIC * GPU_MEDIUM_4
 # MAGIC * GPU_MEDIUM_8
 # MAGIC * GPU_LARGE_8
+# MAGIC
+# MAGIC _Workload size_
+# MAGIC * Small - works fine
+# MAGIC * Medium 
+# MAGIC * Large
+# MAGIC
+# MAGIC ##### Last updated: 2023-10-18
 
 # COMMAND ----------
 
@@ -37,23 +52,26 @@ dbutils.widgets.text("1. Model", default_model_name)
 dbutils.widgets.text("2. Version", "1")
 dbutils.widgets.text("3. Endpoint", "llama2_simple")
 dbutils.widgets.text("4. Workload type", "")
+dbutils.widgets.text("5. Workload size", "")
 
 model_name = dbutils.widgets.get("1. Model")
 version = dbutils.widgets.get("2. Version")
 endpoint_name = dbutils.widgets.get("3. Endpoint")
 workload_type = dbutils.widgets.get("4. Workload type")
+workload_size = dbutils.widgets.get("5. Workload size")
 
 print("model:", model_name)
 print("version:", version)
 print("endpoint_name:", endpoint_name)
 print("workload_type:", workload_type)
+print("workload_size:", workload_size)
 
 # COMMAND ----------
 
 assert_widget(model_name, "1. Model name")
 assert_widget(version, "2. Version")
-assert_widget(endpoint_name, "3. Endpoint")
-assert_widget(endpoint_name, "4. Endpoint")
+assert_widget(workload_type, "4. Workload type")
+assert_widget(workload_size, "5. Workload size")
 
 # COMMAND ----------
 
@@ -78,7 +96,6 @@ spec = {
           "workload_size": "Medium",
           "scale_to_zero_enabled": False,
           "workload_type": workload_type,
-          "scale_to_zero_enabled": True
         } 
       ] 
     } 
@@ -105,19 +122,11 @@ model_serving_client.wait_until(endpoint_name, max=50, sleep_time=10)
 
 # COMMAND ----------
 
-model_serving_client.get_endpoint(endpoint_name)
-
-# COMMAND ----------
-
-# MAGIC %md #### List endpoints
-
-# COMMAND ----------
-
 # MAGIC %md #### Get endpoint info
 
 # COMMAND ----------
 
-# MAGIC %md #### Wait until the serving endpoint is ready
+model_serving_client.get_endpoint(endpoint_name)
 
 # COMMAND ----------
 
@@ -162,8 +171,4 @@ import json
 
 headers = { "Authorization": f"Bearer {token}", "Content-Type": "application/json" }
 rsp = requests.post(endpoint_uri, headers=headers, data=questions, timeout=15)
-rsp.text
-
-# COMMAND ----------
-
-
+rsp.status_code, print(rsp.json())

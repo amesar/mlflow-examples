@@ -9,6 +9,8 @@
 # MAGIC * You can optionally write the answers to an output table.
 # MAGIC * All table names are 3 part UC names such `andre_m.data.llama2_answers`.
 # MAGIC * Runs on `e2-dogfood` workspace. Mileage may vary on other workspaces.
+# MAGIC * Cluster instance type:
+# MAGIC For bactch g4dn.xlarge works fine 
 # MAGIC
 # MAGIC ##### Widgets
 # MAGIC * `1. Model` - Model name.
@@ -18,7 +20,7 @@
 # MAGIC * `4. Output Table` - Output table of answers (includes the original question).
 # MAGIC * `5. Write mode` - Write mode for output table. If "none", will not write to the table.
 # MAGIC
-# MAGIC Last updated: 2023-10-16
+# MAGIC ##### Last updated: 2023-10-18
 
 # COMMAND ----------
 
