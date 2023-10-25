@@ -14,9 +14,9 @@ entry_points:
       tensorflow_autolog: {type: boolean, default: False}
     command: "python train.py
                 --epochs {epochs}
-                --batch_size {batch_size}
-                --model_name {model_name}
-                --log_as_onnx {log_as_onnx}
-                --mlflow_custom_log {mlflow_custom_log}
-                --keras_autolog {keras_autolog}
-                --tensorflow_autolog {tensorflow_autolog}"
+                --batch-size {batch_size}
+                --model-name {model_name}
+                --log-as-onnx {log_as_onnx}
+                --mlflow-custom-log {mlflow_custom_log}
+                --keras-autolog {keras_autolog}
+                --tensorflow-autolog {tensorflow_autolog}"
