@@ -12,18 +12,18 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("1. Metric", "training_rmse")
-metric = dbutils.widgets.get("1. Metric")
-
-dbutils.widgets.dropdown("2. Delete existing versions", "yes", ["yes","no"])
-delete_existing_versions = dbutils.widgets.get("2. Delete existing versions") == "yes"
-
-print("metric:", metric)
-print("delete_existing_versions:", delete_existing_versions)
+# MAGIC %run ./includes/Common
 
 # COMMAND ----------
 
-# MAGIC %md ### Display experiment
+dbutils.widgets.text("1. Metric", "training_rmse")
+metric = dbutils.widgets.get("1. Metric")
+
+dbutils.widgets.dropdown("2. Delete registered model", "yes", ["yes", "no"])
+delete_registered_model = dbutils.widgets.get("2. Delete registered model") == "yes"
+
+print("metric:", metric)
+print("delete_registered_model:", delete_registered_model)
 
 # COMMAND ----------
 
@@ -76,18 +76,20 @@ from mlflow.exceptions import MlflowException, RestException
 
 try:
     registered_model = mlflow_client.get_registered_model(_model_name)
-    print(f"Found {_model_name}")
-    versions = mlflow_client.get_latest_versions(_model_name)
-    print(f"Found {len(versions)} versions")
-    if delete_existing_versions:
+    print(f"Found registered model '{_model_name}'")
+    if delete_registered_model:
+        versions = mlflow_client.get_latest_versions(_model_name)
+        print(f"Found {len(versions)} model versions to delete")
         for v in versions:
-            print(f"  version={v.version} status={v.status} stage={v.current_stage} run_id={v.run_id}")
+            print(f"  Deleting version={v.version} status={v.status} stage={v.current_stage} run_id={v.run_id}")
             mlflow_client.transition_model_version_stage(_model_name, v.version, "Archived")
             mlflow_client.delete_model_version(_model_name, v.version)
+        print(f"Deleting registered model '{_model_name}'")
+        mlflow_client.delete_registered_model(_model_name)
+        registered_model = mlflow_client.create_registered_model(_model_name)
 except RestException as e:
-    print("INFO:",e)
     if e.error_code == "RESOURCE_DOES_NOT_EXIST":
-        print(f"Creating {_model_name}")
+        print(f"Creating registered model '{_model_name}'")
         registered_model = mlflow_client.create_registered_model(_model_name)
     else:
         raise e

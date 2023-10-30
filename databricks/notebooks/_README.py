@@ -6,4 +6,4 @@
 # MAGIC * [transformers]($transformers/_README) - Basic Hugging Face transformer task examples.
 # MAGIC * [Mini_MLOps_Pipeline]($Mini_MLOps_Pipeline/_README) - Simple end-to-end "mini" MLOps pipeline.
 # MAGIC
-# MAGIC Last updated: 2023-10-16
+# MAGIC Last updated: 2023-10-30

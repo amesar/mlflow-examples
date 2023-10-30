@@ -42,14 +42,19 @@ class ModelServingClient:
             if not endpoint:
                 return {}
             #  'state': {'ready': 'READY', 'config_update': 'NOT_UPDATING'},
-            state = endpoint.get("state",None)
+            state = endpoint.get("state")
             now = time.strftime("%Y-%m-%d_%H:%M:%S", time.gmtime(time.time()))
             print(f"{now}: Waiting {i+1}/{max}: {state}")
             if state["ready"] == "READY" or state["config_update"] == "UPDATE_FAILED":
+                print("Done waiting. State:", state)
                 return state
             import time
             time.sleep(sleep_time)
         return {}
+
+# COMMAND ----------
+
+databricks_client = DatabricksHttpClient()
 
 # COMMAND ----------
 

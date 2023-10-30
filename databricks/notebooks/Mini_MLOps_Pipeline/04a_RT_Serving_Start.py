@@ -64,13 +64,13 @@ print(f"About to launch endpoint '{_endpoint_name}'")
 
 served_model = "my-model"
 spec = {
-    "name": f"{_endpoint_name}",
+    "name": _endpoint_name,
     "config": { 
       "served_models": [ 
         { 
-          "name": f"{served_model}",
-          "model_name": f"{_model_name}",
-          f"model_version": f"{registered_model_version}",
+          "name": served_model,
+          "model_name": _model_name,
+          f"model_version": registered_model_version,
           "workload_size": "Small",
           "scale_to_zero_enabled": False
         } 
@@ -93,7 +93,7 @@ model_serving_client.start_endpoint(spec)
 
 # COMMAND ----------
 
-model_serving_client.wait_until(_endpoint_name, max=50, sleep_time=4)
+model_serving_client.wait_until(_endpoint_name, max=60, sleep_time=10)
 
 # COMMAND ----------
 

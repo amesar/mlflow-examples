@@ -65,6 +65,7 @@ data.describe()
 # COMMAND ----------
 
 from sklearn.model_selection import train_test_split
+from mlflow.models.signature import infer_signature
 
 train, test = train_test_split(data, test_size=0.30, random_state=42)
 X_train = train.drop([_col_label], axis=1)
@@ -92,6 +93,7 @@ def train_no_autologging(max_depth):
     import time
     now = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(time.time()))
     context = experiment.name.split("/")[1]
+    
     with mlflow.start_run(run_name=f"No autolog - {context} - {now}") as run:
         mlflow.set_tag("mlflow_version", mlflow.__version__)
         mlflow.set_tag("context", context)
@@ -100,10 +102,11 @@ def train_no_autologging(max_depth):
         model = DecisionTreeRegressor(max_depth=max_depth)
         model.fit(X_train, y_train)
         predictions = model.predict(X_test)
+        signature = infer_signature(X_train, predictions)
         rmse = np.sqrt(mean_squared_error(y_test, predictions))
         mlflow.log_metric("training_rmse", rmse)
         print(f"rmse={rmse:5.3f} max_depth={max_depth:02d} run_id={run.info.run_id}")
-        mlflow.sklearn.log_model(model, "model")
+        mlflow.sklearn.log_model(model, "model", signature=signature)
 
 # COMMAND ----------
 

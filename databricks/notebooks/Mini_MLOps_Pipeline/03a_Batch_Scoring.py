@@ -3,7 +3,7 @@
 # MAGIC * Scores the best model run from the [01_Train_Model]($01_Train_Model) notebook.
 # MAGIC * Uses the model URI: `models:/mini_mlops/production`.
 # MAGIC * Scores with native Sklearn, Pyfunc and UDF flavors.
-# MAGIC * Sklearn and Pyfunc scoring is executed only on the driver node, whereas UDF scoring leverages all nodes of the cluster.
+# MAGIC * Sklearn and Pyfunc scoring is executed only on the driver node, whereas UDF scoring uses all nodes of the cluster.
 
 # COMMAND ----------
 
