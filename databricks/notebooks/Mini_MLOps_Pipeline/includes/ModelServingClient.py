@@ -1,4 +1,8 @@
 # Databricks notebook source
+# MAGIC %run ./HttpClient
+
+# COMMAND ----------
+
 class ModelServingClient:
 
     def __init__(self):
@@ -50,6 +54,3 @@ class ModelServingClient:
 # COMMAND ----------
 
 model_serving_client = ModelServingClient()
-
-# COMMAND ----------
-

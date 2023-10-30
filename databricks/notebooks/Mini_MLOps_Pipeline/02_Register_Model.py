@@ -2,7 +2,8 @@
 # MAGIC %md # Register Best Model in Model Registry
 # MAGIC * Creates a new registered model if it doesn't already exist.
 # MAGIC * Deletes all current model versions (optional).
-# MAGIC * Finds the best model (lowest RMSE metric) generated from [01_Train_Model]($01_Train_Model) notebook experiment.
+# MAGIC * Finds the best model (lowest 'training_rmse' metric) generated from [01_Train_Model]($01_Train_Model) notebook experiment.
+# MAGIC * Use 'training_mean_absolute_error' if you autolog your run.
 # MAGIC * Adds the best run as a registered model version and promotes it to the `production` stage.
 
 # COMMAND ----------
@@ -11,13 +12,14 @@
 
 # COMMAND ----------
 
-# MAGIC %run ./includes/Common
+dbutils.widgets.text("1. Metric", "training_rmse")
+metric = dbutils.widgets.get("1. Metric")
 
-# COMMAND ----------
+dbutils.widgets.dropdown("2. Delete existing versions", "yes", ["yes","no"])
+delete_existing_versions = dbutils.widgets.get("2. Delete existing versions") == "yes"
 
-dbutils.widgets.dropdown("Delete existing versions", "yes", ["yes","no"])
-delete_existing_versions = dbutils.widgets.get("Delete existing versions") == "yes"
-delete_existing_versions
+print("metric:", metric)
+print("delete_existing_versions:", delete_existing_versions)
 
 # COMMAND ----------
 
@@ -35,22 +37,22 @@ display_experiment_uri(experiment)
 
 # COMMAND ----------
 
-df = mlflow.search_runs(experiment_id, order_by=["metrics.rmse ASC"])
-df = df[["run_id","metrics.training_rmse","params.max_depth"]]
-df = df.round({"metrics.training_rmse": 3})
+df = mlflow.search_runs(experiment_id, order_by=[f"metrics.{metric} ASC"])
+df = df[["run_id",f"metrics.{metric}","params.max_depth"]]
+df = df.round({f"metrics.{metric}": 3})
 display(df)
 
 # COMMAND ----------
 
 # MAGIC %md ### Find best run
 # MAGIC
-# MAGIC Search for the run with lowest RMSE metric.
+# MAGIC Search for the run with lowest training RMSE metric.
 
 # COMMAND ----------
 
-runs = mlflow_client.search_runs(experiment_id, order_by=["metrics.training_rmse ASC"], max_results=1)
+runs = mlflow_client.search_runs(experiment_id, order_by=[f"metrics.{metric} ASC"], max_results=1)
 best_run = runs[0]
-best_run.info.run_id, round(best_run.data.metrics["training_rmse"],3), best_run.data.params
+best_run.info.run_id, round(best_run.data.metrics[metric],3), best_run.data.params
 
 # COMMAND ----------
 
@@ -88,7 +90,7 @@ except RestException as e:
         print(f"Creating {_model_name}")
         registered_model = mlflow_client.create_registered_model(_model_name)
     else:
-        raise Exception(e)
+        raise e
 
 # COMMAND ----------
 
