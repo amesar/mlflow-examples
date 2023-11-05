@@ -1,9 +1,13 @@
 # Databricks notebook source
 # MAGIC %md ## Start a model serving endpoint
+# MAGIC
+# MAGIC * https://docs.databricks.com/api/workspace/servingendpoints/create
+# MAGIC * [../includes/ModelServingClient]($../includes/ModelServingClient)
+# MAGIC
 
 # COMMAND ----------
 
-# MAGIC %md ### Setup includes
+# MAGIC %md ### Setup
 
 # COMMAND ----------
 
@@ -11,7 +15,7 @@
 
 # COMMAND ----------
 
-# MAGIC %md ### Setup widgets
+# MAGIC %run ../includes/ModelServingClient
 
 # COMMAND ----------
 

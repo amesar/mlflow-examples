@@ -1,5 +1,7 @@
 # Databricks notebook source
 # MAGIC %md ## Score a model with RT Model Serving
+# MAGIC
+# MAGIC * https://docs.databricks.com/en/machine-learning/model-serving/score-model-serving-endpoints.html
 
 # COMMAND ----------
 

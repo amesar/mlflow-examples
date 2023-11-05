@@ -37,7 +37,7 @@ class ModelServingClient:
     
     def wait_until(self, endpoint_name, max=20, sleep_time=2):
         import time
-        for i in range(0,max):
+        for i in range(0, max):
             endpoint = self.get_endpoint(endpoint_name)
             if not endpoint:
                 return {}

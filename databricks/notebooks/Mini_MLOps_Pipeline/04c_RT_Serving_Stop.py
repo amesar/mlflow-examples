@@ -1,9 +1,24 @@
 # Databricks notebook source
 # MAGIC %md ## Stop a model serving endpoint
+# MAGIC
+# MAGIC * https://docs.databricks.com/api/workspace/servingendpoints/delete
+# MAGIC * [../includes/ModelServingClient]($../includes/ModelServingClient)
+
+# COMMAND ----------
+
+# MAGIC %md #### Setup
 
 # COMMAND ----------
 
 # MAGIC %run ./includes/Common
+
+# COMMAND ----------
+
+# MAGIC %run ../includes/ModelServingClient
+
+# COMMAND ----------
+
+# MAGIC %md ### Stop endpoint
 
 # COMMAND ----------
 

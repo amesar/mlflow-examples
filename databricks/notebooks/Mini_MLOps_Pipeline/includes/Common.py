@@ -165,9 +165,3 @@ def wait_until_version_ready(model_name, model_version, sleep_time=1, iterations
         time.sleep(sleep_time)
     end = time.time()
     print(f"Waited {round(end-start,2)} seconds")
-
-# COMMAND ----------
-
-# MAGIC %run ./ModelServingClient
-
-XX

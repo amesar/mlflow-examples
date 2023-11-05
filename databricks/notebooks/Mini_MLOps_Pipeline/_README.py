@@ -28,7 +28,7 @@
 # MAGIC ##### Github 
 # MAGIC * [github.com/amesar/mlflow-examples/databricks/notebooks/Mini_MLOps_Pipeline](https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/Mini_MLOps_Pipeline)
 # MAGIC
-# MAGIC Last updated: _2023-10-30_
+# MAGIC Last updated: _2023-11-05_
 
 # COMMAND ----------
 

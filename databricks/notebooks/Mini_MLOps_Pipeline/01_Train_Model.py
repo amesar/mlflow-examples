@@ -22,10 +22,10 @@
 
 # COMMAND ----------
 
-dbutils.widgets.dropdown("1. Autologging","no",["yes","no"])
+dbutils.widgets.dropdown("1. Autologging", "no", ["yes","no"])
 autologging = dbutils.widgets.get("1. Autologging") == "yes"
 
-dbutils.widgets.dropdown("2. Delete existing runs","yes",["yes","no"])
+dbutils.widgets.dropdown("2. Delete existing runs", "yes", ["yes","no"])
 do_delete_runs = dbutils.widgets.get("2. Delete existing runs") == "yes"
 
 dbutils.widgets.text("3. Delta table", "")
