@@ -22,8 +22,8 @@
 # MAGIC   * [04c_RT_Serving_Stop]($04c_RT_Serving_Stop) - Stop endpoint.
 # MAGIC * Helper notebooks:
 # MAGIC   * [Common]($includes/Common) - Helper functions.
-# MAGIC   * [ModelServingClient]($includes/ModelServingClient) - Python HTTP client to invoke Databricks Model Serving API.
-# MAGIC   * [HttpClient]($includes/HttpClient) - Python HTTP client to invoke Databricks API.
+# MAGIC   * [ModelServingClient]($../includes/ModelServingClient) - Python HTTP client to invoke Databricks Model Serving API.
+# MAGIC   * [HttpClient]($../includes/HttpClient) - Python HTTP client to invoke Databricks API.
 # MAGIC
 # MAGIC ##### Github 
 # MAGIC * [github.com/amesar/mlflow-examples/databricks/notebooks/Mini_MLOps_Pipeline](https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/Mini_MLOps_Pipeline)

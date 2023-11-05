@@ -169,3 +169,5 @@ def wait_until_version_ready(model_name, model_version, sleep_time=1, iterations
 # COMMAND ----------
 
 # MAGIC %run ./ModelServingClient
+
+XX

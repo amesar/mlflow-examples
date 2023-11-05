@@ -13,17 +13,22 @@ import os
 import json
 import requests
 
+_ctx = dbutils.notebook.entry_point.getDbutils().notebook().getContext()
+
 def get_token():
-    return dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
+    return _ctx.apiToken().get()
 
 def get_host():
-    host = dbutils.notebook.entry_point.getDbutils().notebook().getContext().tags().get("browserHostName").get()
+    host = _ctx.tags().get("browserHostName").get()
     return f"https://{host}"
 
-TIMEOUT = 15
+_TIMEOUT = 15
 
-""" Wrapper for get and post methods for Databricks REST APIs. """
+
 class HttpClient(object):
+    """
+    Wrapper for get and post methods for Databricks REST APIs.
+    """
     def __init__(self, api_prefix, host=None, token=None):
         if not host: host = get_host()
         if not token: token = get_token()
@@ -60,7 +65,7 @@ class HttpClient(object):
         """
         uri = self._mk_uri(resource)
         data = json.dumps(data) if data else None
-        rsp = requests.delete(uri, headers=self._mk_headers(), data=data, timeout=TIMEOUT)
+        rsp = requests.delete(uri, headers=self._mk_headers(), data=data, timeout=_TIMEOUT)
         self._check_response(rsp, uri)
         return rsp
 
@@ -75,10 +80,12 @@ class HttpClient(object):
 
     def _check_response(self, rsp, uri):
         if rsp.status_code < 200 or rsp.status_code > 299:
-            raise HttpException(f"HTTP status code: {rsp.status_code}. Reason: {rsp.reason} URL: {uri}", rsp.status_code)
+            msg = { "http_status_code": rsp.status_code, "uri": rsp.url, "reason": {rsp.reason}, "response": rsp.text }
+            raise HttpException(str(msg), rsp.status_code)
 
     def __repr__(self):
         return self.api_uri
+
 
 class DatabricksHttpClient(HttpClient):
     def __init__(self, host=None, token=None):

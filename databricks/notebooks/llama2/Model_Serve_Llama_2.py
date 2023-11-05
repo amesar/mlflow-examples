@@ -42,7 +42,7 @@ print("DBR: ", os.environ.get("DATABRICKS_RUNTIME_VERSION"))
 
 # COMMAND ----------
 
-# MAGIC %run ./includes/ModelServingClient
+# MAGIC %run ../includes/ModelServingClient
 
 # COMMAND ----------
 
