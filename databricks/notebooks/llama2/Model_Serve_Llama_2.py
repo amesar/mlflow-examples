@@ -1,17 +1,18 @@
 # Databricks notebook source
 # MAGIC %md ## Real-time Model Serving Llama 2
 # MAGIC
-# MAGIC ##### Overview
+# MAGIC #### Overview
 # MAGIC * Launches a model serving endpoint with the REST API.
 # MAGIC * Sends questions to be scored to the endpoint.
 # MAGIC * WIP: Creating correct request to model serving endpoint in the works.
+# MAGIC * Assuming e2-dogfood model: `marketplace_staging_llama_2_models.models.llama_2_7b_chat_hf`
 # MAGIC
-# MAGIC ##### Docs
+# MAGIC #### Docs
 # MAGIC * https://docs.databricks.com/api/workspace/servingendpoints
 # MAGIC * https://docs.databricks.com/en/machine-learning/model-serving/create-manage-serving-endpoints.html#gpu
 # MAGIC
-# MAGIC ##### Widget values
-# MAGIC _Workload type_
+# MAGIC #### Widget values
+# MAGIC ##### _Workload type_
 # MAGIC
 # MAGIC [GPU types](https://docs.databricks.com/en/machine-learning/model-serving/create-manage-serving-endpoints.html#gpu):
 # MAGIC * GPU
@@ -20,12 +21,12 @@
 # MAGIC * GPU_MEDIUM_8
 # MAGIC * GPU_LARGE_8
 # MAGIC
-# MAGIC _Workload size_
+# MAGIC ##### _Workload size_
 # MAGIC * Small - works fine
 # MAGIC * Medium 
 # MAGIC * Large
 # MAGIC
-# MAGIC ##### Last updated: 2023-10-18
+# MAGIC ##### Last updated: 2023-11-05
 
 # COMMAND ----------
 
@@ -51,8 +52,8 @@ default_model_name = "marketplace_staging_llama_2_models.models.llama_2_7b_chat_
 dbutils.widgets.text("1. Model", default_model_name)
 dbutils.widgets.text("2. Version", "1")
 dbutils.widgets.text("3. Endpoint", "llama2_simple")
-dbutils.widgets.text("4. Workload type", "")
-dbutils.widgets.text("5. Workload size", "")
+dbutils.widgets.text("4. Workload type", "GPU_MEDIUM")
+dbutils.widgets.text("5. Workload size", "Small")
 
 model_name = dbutils.widgets.get("1. Model")
 version = dbutils.widgets.get("2. Version")
@@ -118,7 +119,7 @@ model_serving_client.start_endpoint(spec)
 
 # COMMAND ----------
 
-model_serving_client.wait_until(endpoint_name, max=50, sleep_time=10)
+model_serving_client.wait_until(endpoint_name, max=60, sleep_time=10)
 
 # COMMAND ----------
 
@@ -167,8 +168,7 @@ endpoint_uri
 # COMMAND ----------
 
 import requests
-import json
 
 headers = { "Authorization": f"Bearer {token}", "Content-Type": "application/json" }
 rsp = requests.post(endpoint_uri, headers=headers, data=questions, timeout=15)
-rsp.status_code, print(rsp.json())
+rsp.status_code, rsp.text

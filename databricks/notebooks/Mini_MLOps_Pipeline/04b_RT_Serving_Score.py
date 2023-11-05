@@ -19,7 +19,7 @@ endpoint_uri
 
 # COMMAND ----------
 
-# MAGIC %md ### Score with curL
+# MAGIC %md ### Score with curl
 
 # COMMAND ----------
 
