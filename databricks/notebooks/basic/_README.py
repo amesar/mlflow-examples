@@ -27,7 +27,10 @@
 # MAGIC * [Versions]($Versions) - Show version information.
 # MAGIC * [Create_Wine_Quality_Table]($Create_Wine_Quality_Table) - Create winequality_white table for Sklearn_Wine notebooks.
 # MAGIC
-# MAGIC **Scala SparkML Interop Notebooks**
+# MAGIC ##### Scala SparkML Interop Notebooks
 # MAGIC * [README]($scala_sparkml_interop/00_README)
+# MAGIC
+# MAGIC ##### Github
+# MAGIC * https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/basic
 # MAGIC
 # MAGIC Last updated: 2023-11-05

@@ -1,24 +1,9 @@
 # Databricks notebook source
 # MAGIC %md # Sklearn MLflow train and predict with ONNX
 # MAGIC
-# MAGIC **Overview**
-# MAGIC * Trains and saves model as Sklearn and ONNX flavor
-# MAGIC * Predicts using ONNX native, ONNX Pyfunc and ONNX UDF flavors
-# MAGIC
-# MAGIC **Successful run - 2023-07-12**
-# MAGIC   ```
-# MAGIC +-------------------------------+---------------------------------------------------+
-# MAGIC | Name                          | Version                                           |
-# MAGIC |-------------------------------+---------------------------------------------------|
-# MAGIC | mlflow version:               | 2.4.2                                             |
-# MAGIC | $DATABRICKS_RUNTIME_VERSION:  | 13.2                                              |                                           |
-# MAGIC | sklearn version:              | 1.2.2                                             |
-# MAGIC | onnx version:                 | 1.14.0                                            |
-# MAGIC | onnxmltools version:          | 1.11.1                                            |
-# MAGIC | onnxruntime version:          | 1.15.1                                            |
-# MAGIC | skl2onnx version:             | 1.14.1                                            |
-# MAGIC +-------------------------------+---------------------------------------------------+
-# MAGIC ```
+# MAGIC ##### Overview
+# MAGIC * Trains and saves model as Sklearn and ONNX flavors
+# MAGIC * Predicts using ONNX native, Pyfunc and Spark UDF flavors
 
 # COMMAND ----------
 
@@ -26,9 +11,9 @@
 
 # COMMAND ----------
 
-# MAGIC %pip install onnx==1.14.0
-# MAGIC %pip install onnxruntime==1.15.1
-# MAGIC %pip install skl2onnx==1.14.1
+# MAGIC %pip install onnx==1.15.0
+# MAGIC %pip install onnxruntime==1.16.1
+# MAGIC %pip install skl2onnx==1.15.0
 
 # COMMAND ----------
 
@@ -118,10 +103,11 @@ with mlflow.start_run(run_name="sklearn_onnx") as run:
     initial_type = [('float_input', skl2onnx.common.data_types.FloatTensorType([None, test_x.shape[1]]))]
     onnx_model = skl2onnx.convert_sklearn(sklearn_model, initial_types=initial_type)
     print("onnx_model.type:", type(onnx_model))
+    
     mlflow.onnx.log_model(onnx_model, "onnx-model", 
         signature = signature, 
         input_example = test_x,
-        registered_model_name=model_name
+        registered_model_name = model_name
     )
         
     # Run predictions and log metrics
