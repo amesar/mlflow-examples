@@ -137,7 +137,7 @@ data_to_predict = WineQuality.prep_prediction_data(data)
 
 # COMMAND ----------
 
-# MAGIC %md #### Predict as PyFunc ONNX flavor
+# MAGIC %md #### Predict as Pyfunc  flavor
 
 # COMMAND ----------
 
@@ -171,7 +171,7 @@ display(pd.DataFrame(predictions, columns=["prediction"]))
 
 # COMMAND ----------
 
-# MAGIC %md #### Predict as ONNX UDF
+# MAGIC %md #### Predict as Spark UDF
 
 # COMMAND ----------
 
