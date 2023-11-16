@@ -1,15 +1,16 @@
 # Databricks notebook source
 # MAGIC %md ## Sklearn feature store data preparation
 # MAGIC
-# MAGIC **Overview**
+# MAGIC ##### Overview
 # MAGIC * Creates  feature table.
-# MAGIC * Run this notebook once before running [Sklearn_Wine_FS]($Sklearn_Wine_FS).
+# MAGIC * Run this notebook once before running [03_Sklearn_Wine_FS]($03_Sklearn_Wine_FS).
+# MAGIC * Creates table `andre_fs_wine` in specified database.
 # MAGIC
-# MAGIC **Widgets**
+# MAGIC ##### Widgets
 # MAGIC * `1. Database` 
-# MAGIC * `2. Datapath` 
-# MAGIC * `3. Overwrite table`
-# MAGIC * `4. Unity Catalog`
+# MAGIC * `2. Datapath` - /databricks-datasets/wine-quality/winequality-white.csv
+# MAGIC * `3. Overwrite feature table`
+# MAGIC * `4. Drop feature table`
 
 # COMMAND ----------
 
@@ -21,13 +22,13 @@ fs_default_datapath = "/databricks-datasets/wine-quality/winequality-white.csv"
 
 dbutils.widgets.text("1. Database", "")
 dbutils.widgets.text("2. Datapath", fs_default_datapath)
-dbutils.widgets.dropdown("3. Overwrite table","yes",["yes","no"])
-dbutils.widgets.dropdown("4. Unity Catalog", "no", ["yes","no"])
+dbutils.widgets.dropdown("3. Overwrite table", "yes", ["yes","no"])
+dbutils.widgets.dropdown("4. Drop table", "no", ["yes","no"])
 
 fs_database = dbutils.widgets.get("1. Database")
 fs_datapath = dbutils.widgets.get("2. Datapath")
-overwrite_table = dbutils.widgets.get("3. Overwrite table")
-use_uc = dbutils.widgets.get("4. Unity Catalog") == "yes"
+overwrite_table = dbutils.widgets.get("3. Overwrite table") == "yes"
+drop_table = dbutils.widgets.get("4. Drop table") == "yes"
 
 fs_table = f"{fs_database}.wine_features"
 
@@ -35,17 +36,11 @@ print("fs_database:", fs_database)
 print("fs_datapath:", fs_datapath)
 print("fs_table:", fs_table)
 print("overwrite_table:", overwrite_table)
-print("use_uc:", use_uc)
+print("drop_table:", drop_table)
 
 # COMMAND ----------
 
 assert_widget(fs_database, "1. Database")
-
-# COMMAND ----------
-
-if use_uc:
-    client = activate_unity_catalog()
-    print("New client._registry_uri:",client._registry_uri)
 
 # COMMAND ----------
 
@@ -102,25 +97,24 @@ fs_client = FeatureStoreClient()
 
 # COMMAND ----------
 
-def fs_table_exists(fs_table):
-    try:
-        fs_client.get_table(fs_table)
-        return True
-    except Exception as e: # ValueError
-        print("INFO:",e,type(e))
-        return False
-fs_table_exists(fs_table)
+if drop_table:
+    print(f"Dropping feature table '{fs_table}'")
+    fs_client.drop_table(fs_table)
 
 # COMMAND ----------
 
 if not fs_table_exists(fs_table):
-    print(f"Creating feature table {fs_table}")
+    print(f"Creating feature table '{fs_table}'")
     fs_client.create_table(
         name = fs_table,
         primary_keys = ["wine_id"],
         df = features_df,
      description="id and features of all wine",
     )
+
+# COMMAND ----------
+
+# MAGIC %md ### Describe feature table
 
 # COMMAND ----------
 

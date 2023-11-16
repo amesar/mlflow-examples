@@ -22,13 +22,11 @@ dbutils.widgets.text("1. Experiment name", "")
 dbutils.widgets.text("2. Registered model", "")
 dbutils.widgets.text("3. Feature table", "")
 dbutils.widgets.text("4. Max depth", "3")
-dbutils.widgets.dropdown("5. Unity Catalog", "no", ["yes","no"])
 
 experiment_name = dbutils.widgets.get("1. Experiment name")
 model_name = dbutils.widgets.get("2. Registered model")
 fs_table_name = dbutils.widgets.get("3. Feature table")
 max_depth = int(dbutils.widgets.get("4. Max depth"))
-use_uc = dbutils.widgets.get("5. Unity Catalog") == "yes"
 
 fs_datapath = "/databricks-datasets/wine-quality/winequality-white.csv"
 
@@ -40,7 +38,6 @@ print("model_name:", model_name)
 print("fs_table_name:", fs_table_name)
 print("fs_datapath:", fs_datapath)
 print("max_depth:", max_depth)
-print("use_uc:", use_uc)
 
 # COMMAND ----------
 
@@ -55,9 +52,9 @@ if experiment_name:
 
 # COMMAND ----------
 
-if use_uc:
+if model_name and is_unity_catalog(model_name):
     client = activate_unity_catalog()
-    print("New client._registry_uri:",client._registry_uri)
+    print("New client._registry_uri:", client._registry_uri)
 
 # COMMAND ----------
 
@@ -173,7 +170,6 @@ if model_name:
 
 # COMMAND ----------
 
-#model_uri = f"models:/{model_name}/latest"
 model_uri = f"runs:/{run.info.run_id}/model"
 model_uri
 
@@ -194,12 +190,12 @@ display(predictions_df["wine_id", "prediction"])
 # COMMAND ----------
 
 model_info = mlflow.models.get_model_info(model_uri)
-#dump_obj_as_json(model_info) # fails if UC
+#dump_obj_as_json(model_info) # UC: TypeError: Object of type ModelSignature is not JSON serializable
 dump_obj(model_info)
 
 # COMMAND ----------
 
-# MAGIC %md ### Pyfunc predict
+# MAGIC %md ### Pyfunc predict - fails - TODO
 
 # COMMAND ----------
 

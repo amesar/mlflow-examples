@@ -40,3 +40,14 @@ def _create_id_df(raw_df):
 def create_id_df(data_path):
     raw_df = read_wine_data(data_path)
     return _create_id_df(raw_df)
+
+# COMMAND ----------
+
+def fs_table_exists(fs_table): 
+    try:
+        fs_client.get_table(fs_table)
+        print(f"Feature table '{fs_table}' exists")
+        return True
+    except Exception as e: # ValueError 
+        print("INFO:", e, type(e))
+        return False

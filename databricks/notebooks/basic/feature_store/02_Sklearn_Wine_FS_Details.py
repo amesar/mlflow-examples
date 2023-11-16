@@ -2,9 +2,6 @@
 # MAGIC %md ## Sklearn Wine Feature Store - Details
 # MAGIC
 # MAGIC Get details of feature table.
-# MAGIC
-# MAGIC Widgets:
-# MAGIC * `1. Feature table`
 
 # COMMAND ----------
 
@@ -13,7 +10,6 @@
 # COMMAND ----------
 
 dbutils.widgets.text("1. Feature table", "")
-
 fs_table_name = dbutils.widgets.get("1. Feature table")
 
 print("fs_table_name:", fs_table_name)
@@ -21,14 +17,6 @@ print("fs_table_name:", fs_table_name)
 # COMMAND ----------
 
 assert_widget(fs_table_name, "1. Feature table")
-
-# COMMAND ----------
-
-#toggle_unity_catalog(fs_table_name)
-
-# COMMAND ----------
-
-mlflow.get_tracking_uri()
 
 # COMMAND ----------
 
