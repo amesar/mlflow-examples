@@ -2,13 +2,13 @@
 # MAGIC %md # Basic Keras MNIST train and predict notebook
 # MAGIC * Trains and saves model as Keras flavor which uses the TensorFlow SavedModel format.
 # MAGIC * Predicts using Keras model.
-# MAGIC 
+# MAGIC
 # MAGIC Widgets:
-# MAGIC * Registered Model - If set, register the model under this name.
-# MAGIC * Epochs - Number of epochs.
-# MAGIC * Batch Size - Batch size.
-# MAGIC 
-# MAGIC Last update: 2023-04-14
+# MAGIC * 1. Registered Model - If set, register the model under this name.
+# MAGIC * 2. Epochs - Number of epochs.
+# MAGIC * 3. Batch Size - Batch size.
+# MAGIC
+# MAGIC Last update: 2023-11-17
 
 # COMMAND ----------
 
@@ -49,7 +49,6 @@ tf.random.set_seed(1)
 
 print("sparkVersion:", get_notebook_tag("sparkVersion"))
 print("MLflow Version:", mlflow.__version__)
-print("Keras version:", keras.__version__)
 print("Tensorflow version:", tf.__version__)
 
 # COMMAND ----------
@@ -115,7 +114,7 @@ with mlflow.start_run(run_name=f"{now} - {mlflow.__version__}") as run:
     print("Run ID:", run.info.run_id)
     mlflow.set_tag("version.mlflow", mlflow.__version__)
     mlflow.set_tag("version.tensorflow", tf.__version__)
-    mlflow.set_tag("version.keras", keras.__version__)
+
 
     model.compile(optimizer='rmsprop',
                   loss='categorical_crossentropy',
@@ -139,6 +138,10 @@ with mlflow.start_run(run_name=f"{now} - {mlflow.__version__}") as run:
 # COMMAND ----------
 
 test_images.shape
+
+# COMMAND ----------
+
+# MAGIC %md ##### Predict
 
 # COMMAND ----------
 
@@ -217,7 +220,7 @@ type(predictions)
 # COMMAND ----------
 
 # MAGIC %md #### Predict as UDF - TODO
-# MAGIC 
+# MAGIC
 # MAGIC * TypeError: Can not infer schema for type: ``<class 'numpy.ndarray'>``
 
 # COMMAND ----------
