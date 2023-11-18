@@ -1,0 +1,22 @@
+name: mlflow-examples-keras_room_recognition
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      epochs:     {type: int, default: 15}
+      batch_size: {type: int, default: 128}
+      model_name:  {type: string, default: None}
+      log_as_onnx:        {type: boolean, default: False}
+      mlflow_custom_log:  {type: boolean, default: True}
+      keras_autolog:      {type: boolean, default: False}
+      tensorflow_autolog: {type: boolean, default: False}
+    command: "python train.py
+                --epochs {epochs}
+                --batch-size {batch_size}
+                --model-name {model_name}
+                --log-as-onnx {log_as_onnx}
+                --mlflow-custom-log {mlflow_custom_log}
+                --keras-autolog {keras_autolog}
+                --tensorflow-autolog {tensorflow_autolog}"

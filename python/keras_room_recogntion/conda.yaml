@@ -1,0 +1,13 @@
+name: mlflow-examples-keras_room_recognition
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
+  - pip:
+    - mlflow
+    #- tensorflow==2.5.0 # Fails: ONNX training on Mac and Debian
+    #- tensorflow==2.4.1 # Fails: ONNX training on Mac and Debian
+    - tensorflow==2.8.0  # OK:    ONNX training on Mac and Debian
+    - Pillow
+    - scikit-image
+    - opencv-python
