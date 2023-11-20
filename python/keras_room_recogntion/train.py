@@ -17,6 +17,8 @@ tf.random.set_seed(42)
 datadir = "/home/ascc/LF_Workspace/Bayes_model/IROS23/ADL_HMM_BAYES/room_classifier/early_exit_model/watch_data/labelled/"
 categories = ['bathroom','bedroom', 'kitchen','livingroom', 'hallway', 'door']
 
+test_datadir = "/home/ascc/LF_Workspace/Bayes_model/IROS23/ADL_HMM_BAYES/room_classifier/early_exit_model/watch_data/test"
+
 img_size = 299
 input_shape = (299, 299, 3)
 
@@ -78,17 +80,36 @@ def train(run, model_name, data_path, epochs, batch_size, mlflow_custom_log, log
     model.summary()
     model.fit(X, y_class_num, epochs=epochs, batch_size=32,validation_split=0.2)
     print("model.type:",type(model))
+    
 
- #   test_loss, test_acc = model.evaluate(x_test, y_test)
- #   print("test_acc:", test_acc)
- #   print("test_loss:", test_loss)
+    test_data=[]
+    create_training_data(categories,test_datadir,img_size,test_data)
+    random.shuffle(test_data)
+    x_test = []
+    y_test = []
+    for features,label in test_data:
+        x_test.append(features)
+        y_test.append(label)
+    
+    
+    x_test=np.array(x_test).reshape(-1,img_size,img_size,channel)  #(cannot pass list directly, -1=(calculates the array size), size,1=gray scale)
+    y_test=keras.utils.to_categorical(y_test,num_classes=len(categories))   #one-hot encoder for cateorical values
+    
+    print('reshape:')
+    print(len(x_test))
+    print(y_test.ndim)
+
+
+    test_loss, test_acc = model.evaluate(x_test, y_test)
+    print("test_acc:", test_acc)
+    print("test_loss:", test_loss)
 
     if mlflow_custom_log:
         mlflow.log_param("epochs", epochs)
         mlflow.log_param("batch_size", batch_size)
 
-#        mlflow.log_metric("test_acc", test_acc)
-#        mlflow.log_metric("test_loss", test_loss)
+        mlflow.log_metric("test_acc", test_acc)
+        mlflow.log_metric("test_loss", test_loss)
 
         # Save as TensorFlow SavedModel format (MLflow Keras default)
         mlflow.keras.log_model(model, "keras-model", registered_model_name=model_name)

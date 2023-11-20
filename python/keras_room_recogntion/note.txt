@@ -1,0 +1,3 @@
+mlflow run . --experiment-name=keras_ascc --run-name runname_keras_ascc_room_recognition
+
+mlflow run . --experiment-name=keras_ascc --run-name runname_keras_ascc_room_recognition_test -P epochs=1 -P keras-autolog=True -P mlflow-autolog=True  -P tensorflow-autolog=True
