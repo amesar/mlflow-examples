@@ -53,12 +53,6 @@ lst.append(["pandas version:", pandas.__version__])
 lst.append(["numpy version:", numpy.__version__])
 
 try:
-    import mleap.version
-    lst.append(["mleap version", mleap.__version__])
-except Exception as e: # ModuleNotFoundError
-    lst.append(["mleap version", None])
-
-try:
     from google import protobuf 
     lst.append(["protobuf version:", protobuf.__version__])
 except AttributeError as e:
