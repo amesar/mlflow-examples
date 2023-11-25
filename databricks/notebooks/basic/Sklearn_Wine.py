@@ -16,9 +16,8 @@
 # MAGIC * 09. Log input - new in MLflow 2.4.0
 # MAGIC * 10. Log evaluation metric
 # MAGIC * 11. Log SHAP
-# MAGIC * 12. Delta table: if not set, read CSV file from DBFS
+# MAGIC * 12. Delta table: if not set, read default Databricks CSV file from DBFS
 # MAGIC * 13. Max depth
-# MAGIC * 14. Unity Catalog
 # MAGIC
 # MAGIC #### Notes
 # MAGIC
@@ -34,7 +33,7 @@
 # MAGIC   * andre_catalog.ml_data.winequality_white
 # MAGIC   * andre_catalog.ml_data.winequality_red
 # MAGIC
-# MAGIC Last udpated: 2023-07-24
+# MAGIC Last udpated: _2023-11-24_
 
 # COMMAND ----------
 
@@ -59,7 +58,6 @@ dbutils.widgets.dropdown("10. Log evaluation metrics", "no", ["yes","no"])
 dbutils.widgets.dropdown("11. Log SHAP", "no", ["yes","no"])
 dbutils.widgets.text("12. Delta table", "")
 dbutils.widgets.text("13. Max depth", "1") 
-dbutils.widgets.dropdown("14. Unity Catalog", "no", ["yes","no"])
 
 run_name = dbutils.widgets.get("01. Run name")
 experiment_name = dbutils.widgets.get("02. Experiment name")
@@ -74,7 +72,6 @@ log_evaluation_metrics = dbutils.widgets.get("10. Log evaluation metrics") == "y
 log_shap = dbutils.widgets.get("11. Log SHAP") == "yes"
 delta_table = dbutils.widgets.get("12. Delta table")
 max_depth = to_int(dbutils.widgets.get("13. Max depth"))
-use_uc = dbutils.widgets.get("14. Unity Catalog") == "yes"
 
 run_name = run_name or None
 experiment_name = experiment_name or None
@@ -96,7 +93,6 @@ print("log_evaluation_metrics:", log_evaluation_metrics)
 print("log_shap:", log_shap)
 print("delta_table:", delta_table)
 print("max_depth:", max_depth)
-print("use_uc:", use_uc)
 
 # COMMAND ----------
 
@@ -109,9 +105,7 @@ if experiment_name:
 
 # COMMAND ----------
 
-if use_uc:
-    client = activate_unity_catalog()
-    print("New client._registry_uri:",client._registry_uri)
+client = toggle_unity_catalog(model_name)
 
 # COMMAND ----------
 

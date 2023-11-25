@@ -271,11 +271,18 @@ def activate_unity_catalog():
 
 # COMMAND ----------
 
-def is_unity_catalog(name):
-    return len(name.split(".")) == 3
+def is_unity_catalog(model_name):
+    return len(model_name.split(".")) == 3
 
-def toggle_unity_catalog(name):
-    tracking_uri = "databricks-uc" if is_unity_catalog(name) else "databricks"
-    print(f"Setting new tracking URI: {tracking_uri}")
-    mlflow.set_registry_uri(tracking_uri)
-    print(f"New tracking URI: {mlflow.get_tracking_uri()}")
+def toggle_unity_catalog(model_name):
+    registry_uri = "databricks-uc" if is_unity_catalog(model_name) else "databricks"
+    print(f"Setting new registry_uri URI: {registry_uri}")
+    mlflow.set_registry_uri(registry_uri)
+    print(f"New registry_uri URI: {mlflow.get_registry_uri()}")
+    client = mlflow.MlflowClient()
+    print(f"New client.registry_uri URI: {client._registry_uri}")
+    return client
+
+# COMMAND ----------
+
+
