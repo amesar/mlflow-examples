@@ -7,6 +7,10 @@
 
 # COMMAND ----------
 
+# MAGIC %run ./Load_Data
+
+# COMMAND ----------
+
 import os
 import mlflow
 mlflow.set_registry_uri("databricks-uc")

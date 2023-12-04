@@ -20,6 +20,9 @@ model_name = dbutils.widgets.get("1. Registered model")
 dbutils.widgets.text("2. Metric", "rmse")
 metric = dbutils.widgets.get("2. Metric")
 
+print("model_name:", model_name)
+print("metric:", metric)
+
 # COMMAND ----------
 
 assert_widget(model_name, "1. Registered model")

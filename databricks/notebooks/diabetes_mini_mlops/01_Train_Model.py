@@ -22,6 +22,18 @@
 
 # COMMAND ----------
 
+dbutils.widgets.text("Table", "")
+table_name = dbutils.widgets.get("Table")
+table_name = table_name or None
+
+print("table_name:", table_name)
+
+# COMMAND ----------
+
+# MAGIC %md ### Clean experiment by deleting existing runs
+
+# COMMAND ----------
+
 experiment = get_experiment()
 
 # COMMAND ----------
@@ -57,19 +69,26 @@ from mlflow.models.signature import infer_signature
 
 # COMMAND ----------
 
-diabetes = datasets.load_diabetes()
-X = diabetes.data
-y = diabetes.target
+data = load_data(table_name)
 
-# Create pandas DataFrame 
-Y = np.array([y]).transpose()
-d = np.concatenate((X, Y), axis=1)
-cols = ['age', 'sex', 'bmi', 'bp', 's1', 's2', 's3', 's4', 's5', 's6', 'progression']
-data = pd.DataFrame(d, columns=cols)
+# COMMAND ----------
+
+X = data.drop(["progression"], axis=1).to_numpy()
+
+y = data[["progression"]]
+y = np.concatenate(y.to_numpy()).ravel()
 
 # COMMAND ----------
 
 display(data)
+
+# COMMAND ----------
+
+# MAGIC %md #### New
+
+# COMMAND ----------
+
+
 
 # COMMAND ----------
 
