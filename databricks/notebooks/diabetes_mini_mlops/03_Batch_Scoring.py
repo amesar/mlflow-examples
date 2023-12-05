@@ -6,7 +6,7 @@
 
 # COMMAND ----------
 
-# MAGIC %md ### Setup
+# MAGIC %md #### Setup
 
 # COMMAND ----------
 
@@ -22,12 +22,16 @@ dbutils.widgets.text("2. Table", "")
 table_name = dbutils.widgets.get("2. Table")
 table_name = table_name or None
 
+dbutils.widgets.text("3. Alias", _alias)
+alias = dbutils.widgets.get("3. Alias")
+
 print("model_name:", model_name)
 print("table_name:", table_name)
+print("alias:", alias)
 
 # COMMAND ----------
 
-# MAGIC %md ### Prepare scoring data
+# MAGIC %md #### Prepare scoring data
 # MAGIC * Drop the label column `progression`
 
 # COMMAND ----------
@@ -37,15 +41,28 @@ data = data.drop(["progression"], axis=1)
 
 # COMMAND ----------
 
+# MAGIC %md #### Prepare model URI
+# MAGIC * A `model URI` can use either a model version's version or alias.
+# MAGIC   * With version number: `models:/my_catalog.models.diabetes_mlops/1`
+# MAGIC   * With alias: `models:/my_catalog.models.diabetes_mlops@alias`
+
+# COMMAND ----------
+
+if alias:
+    model_uri = f"models:/{model_name}@{alias}"
+else:
+    model_uri = f"models:/{model_name}/1"
+model_uri
+
+# COMMAND ----------
+
 # MAGIC
-# MAGIC %md ### Score with native Sklearn flavor
-# MAGIC * Executes only on the driver node of the cluster
+# MAGIC %md #### Score with native Sklearn flavor
+# MAGIC * Executes only on the driver node
 
 # COMMAND ----------
 
 import pandas as pd
-model_uri = f"models:/{model_name}/1"
-model_uri
 
 # COMMAND ----------
 
@@ -55,7 +72,11 @@ display(pd.DataFrame(predictions, columns=["prediction"]))
 
 # COMMAND ----------
 
-# MAGIC %md ### Score with Pyfunc flavor
+
+
+# COMMAND ----------
+
+# MAGIC %md #### Score with Pyfunc flavor
 # MAGIC * Executes only on the driver node of the cluster
 
 # COMMAND ----------
@@ -68,7 +89,7 @@ display(pd.DataFrame(predictions, columns=["prediction"]))
 
 # COMMAND ----------
 
-# MAGIC %md ### Distributed scoring with UDF
+# MAGIC %md #### Distributed scoring with UDF
 # MAGIC * Executes on all worker nodes of the cluster.
 # MAGIC * UDF wraps the Sklearn model.
 # MAGIC * Pass a Spark dataframe to the UDF.

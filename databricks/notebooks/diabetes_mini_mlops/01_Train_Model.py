@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %md # MLflow quickstart: training and logging  
+# MAGIC %md # Train Diabetes Model  
 # MAGIC
 # MAGIC This tutorial is based on the MLflow [ElasticNet Diabetes example](https://github.com/mlflow/mlflow/tree/master/examples/sklearn_elasticnet_diabetes). It illustrates how to use MLflow to track the model training process, including logging model parameters, metrics, the model itself, and other artifacts like plots. It also includes instructions for viewing the logged results in the MLflow tracking UI.    
 # MAGIC
@@ -7,10 +7,6 @@
 # MAGIC   * [Elastic net regularization](https://en.wikipedia.org/wiki/Elastic_net_regularization)
 # MAGIC   * [Regularization and Variable Selection via the Elastic Net](https://web.stanford.edu/~hastie/TALKS/enet_talk.pdf)
 # MAGIC   * [sklearn.datasets.load_diabetes](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_diabetes.html#sklearn.datasets.load_diabetes)
-# MAGIC   
-# MAGIC ### Requirements
-# MAGIC * This notebook requires Databricks Runtime ML 13.x or above.
-# MAGIC
 
 # COMMAND ----------
 

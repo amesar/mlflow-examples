@@ -15,6 +15,7 @@ import os
 import mlflow
 mlflow.set_registry_uri("databricks-uc")
 mlflow_client = mlflow.MlflowClient()
+print("mlflow_client.registry_uri:", mlflow_client._registry_uri)
 
 # COMMAND ----------
 
@@ -112,12 +113,8 @@ def create_registered_model(model_name, delete_registered_model=True):
 # COMMAND ----------
 
 _host_name = _get_notebook_tag("browserHostName")
-print("_host_name:", _host_name)
-
-# COMMAND ----------
-
 _token = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
-dbutils.fs.put("file:///root/.databrickscfg",f"[DEFAULT]\nhost=https://{_host_name}\ntoken = "+_token,overwrite=True)
+print("_host_name:", _host_name)
 
 # COMMAND ----------
 

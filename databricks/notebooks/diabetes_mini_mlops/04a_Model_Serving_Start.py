@@ -19,42 +19,28 @@
 
 # COMMAND ----------
 
-#dbutils.widgets.removeAll()
-
-# COMMAND ----------
-
 dbutils.widgets.text("1. Registered model", "")
 model_name = dbutils.widgets.get("1. Registered model")
 
-dbutils.widgets.text("2. Model version", "")
-version = dbutils.widgets.get("2. Model version")
-
-dbutils.widgets.text("3. Model serving endpoint", _endpoint_name)
-endpoint_name = dbutils.widgets.get("3. Model serving endpoint")
+dbutils.widgets.text("2. Model serving endpoint", _endpoint_name)
+endpoint_name = dbutils.widgets.get("2. Model serving endpoint")
 
 print("model_name:", model_name)
-print("version:", version)
 print("endpoint_name:", endpoint_name)
+print("_alias:", _alias)
 
 # COMMAND ----------
 
 assert_widget(model_name, "1. Registered model")
-assert_widget(model_name, "2. Model version")
-assert_widget(model_name, "3. Model serving endpoint")
+assert_widget(model_name, "2. Model serving endpoint")
 
 # COMMAND ----------
 
-# MAGIC %md #### List all endpoints
+# MAGIC %md #### List endpoints
 
 # COMMAND ----------
 
-import pandas as pd
-
-endpoints = model_serving_client.list_endpoints()
-if len(endpoints) > 0:
-    lst = [ ( e["name"], e["creator"] ) for e in endpoints ]
-    df = pd.DataFrame(lst, columns = ["Name","Creator"])
-    display(spark.createDataFrame(df))
+list_model_serving_endpoints()
 
 # COMMAND ----------
 
@@ -85,21 +71,17 @@ print(f"About to launch endpoint '{endpoint_name}'")
 
 # COMMAND ----------
 
-_alias
-
-# COMMAND ----------
-
 model = mlflow_client.get_registered_model(model_name)
 dump_obj(model)
 
 # COMMAND ----------
 
 version = model.aliases[_alias]
-version
+print("version:", version)
 
 # COMMAND ----------
 
-# MAGIC %md #### Define endpoint spec
+# MAGIC %md #### Define endpoint config spec
 
 # COMMAND ----------
 

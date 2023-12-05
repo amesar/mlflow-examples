@@ -1,12 +1,9 @@
 # Databricks notebook source
 # MAGIC %md ## Register Best Model Run in Model Registry
 # MAGIC * Creates a new registered model if it doesn't already exist.
-# MAGIC * Deletes all current model versions (optional).
-# MAGIC * Finds the best model (lowest 'rmse' metric) generated from [01_Train_Model]($01_Train_Model) notebook experiment.
-# MAGIC * Adds the best run as a registered model version and promotes it to the `production` stage.
-# MAGIC
-# MAGIC ##### Notes
-# MAGIC * andre_catalog.ml_models2.diabetes_mlops
+# MAGIC * Deletes any existing model versions.
+# MAGIC * Finds the best model (lowest 'rmse' metric) generated from the [01_Train_Model]($01_Train_Model) notebook.
+# MAGIC * Adds the best run as a registered model version and assigns the 'champ' alias to it.
 
 # COMMAND ----------
 
@@ -97,11 +94,8 @@ version = mlflow_client.create_model_version(
 
 # COMMAND ----------
 
-_alias
-
-# COMMAND ----------
-
 mlflow_client.set_registered_model_alias(model_name, _alias, version.version)
+_alias
 
 # COMMAND ----------
 

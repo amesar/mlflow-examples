@@ -59,7 +59,7 @@ data = { "dataframe_split": {
 import json
 data = json.dumps(data)
 
-headers = { "Authorization": f"Bearer {token}", "Content-Type": "application/json" }
+headers = { "Authorization": f"Bearer {_token}", "Content-Type": "application/json" }
 rsp = requests.post(endpoint_uri, headers=headers, data=data, timeout=15)
 rsp.text
 
@@ -67,4 +67,4 @@ rsp.text
 
 # MAGIC %md ### Next notebook
 # MAGIC
-# MAGIC When finished scoring, go to the **[04c_RT_Serving_Stop]($04c_RT_Serving_Stop)** notebook to shut down the serving endpoint.
+# MAGIC When finished scoring, go to the **[04c_Model_Serving_Stop]($04c_Model_Serving_Stop)** notebook to shut down the serving endpoint.

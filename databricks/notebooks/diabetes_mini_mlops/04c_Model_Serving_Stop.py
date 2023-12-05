@@ -24,17 +24,15 @@ print("endpoint_name:", endpoint_name)
 
 # COMMAND ----------
 
-# MAGIC %md ### Display endpoints
+# MAGIC %md #### List endpoints
 
 # COMMAND ----------
 
-endpoints = model_serving_client.list_endpoints()
-for e in endpoints:
-    print(f"{e['name']} - {e['creator']}")
+list_model_serving_endpoints()
 
 # COMMAND ----------
 
-# MAGIC %md ### Stop endpoint
+# MAGIC %md #### Stop endpoint
 
 # COMMAND ----------
 
@@ -46,7 +44,7 @@ model_serving_client.stop_endpoint(endpoint_name)
 
 # COMMAND ----------
 
-# MAGIC %md ### Display endpoints
+# MAGIC %md #### List endpoints
 
 # COMMAND ----------
 
@@ -54,12 +52,10 @@ model_serving_client.get_endpoint(endpoint_name)
 
 # COMMAND ----------
 
-endpoints = model_serving_client.list_endpoints()
-for e in endpoints:
-    print(f"{e['name']} - {e['creator']}")
+list_model_serving_endpoints()
 
 # COMMAND ----------
 
-# MAGIC %md ### Next notebook
+# MAGIC %md #### No next notebook
 # MAGIC
 # MAGIC **_Congratulations!_** You have finished your Diabetes Mini MLOps example. There is no next notebook.
