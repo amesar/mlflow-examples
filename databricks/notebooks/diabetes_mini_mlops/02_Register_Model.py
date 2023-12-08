@@ -2,8 +2,15 @@
 # MAGIC %md ## Register Best Model Run in Model Registry
 # MAGIC * Creates a new registered model if it doesn't already exist.
 # MAGIC * Deletes any existing model versions.
-# MAGIC * Finds the best model (lowest 'rmse' metric) generated from the [01_Train_Model]($01_Train_Model) notebook.
+# MAGIC * Finds the best model (lowest RMSE metric) generated from the [01_Train_Model]($01_Train_Model) notebook.
 # MAGIC * Adds the best run as a registered model version and assigns the 'champ' alias to it.
+# MAGIC
+# MAGIC ##### Widgets
+# MAGIC
+# MAGIC * `1. Registered model` - name of registerd model such as `andre_m.ml_models.diabetes_mlops`.
+# MAGIC * `2. Metric` - Metrics to optimized for such as RMSE.
+# MAGIC * `3. Alias` - Model alias
+# MAGIC
 
 # COMMAND ----------
 

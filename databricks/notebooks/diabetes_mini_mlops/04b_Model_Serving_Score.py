@@ -1,7 +1,10 @@
 # Databricks notebook source
-# MAGIC %md ## Score a model with model serving endpoint
+# MAGIC %md ## Score a model with serving endpoint
 # MAGIC
-# MAGIC * [Send scoring requests to serving endpoints](https://docs.databricks.com/en/machine-learning/model-serving/score-model-serving-endpoints.html)
+# MAGIC * [Send scoring requests to serving endpoints](https://docs.databricks.com/en/machine-learning/model-serving/score-model-serving-endpoints.html) (docs)
+# MAGIC
+# MAGIC #### Widgets
+# MAGIC * `1. Model Serving endpoint`
 
 # COMMAND ----------
 

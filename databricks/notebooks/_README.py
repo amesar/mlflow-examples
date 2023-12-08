@@ -10,4 +10,4 @@
 # MAGIC   * [Mini_MLOps_Pipeline]($Mini_MLOps_Pipeline/_README) - Simple end-to-end "mini" MLOps pipeline using wine quality dataset. Uses non-UC model version stages.
 # MAGIC * [./includes]($includes) - Common include notebooks.
 # MAGIC
-# MAGIC Last updated: 2023-12-04
+# MAGIC Last updated: 2023-12-07

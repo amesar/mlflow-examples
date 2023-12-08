@@ -3,10 +3,19 @@
 # MAGIC
 # MAGIC This tutorial is based on the MLflow [ElasticNet Diabetes example](https://github.com/mlflow/mlflow/tree/master/examples/sklearn_elasticnet_diabetes). It illustrates how to use MLflow to track the model training process, including logging model parameters, metrics, the model itself, and other artifacts like plots. It also includes instructions for viewing the logged results in the MLflow tracking UI.    
 # MAGIC
-# MAGIC This notebook uses the scikit-learn `diabetes` dataset and predicts the progression metric (a quantitative measure of disease progression after one year) based on BMI, blood pressure, and other measurements. It uses the scikit-learn ElasticNet linear regression model, varying the `alpha` and `l1_ratio` parameters for tuning. For more information on ElasticNet, refer to:
+# MAGIC This notebook uses the [scikit-learn diabetes dataset](https://scikit-learn.org/stable/datasets/toy_dataset.html#diabetes-dataset) and predicts the progression metric (a quantitative measure of disease progression after one year) based on BMI, blood pressure, and other measurements. It uses the scikit-learn ElasticNet linear regression model, varying the `alpha` and `l1_ratio` parameters for tuning. For more information on ElasticNet, refer to:
 # MAGIC   * [Elastic net regularization](https://en.wikipedia.org/wiki/Elastic_net_regularization)
 # MAGIC   * [Regularization and Variable Selection via the Elastic Net](https://web.stanford.edu/~hastie/TALKS/enet_talk.pdf)
 # MAGIC   * [sklearn.datasets.load_diabetes](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_diabetes.html#sklearn.datasets.load_diabetes)
+# MAGIC
+# MAGIC ##### Widgets
+# MAGIC
+# MAGIC   * `1. Table` - diabetes table such as `andre_m.ml_data.diabetes` (optional).
+# MAGIC     * If the table is not specified, data is loaded from the default sklearn dataset.
+# MAGIC     * If the table is specified:
+# MAGIC       * If the table does not exist, we create a table from sklean's dataset.
+# MAGIC       * If the table exists, we simply read from the table.
+# MAGIC       * Using a table allows us to showcase Unity Catalog's lineage capabilities.
 
 # COMMAND ----------
 

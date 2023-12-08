@@ -1,9 +1,13 @@
 # Databricks notebook source
 # MAGIC %md ## Start a model serving endpoint
 # MAGIC
-# MAGIC * [Create a new serving endpoint](https://docs.databricks.com/api/workspace/servingendpoints/create)
+# MAGIC * [Create a new serving endpoint](https://docs.databricks.com/api/workspace/servingendpoints/create) (doc)
 # MAGIC * [../includes/ModelServingClient]($../includes/ModelServingClient)
 # MAGIC
+# MAGIC ##### Widgets
+# MAGIC
+# MAGIC * `1. Registered model` - name of registerd model such as `andre_m.ml_models.diabetes_mlops`.
+# MAGIC * `2. Model Serving endpoint`
 
 # COMMAND ----------
 
