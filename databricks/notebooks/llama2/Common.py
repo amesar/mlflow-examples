@@ -1,4 +1,11 @@
 # Databricks notebook source
+default_model_name = "marketplace_staging_llama_2_models.models.llama_2_7b_chat_hf" # e2_dogfood
+#default_model_name = "databricks_llama_2_models.models.llama_2_7b_chat_hf" # e2_demo_west
+
+print("default_model_name:", default_model_name)
+
+# COMMAND ----------
+
 def assert_widget(value, name):
     if len(value.rstrip())==0:
         raise Exception(f"ERROR: '{name}' widget is required")

@@ -47,8 +47,6 @@ print("DBR: ", os.environ.get("DATABRICKS_RUNTIME_VERSION"))
 
 # COMMAND ----------
 
-default_model_name = "marketplace_staging_llama_2_models.models.llama_2_7b_chat_hf"
-
 dbutils.widgets.text("1. Model", default_model_name)
 dbutils.widgets.text("2. Version", "1")
 dbutils.widgets.text("3. Endpoint", "llama2_simple")

@@ -9,8 +9,7 @@
 # MAGIC * You can optionally write the answers to an output table.
 # MAGIC * All table names are 3 part UC names such `andre_m.data.llama2_answers`.
 # MAGIC * Runs on `e2-dogfood` workspace. Mileage may vary on other workspaces.
-# MAGIC * Cluster instance type:
-# MAGIC For bactch g4dn.xlarge works fine 
+# MAGIC * Cluster instance type: for `llama_2_7b_chat_hf` instance `g4dn.xlarge` is OK. 
 # MAGIC
 # MAGIC ##### Widgets
 # MAGIC * `1. Model` - Model name.
@@ -20,7 +19,8 @@
 # MAGIC * `4. Output Table` - Output table of answers (includes the original question).
 # MAGIC * `5. Write mode` - Write mode for output table. If "none", will not write to the table.
 # MAGIC
-# MAGIC ##### Last updated: 2023-10-18
+# MAGIC
+# MAGIC ##### Last updated: 2023-12-10
 
 # COMMAND ----------
 
@@ -37,8 +37,6 @@ mlflow.set_registry_uri("databricks-uc")
 mlflow.__version__
 
 # COMMAND ----------
-
-default_model_name = "marketplace_staging_llama_2_models.models.llama_2_7b_chat_hf"
 
 dbutils.widgets.text("1. Model", default_model_name)
 dbutils.widgets.text("2. Version", "1")
@@ -94,7 +92,7 @@ model_uri
 
 # MAGIC %md ##### Load model as Spark UDF
 # MAGIC
-# MAGIC This takes a minute or two.
+# MAGIC This takes a minute or two for `llama_2_7b_chat_hf` model.
 
 # COMMAND ----------
 
@@ -104,7 +102,7 @@ udf = mlflow.pyfunc.spark_udf(spark, model_uri, "string")
 
 # MAGIC %md ##### Call model with questions
 # MAGIC
-# MAGIC Takes about 30-60 seconds per question.
+# MAGIC Takes about 20 seconds per question for `llama_2_7b_chat_hf` model.
 
 # COMMAND ----------
 

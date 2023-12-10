@@ -9,11 +9,11 @@
 # MAGIC
 # MAGIC ##### Notebooks
 # MAGIC * [Batch_Score_Llama_2]($Batch_Score_Llama_2) - Batch scoring.
-# MAGIC * [Model_Serve_Llama_2]($Model_Serve_Llama_2) - Real-time scoring.
+# MAGIC * [Model_Serve_Llama_2]($Model_Serve_Llama_2) - Realtime scoring - model serving endpoint.
 # MAGIC * [Common]($Common)
 # MAGIC
 # MAGIC ##### Github
 # MAGIC * https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/llama2
 # MAGIC
 # MAGIC
-# MAGIC ##### Last updated: _2023-11-05_
+# MAGIC ##### Last updated: _2023-12-10_
