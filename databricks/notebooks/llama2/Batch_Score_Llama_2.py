@@ -8,7 +8,7 @@
 # MAGIC   * The input file is a one column CSV file with no header.
 # MAGIC * You can optionally write the answers to an output table.
 # MAGIC * All table names are 3 part UC names such `andre_m.ml_data.llama2_answers`.
-# MAGIC * Cluster instance type: for `llama_2_7b_chat_hf`, instance `g4dn.xlarge` is OK. 
+# MAGIC * Cluster instance type: for `llama_2_7b_chat_hf`, instance `g4dn.xlarge` (AWS) is OK. 
 # MAGIC
 # MAGIC ##### Widgets
 # MAGIC * `1. Model` - Model name.
