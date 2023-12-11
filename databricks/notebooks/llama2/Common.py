@@ -1,6 +1,6 @@
 # Databricks notebook source
-default_model_name = "marketplace_staging_llama_2_models.models.llama_2_7b_chat_hf" # e2_dogfood
-#default_model_name = "databricks_llama_2_models.models.llama_2_7b_chat_hf" # e2_demo_west
+default_model_name = "databricks_llama_2_models.models.llama_2_7b_chat_hf" # per Marketplace notebook
+#default_model_name = "marketplace_staging_llama_2_models.models.llama_2_7b_chat_hf" # e2_dogfood
 
 print("default_model_name:", default_model_name)
 
@@ -55,3 +55,17 @@ def load_data(name):
         return spark.table(name)
     else: # otherwise assume its a CSV file
         return load_from_path(name)
+
+# COMMAND ----------
+
+def dump(dct, title=None, sort_keys=None, indent=2):
+    if title:
+        print(f"{title}:")
+    print(json.dumps(dct, sort_keys=sort_keys, indent=indent))
+
+# COMMAND ----------
+
+import mlflow
+import os
+print("MLflow versions:", mlflow.__version__)
+print("DBR version     ", os.environ.get("DATABRICKS_RUNTIME_VERSION"))

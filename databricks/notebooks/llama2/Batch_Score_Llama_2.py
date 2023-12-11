@@ -2,14 +2,13 @@
 # MAGIC %md ### Batch Score LLama 2 model
 # MAGIC
 # MAGIC * Simple Llama2 model batch scoring example.
-# MAGIC * Load the new Marketplace LLama 2 7b model from Unity Catalog (UC) registry and asks some questions.
+# MAGIC * Load the new Marketplace `LLama 2 7b` model from Unity Catalog (UC) registry and asks some questions.
 # MAGIC * Questions can be from a file or a table.
 # MAGIC   * The table has a one string column called `question`.
 # MAGIC   * The input file is a one column CSV file with no header.
 # MAGIC * You can optionally write the answers to an output table.
-# MAGIC * All table names are 3 part UC names such `andre_m.data.llama2_answers`.
-# MAGIC * Runs on `e2-dogfood` workspace. Mileage may vary on other workspaces.
-# MAGIC * Cluster instance type: for `llama_2_7b_chat_hf` instance `g4dn.xlarge` is OK. 
+# MAGIC * All table names are 3 part UC names such `andre_m.ml_data.llama2_answers`.
+# MAGIC * Cluster instance type: for `llama_2_7b_chat_hf`, instance `g4dn.xlarge` is OK. 
 # MAGIC
 # MAGIC ##### Widgets
 # MAGIC * `1. Model` - Model name.
@@ -20,7 +19,7 @@
 # MAGIC * `5. Write mode` - Write mode for output table. If "none", will not write to the table.
 # MAGIC
 # MAGIC
-# MAGIC ##### Last updated: 2023-12-10
+# MAGIC ##### Last updated: _2023-12-10_
 
 # COMMAND ----------
 
@@ -34,7 +33,6 @@
 
 import mlflow
 mlflow.set_registry_uri("databricks-uc")
-mlflow.__version__
 
 # COMMAND ----------
 
@@ -68,7 +66,7 @@ assert_widget(input_file_or_table, "3. Input File or Table")
 
 # COMMAND ----------
 
-# MAGIC %md ##### Load input questions from either a file or table.
+# MAGIC %md ##### Load input questions from either a file or table
 
 # COMMAND ----------
 
@@ -92,7 +90,7 @@ model_uri
 
 # MAGIC %md ##### Load model as Spark UDF
 # MAGIC
-# MAGIC This takes a minute or two for `llama_2_7b_chat_hf` model.
+# MAGIC This may take a few minutes to load the `llama_2_7b_chat_hf` model.
 
 # COMMAND ----------
 
@@ -111,7 +109,7 @@ display(df_answers)
 
 # COMMAND ----------
 
-# MAGIC %md #### Write to table
+# MAGIC %md #### Write results to table
 
 # COMMAND ----------
 

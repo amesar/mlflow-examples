@@ -10,6 +10,7 @@
 # MAGIC #### Docs
 # MAGIC * https://docs.databricks.com/api/workspace/servingendpoints
 # MAGIC * https://docs.databricks.com/en/machine-learning/model-serving/create-manage-serving-endpoints.html#gpu
+# MAGIC * [Send scoring requests to serving endpoints](https://docs.databricks.com/en/machine-learning/model-serving/score-model-serving-endpoints.html)
 # MAGIC
 # MAGIC #### Widget values
 # MAGIC ##### _Workload type_
@@ -26,12 +27,7 @@
 # MAGIC * Medium 
 # MAGIC * Large
 # MAGIC
-# MAGIC ##### Last updated: 2023-11-05
-
-# COMMAND ----------
-
-import os
-print("DBR: ", os.environ.get("DATABRICKS_RUNTIME_VERSION"))
+# MAGIC ##### Last updated: _2023-12-10_
 
 # COMMAND ----------
 
@@ -52,18 +48,21 @@ dbutils.widgets.text("2. Version", "1")
 dbutils.widgets.text("3. Endpoint", "llama2_simple")
 dbutils.widgets.text("4. Workload type", "GPU_MEDIUM")
 dbutils.widgets.text("5. Workload size", "Small")
+dbutils.widgets.text("6. Max tokens", "128")
 
 model_name = dbutils.widgets.get("1. Model")
 version = dbutils.widgets.get("2. Version")
 endpoint_name = dbutils.widgets.get("3. Endpoint")
 workload_type = dbutils.widgets.get("4. Workload type")
 workload_size = dbutils.widgets.get("5. Workload size")
+max_tokens = dbutils.widgets.get("6. Max tokens")
 
 print("model:", model_name)
 print("version:", version)
 print("endpoint_name:", endpoint_name)
 print("workload_type:", workload_type)
 print("workload_size:", workload_size)
+print("max_tokens:", max_tokens)
 
 # COMMAND ----------
 
@@ -114,10 +113,11 @@ model_serving_client.start_endpoint(spec)
 # COMMAND ----------
 
 # MAGIC %md #### Wait until endpoint is in READY state
+# MAGIC * This can take up to 10 minutes.
 
 # COMMAND ----------
 
-model_serving_client.wait_until(endpoint_name, max=60, sleep_time=10)
+model_serving_client.wait_until(endpoint_name, max=120, sleep_time=10)
 
 # COMMAND ----------
 
@@ -129,18 +129,42 @@ model_serving_client.get_endpoint(endpoint_name)
 
 # COMMAND ----------
 
-# MAGIC %md #### Make questions
+# MAGIC %md #### Create the questions
+# MAGIC * Several different input formats are supported: 
+# MAGIC   * input
+# MAGIC   * instances
+# MAGIC   * dataframe_records
+# MAGIC   * dataframe_split
+# MAGIC
+# MAGIC See documentaion [Send scoring requests to serving endpoints](https://docs.databricks.com/en/machine-learning/model-serving/score-model-serving-endpoints.html).
 
 # COMMAND ----------
 
-import pandas as pd
 import json
 
-def mk_questions(questions):
-    questions = [ [q] for q in questions ]
-    pdf = pd.DataFrame(questions, columns = ["question"])
-    ds_dict = {"dataframe_split": pdf.to_dict(orient="split")}
-    return json.dumps(ds_dict, allow_nan=True)
+# COMMAND ----------
+
+def as_dataframe_records(questions):
+    return {
+        "dataframe_records": [ { "prompt": q } for q in questions],
+        "params": {
+                "temperature": 0.5,
+        "max_tokens": max_tokens
+        }
+    }
+
+# COMMAND ----------
+
+def as_inputs(questions):
+    return {
+        "inputs": {
+            "prompt": questions,
+        },
+        "params": {
+            "temperature": 0.5,
+            "max_tokens": max_tokens
+        }
+    }
 
 # COMMAND ----------
 
@@ -151,12 +175,13 @@ questions = [
   "What is the western most town in the world?"
 ]
 
-questions = mk_questions(questions)
-questions
+request = as_inputs(questions)
+#request = as_dataframe_records(questions)
+dump(request)
 
 # COMMAND ----------
 
-# MAGIC %md #### Call Model Server
+# MAGIC %md #### Call Model serving endpoint
 
 # COMMAND ----------
 
@@ -168,5 +193,5 @@ endpoint_uri
 import requests
 
 headers = { "Authorization": f"Bearer {token}", "Content-Type": "application/json" }
-rsp = requests.post(endpoint_uri, headers=headers, data=questions, timeout=15)
-rsp.status_code, rsp.text
+response = requests.post(endpoint_uri, headers=headers, json=request, timeout=15)
+dump(response.json())
