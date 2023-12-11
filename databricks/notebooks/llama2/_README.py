@@ -1,7 +1,8 @@
 # Databricks notebook source
-# MAGIC %md ### Take Llama 2 model for a spin
+# MAGIC %md ### Take a Llama 2 model for a spin
 # MAGIC
-# MAGIC * Example for Llama 2 models available at [Databricks Marketplace Llama2](https://marketplace.databricks.com/details/46527194-66f5-4ea1-9619-d7ec6be6a2fa/Databricks_Llama-2-Models).
+# MAGIC ##### Overview
+# MAGIC * Example of Llama 2 models available at [Databricks Marketplace Llama2](https://marketplace.databricks.com/details/46527194-66f5-4ea1-9619-d7ec6be6a2fa/Databricks_Llama-2-Models).
 # MAGIC * Demonstrates how to do both real-time and batch model inference.
 # MAGIC * GPU cluster configuration:
 # MAGIC   * For batch, use `g4dn.xlarge` instance type (AWS).
