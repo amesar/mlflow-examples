@@ -65,7 +65,7 @@ def list_model_serving_endpoints():
     if len(endpoints) == 0:
         print("No model serving endpoints")
     else:
-        data = [ ( e["name"], e["creator"], e["creation_timestamp"] ) for e in endpoints ]
-        df = spark.createDataFrame(data=data, schema = ["name","creator","creation_timestamp"])
+        data = [ ( e.get("name"), e.get("creator"), e.get("creation_timestamp") ) for e in endpoints ]
+        df = spark.createDataFrame(data=data, schema = ["name", "creator", "creation_timestamp"])
         df = df.withColumn("creation_timestamp",from_unixtime(col("creation_timestamp")/1000, "yyyy-MM-dd hh:mm:ss"))
         display(df)

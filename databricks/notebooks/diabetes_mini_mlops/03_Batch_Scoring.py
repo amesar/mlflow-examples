@@ -74,12 +74,12 @@ import pandas as pd
 # COMMAND ----------
 
 model = mlflow.sklearn.load_model(model_uri)
-predictions = model.predict(data)
-display(pd.DataFrame(predictions, columns=["prediction"]))
+type(model)
 
 # COMMAND ----------
 
-
+predictions = model.predict(data)
+display(pd.DataFrame(predictions, columns=["prediction"]))
 
 # COMMAND ----------
 
@@ -88,9 +88,11 @@ display(pd.DataFrame(predictions, columns=["prediction"]))
 
 # COMMAND ----------
 
-import mlflow.pyfunc
-
 model = mlflow.pyfunc.load_model(model_uri)
+type(model)
+
+# COMMAND ----------
+
 predictions = model.predict(data)
 display(pd.DataFrame(predictions, columns=["prediction"]))
 
@@ -105,6 +107,9 @@ display(pd.DataFrame(predictions, columns=["prediction"]))
 # COMMAND ----------
 
 df = spark.createDataFrame(data)
+
+# COMMAND ----------
+
 udf = mlflow.pyfunc.spark_udf(spark, model_uri)
 predictions = df.withColumn("prediction", udf(*df.columns))
 display(predictions.select("prediction"))

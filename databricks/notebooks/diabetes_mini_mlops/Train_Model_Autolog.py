@@ -85,8 +85,8 @@ for p in params_list:
 l1_ratio = 0.01
 alpha = 0.05
   
-#model = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
-##model.fit(train_x, train_y)
+model = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
+model.fit(train_x, train_y)
 model
 
 # COMMAND ----------
