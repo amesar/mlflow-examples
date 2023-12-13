@@ -23,7 +23,10 @@
 # MAGIC   * [ModelServingClient]($../includes/ModelServingClient) - Python HTTP client to invoke Databricks Model Serving API.
 # MAGIC   * [HttpClient]($../includes/HttpClient) - Python HTTP client to invoke Databricks API.
 # MAGIC
-# MAGIC Last updated: _2023-12-07_
+# MAGIC ##### Github
+# MAGIC * https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/diabetes_mini_mlops
+# MAGIC
+# MAGIC ##### Last updated: _2023-12-13_
 
 # COMMAND ----------
 
