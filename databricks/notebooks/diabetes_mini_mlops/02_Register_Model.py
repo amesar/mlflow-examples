@@ -112,3 +112,11 @@ _alias
 
 version = mlflow_client.get_model_version(version.name, version.version)
 dump_obj(version)
+
+# COMMAND ----------
+
+# MAGIC %md ### Display version URI to model version UI page
+
+# COMMAND ----------
+
+display_model_version_uri(model_name, version.version)

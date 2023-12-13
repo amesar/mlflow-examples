@@ -133,8 +133,14 @@ def display_experiment_uri(experiment):
 # COMMAND ----------
 
 def display_registered_model_uri(model_name):
-    uri = f"https://{_host_name}/#mlflow/models/{model_name}"
+    model_name = model_name.replace(".","/")
+    uri = f"https://{_host_name}/explore/data/models/{model_name}"
     displayHTML("""<b>Registered Model URI:</b> <a href="{}">{}</a>""".format(uri,uri))
+    
+def display_model_version_uri(model_name, version):
+    model_name = model_name.replace(".","/")
+    uri = f"https://{_host_name}/explore/data/models/{model_name}/version/1"
+    displayHTML("""<b>Model Version URI:</b> <a href="{}">{}</a>""".format(uri,uri))
 
 # COMMAND ----------
 
