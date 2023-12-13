@@ -30,6 +30,10 @@
 
 # COMMAND ----------
 
+# MAGIC %md ### Mini MLOps Pipeline diagram
+
+# COMMAND ----------
+
 # MAGIC %md 
 # MAGIC **Batch Scoring Pipeline**
 # MAGIC
@@ -38,3 +42,29 @@
 # MAGIC **Real-time Scoring Pipeline**
 # MAGIC
 # MAGIC <img src="https://github.com/amesar/mlflow-examples/blob/master/python/e2e-ml-pipeline/e2e_ml_realtime_pipeline.png?raw=true"  width="700" />
+
+# COMMAND ----------
+
+# MAGIC %md ### Advanced MLOps Pipeline diagram
+
+# COMMAND ----------
+
+# MAGIC %md 
+# MAGIC <img src="https://github.com/amesar/mlflow-resources/blob/master/images/databricks/mlops_pipeline_uc.png?raw=true"  width="900" />
+# MAGIC
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ```
+# MAGIC 1. Dev environment
+# MAGIC     1a. Train model
+# MAGIC     1b. Register best model in dev catalog
+# MAGIC     1b. Copy MLflow run to staging workspace
+# MAGIC 2. Staging environment
+# MAGIC     2a. Run model evaluation and non-ML code tests
+# MAGIC     2b. Copy (promote) model version to staging catalog
+# MAGIC     2c. Copy model version to prod catalog when ready
+# MAGIC     2c. Copy MLflow run to prod workspace for lineage and governance
+# MAGIC 3. Prod environment - run model inference on data
+# MAGIC ```
