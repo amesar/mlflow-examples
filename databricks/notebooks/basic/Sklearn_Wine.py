@@ -41,22 +41,27 @@
 
 # COMMAND ----------
 
+!pip install mlflow[skinny]
+dbutils.library.restartPython()
+
+# COMMAND ----------
+
 # MAGIC %run ./Common
 
 # COMMAND ----------
 
 dbutils.widgets.text("01. Run name", "")
 dbutils.widgets.text("02. Experiment name", "")
-dbutils.widgets.text("03. Registered model", "")
+dbutils.widgets.text("03. Registered model", "Sklearn_wine_best")
 dbutils.widgets.dropdown("04. Model version stage", "None", _model_version_stages)
 dbutils.widgets.dropdown("05. Archive existing versions", "no", ["yes","no"])
 dbutils.widgets.text("06. Model alias","")
 dbutils.widgets.dropdown("07. Save signature", "yes", ["yes","no"])
-dbutils.widgets.dropdown("08. Input example", "no", ["yes","no"])
-dbutils.widgets.dropdown("09. Log input", "no", ["yes","no"])
+dbutils.widgets.dropdown("08. Input example", "yes", ["yes","no"])
+dbutils.widgets.dropdown("09. Log input", "yes", ["yes","no"])
 dbutils.widgets.dropdown("10. Log evaluation metrics", "no", ["yes","no"])
 dbutils.widgets.dropdown("11. Log SHAP", "no", ["yes","no"])
-dbutils.widgets.text("12. Delta table", "")
+dbutils.widgets.text("12. Delta table", "andre.wine_quality")
 dbutils.widgets.text("13. Max depth", "1") 
 
 run_name = dbutils.widgets.get("01. Run name")

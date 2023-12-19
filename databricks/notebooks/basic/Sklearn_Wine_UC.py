@@ -15,7 +15,6 @@
 # MAGIC * 08. SHAP
 # MAGIC * 09. Delta table: if not set, read CSV file from DBFS
 # MAGIC * 10. Max depth
-# MAGIC * 11. Unity Catalog
 # MAGIC
 # MAGIC #### Sample widget values
 # MAGIC
@@ -25,11 +24,16 @@
 # MAGIC   * andre_catalog.ml_data.winequality_white
 # MAGIC   * andre_catalog.ml_data.winequality_red
 # MAGIC
-# MAGIC Last udpated: 2023-08-11
+# MAGIC Last udpated: 2023-12-18
 
 # COMMAND ----------
 
 # MAGIC %md ### Setup
+
+# COMMAND ----------
+
+import mlflow
+mlflow.set_registry_uri("databricks-uc")
 
 # COMMAND ----------
 
@@ -39,11 +43,11 @@
 
 dbutils.widgets.text("01. Run name", "")
 dbutils.widgets.text("02. Experiment name", "")
-dbutils.widgets.text("03. Registered model", "")
+dbutils.widgets.text("03. Registered model", "andre_catalog.ml_models2.sklearn_wine_best")
 dbutils.widgets.text("04. Model alias","")
 dbutils.widgets.dropdown("05. Save signature", "yes", ["yes","no"])
-dbutils.widgets.dropdown("06. Input example", "no", ["yes","no"])
-dbutils.widgets.dropdown("07. Log input", "no", ["yes","no"])
+dbutils.widgets.dropdown("06. Input example", "yes", ["yes","no"])
+dbutils.widgets.dropdown("07. Log input", "yes", ["yes","no"])
 
 dbutils.widgets.dropdown("10. Log evaluation metrics", "no", ["yes","no"]) # XX
 log_evaluation_metrics = dbutils.widgets.get("10. Log evaluation metrics") == "yes"
@@ -51,7 +55,6 @@ log_evaluation_metrics = dbutils.widgets.get("10. Log evaluation metrics") == "y
 dbutils.widgets.dropdown("08. SHAP","no", ["yes","no"])
 dbutils.widgets.text("09. Delta table", "")
 dbutils.widgets.text("10. Max depth", "1") 
-dbutils.widgets.dropdown("11. Unity Catalog", "yes", ["yes","no"])
 
 run_name = dbutils.widgets.get("01. Run name")
 experiment_name = dbutils.widgets.get("02. Experiment name")
@@ -63,7 +66,6 @@ log_input = dbutils.widgets.get("07. Log input") == "yes"
 log_shap = dbutils.widgets.get("08. SHAP") == "yes"
 delta_table = dbutils.widgets.get("09. Delta table")
 max_depth = to_int(dbutils.widgets.get("10. Max depth"))
-use_uc = dbutils.widgets.get("11. Unity Catalog") == "yes"
 
 run_name = run_name or None
 experiment_name = experiment_name or None
@@ -82,7 +84,10 @@ print("log_evaluation_metrics:", log_evaluation_metrics)
 print("SHAP:", log_shap)
 print("delta_table:", delta_table)
 print("max_depth:", max_depth)
-print("use_uc:", use_uc)
+
+# COMMAND ----------
+
+print("MlflowClient._registry_uri:", client._registry_uri)
 
 # COMMAND ----------
 
@@ -92,12 +97,6 @@ if experiment_name:
     print("Experiment ID:", exp.experiment_id)
     client.set_experiment_tag(exp.experiment_id, "version_mlflow", mlflow.__version__)
     client.set_experiment_tag(exp.experiment_id, "timestamp", now)
-
-# COMMAND ----------
-
-if use_uc:
-    client = activate_unity_catalog()
-    print("New client._registry_uri:",client._registry_uri)
 
 # COMMAND ----------
 
