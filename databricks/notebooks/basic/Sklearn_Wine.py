@@ -33,7 +33,7 @@
 # MAGIC   * andre_catalog.ml_data.winequality_white
 # MAGIC   * andre_catalog.ml_data.winequality_red
 # MAGIC
-# MAGIC Last udpated: _2023-11-24_
+# MAGIC Last udpated: _2023-12-18_
 
 # COMMAND ----------
 
