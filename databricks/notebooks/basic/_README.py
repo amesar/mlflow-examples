@@ -9,17 +9,17 @@
 # MAGIC * [Sklearn_Wine_FS]($feature_store/_README) - Sklearn with feature store
 # MAGIC * [XGBoost_Wine]($XGBoost_Wine) -  XGBoost/Sklearn wine quality model
 # MAGIC * [SparkML_Wine]($SparkML_Wine) - SparkML wine quality model
-# MAGIC * [Sklearn_CustomModel]($Sklearn_CustomModel) - three examples of MLflow [Python custom models](https://mlflow.org/docs/latest/models.html#custom-python-models)
 # MAGIC
 # MAGIC ##### Wine Quality predict-only model notebooks
 # MAGIC * [Predict_Sklearn_Wine]($Predict_Sklearn_Wine)
 # MAGIC * [Predict_ONNX_Wine]($Predict_ONNX_Wine)
 # MAGIC
-# MAGIC ##### Other Sklearn model notebooks
+# MAGIC ##### Sklearn Iris model notebooks
 # MAGIC * [Sklearn_Iris]($Sklearn_Iris) 
 # MAGIC * [Sklearn_Iris_Autolog]($Sklearn_Iris_Autolog) 
 # MAGIC
 # MAGIC ##### Other model notebooks
+# MAGIC * [Sklearn_CustomModel]($Sklearn_CustomModel) - three examples of MLflow [Python custom models](https://mlflow.org/docs/latest/models.html#custom-python-models)
 # MAGIC * [Keras_Mnist]($Keras_Mnist) - TensorFlow Keras MNIST
 # MAGIC
 # MAGIC ##### Helper notebooks
@@ -33,4 +33,4 @@
 # MAGIC ##### Github
 # MAGIC * https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/basic
 # MAGIC
-# MAGIC Last updated: 2023-12-18
+# MAGIC Last updated: 2023-12-22

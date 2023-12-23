@@ -11,7 +11,7 @@
 # MAGIC * 04. Model alias
 # MAGIC * 05. Save signature
 # MAGIC * 06. Input example
-# MAGIC * 07. Log input - new in MLflow 2.4.0
+# MAGIC * 07. Log input - see [xx](https://mlflow.org/docs/latest/python_api/mlflow.data.html) - new in MLflow 2.4.0
 # MAGIC * 08. SHAP
 # MAGIC * 09. Delta table: if not set, read CSV file from DBFS
 # MAGIC * 10. Max depth
