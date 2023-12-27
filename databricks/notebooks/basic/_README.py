@@ -6,9 +6,13 @@
 # MAGIC   * With new MLflow 2.4.0 'run.inputs' aka 'mlflow.data' features
 # MAGIC * [Sklearn_Wine_UC]($Sklearn_Wine_UC) - ibid for Unity Catalog
 # MAGIC * [Sklearn_Wine_ONNX]($Sklearn_Wine_ONNX) - ONNX with Sklearn version (2 models logged)
-# MAGIC * [Sklearn_Wine_FS]($feature_store/_README) - Sklearn with feature store
 # MAGIC * [XGBoost_Wine]($XGBoost_Wine) -  XGBoost/Sklearn wine quality model
 # MAGIC * [SparkML_Wine]($SparkML_Wine) - SparkML wine quality model
+# MAGIC
+# MAGIC ##### Feature Store 
+# MAGIC * Sklearn Wine Quality train/predict model notebooks
+# MAGIC * [feature_store_ws]($feature_store/_README) - Uses [FeatureStoreClient](https://api-docs.databricks.com/python/feature-store/latest/feature_store.client.html) - Workspace feature store
+# MAGIC * [feature_store_uc]($feature_store_uc/_README) - Uses [FeatureEngineeringClient](https://api-docs.databricks.com/python/feature-engineering/latest/feature_engineering.client.html) - Unity Catalog feature store
 # MAGIC
 # MAGIC ##### Wine Quality predict-only model notebooks
 # MAGIC * [Predict_Sklearn_Wine]($Predict_Sklearn_Wine)
@@ -33,4 +37,4 @@
 # MAGIC ##### Github
 # MAGIC * https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/basic
 # MAGIC
-# MAGIC Last updated: 2023-12-22
+# MAGIC Last updated: 2023-12-27
