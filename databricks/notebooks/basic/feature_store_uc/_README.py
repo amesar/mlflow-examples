@@ -12,4 +12,7 @@
 # MAGIC * [Feature Store Python API Reference](https://docs.databricks.com/en/dev-tools/api/python/latest/index.html)
 # MAGIC * [Feature Store Python API](https://api-docs.databricks.com/python/feature-store/latest/index.html)
 # MAGIC
+# MAGIC ##### Github
+# MAGIC * https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/basic/feature_store_uc
+# MAGIC
 # MAGIC Last updated: 2023-12-27

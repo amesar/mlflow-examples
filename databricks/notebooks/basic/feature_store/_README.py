@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %md ### README - Sklearn Wine Feature Store 
+# MAGIC %md ### README - Sklearn Wine Feature Store
 # MAGIC
 # MAGIC ##### Notebook
 # MAGIC * [01_Sklearn_Wine_FS_Prep]($01_Sklearn_Wine_FS_Prep) - Run this notebook first once to create feature table.
@@ -11,4 +11,7 @@
 # MAGIC * [Feature Store Python API Reference](https://docs.databricks.com/en/dev-tools/api/python/latest/index.html)
 # MAGIC * [Feature Store Python API](https://api-docs.databricks.com/python/feature-store/latest/index.html)
 # MAGIC
-# MAGIC Last updated: 2023-11-16
+# MAGIC ##### Github
+# MAGIC * https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/basic/feature_store
+# MAGIC
+# MAGIC Last updated: 2023-12-27
