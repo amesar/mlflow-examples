@@ -1,22 +1,21 @@
 # Databricks notebook source
 # MAGIC %md # Train model and predict best model with AutoML API
-# MAGIC 
+# MAGIC
 # MAGIC **Overview**
 # MAGIC * Trains a model using the Databricks AutoML API feature.
 # MAGIC * Runs will be in the notebook experiment.
 # MAGIC * Uses the regression algorithm.
 # MAGIC * Uses the wine quality dataset.
-# MAGIC 
+# MAGIC
 # MAGIC **Widgets**
 # MAGIC * 1\. Timeout minutes - Maximum time to wait for AutoML trials to complete.
 # MAGIC * 2\. Primary metric - Metric used to evaluate and rank model performance. 
 # MAGIC   * Supported metrics for regression: “r2” (default), “mae”, “rmse”, “mse”.
 # MAGIC * 3\. Best primary metric sort order - Sort order for searching for the best primary metric. Values are ASC or DESC (default).
 # MAGIC * See [Classification and regression parameters](https://docs.microsoft.com/en-us/azure/databricks/applications/machine-learning/automl#classification-and-regression) documentation.
-# MAGIC 
+# MAGIC
 # MAGIC **Databricks Documentation**
-# MAGIC * [AutoML Python API](https://docs.microsoft.com/en-us/azure/databricks/applications/machine-learning/automl#automl-python-api)
-# MAGIC * [Python API specification](https://docs.microsoft.com/en-us/azure/databricks/applications/machine-learning/automl#automl-python-api-spec)
+# MAGIC * [Train ML models with Databricks AutoML Python API](https://docs.databricks.com/en/machine-learning/automl/train-ml-model-automl-api.html)
 
 # COMMAND ----------
 
@@ -52,6 +51,8 @@ print("best_primary_metric_sort_order:",best_primary_metric_sort_order)
 # COMMAND ----------
 
 # MAGIC %md ### Get Data
+# MAGIC
+# MAGIC * TODO: Make as Delta table widget
 
 # COMMAND ----------
 

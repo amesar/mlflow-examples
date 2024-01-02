@@ -8,6 +8,7 @@
 # MAGIC * Mini MLOps examples
 # MAGIC   * [diabetes_mini_mlops]($diabetes_mini_mlops/_README) - Mini MLOps example using diabetes dataset (Unity Catalog).
 # MAGIC   * [Mini_MLOps_Pipeline]($Mini_MLOps_Pipeline/_README) - Simple end-to-end "mini" MLOps pipeline using wine quality dataset. Uses workspace registry model version stages.
+# MAGIC * [AutoML_API_Example]($automl_api/AutoML_API_Example)
 # MAGIC * [./includes]($includes) - Common include notebooks.
 # MAGIC
-# MAGIC Last updated: 2023-12-11
+# MAGIC Last updated: 2024-01-02
