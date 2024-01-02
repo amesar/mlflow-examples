@@ -1,21 +1,25 @@
 # Databricks notebook source
 # MAGIC %md # Train model and predict best model with AutoML API
 # MAGIC
-# MAGIC **Overview**
+# MAGIC ##### Overview
 # MAGIC * Trains a model using the Databricks AutoML API feature.
 # MAGIC * Runs will be in the notebook experiment.
 # MAGIC * Uses the regression algorithm.
 # MAGIC * Uses the wine quality dataset.
 # MAGIC
-# MAGIC **Widgets**
-# MAGIC * 1\. Timeout minutes - Maximum time to wait for AutoML trials to complete.
-# MAGIC * 2\. Primary metric - Metric used to evaluate and rank model performance. 
+# MAGIC ##### Widgets
+# MAGIC * 1\. Table - Delta table. If not specified will read from CSV file.
+# MAGIC * 2\. Timeout minutes - Maximum time to wait for AutoML trials to complete.
+# MAGIC * 3\. Primary metric - Metric used to evaluate and rank model performance. 
 # MAGIC   * Supported metrics for regression: “r2” (default), “mae”, “rmse”, “mse”.
-# MAGIC * 3\. Best primary metric sort order - Sort order for searching for the best primary metric. Values are ASC or DESC (default).
+# MAGIC * 4\. Best primary metric sort order - Sort order for searching for the best primary metric. Values are ASC or DESC (default).
 # MAGIC * See [Classification and regression parameters](https://docs.microsoft.com/en-us/azure/databricks/applications/machine-learning/automl#classification-and-regression) documentation.
 # MAGIC
-# MAGIC **Databricks Documentation**
+# MAGIC ##### Databricks Documentation
 # MAGIC * [Train ML models with Databricks AutoML Python API](https://docs.databricks.com/en/machine-learning/automl/train-ml-model-automl-api.html)
+# MAGIC
+# MAGIC ##### Github
+# MAGIC * https://github.com/amesar/mlflow-examples/blob/master/databricks/notebooks/automl_api/AutoML_API_Example.py
 
 # COMMAND ----------
 
@@ -35,30 +39,35 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("1. Timeout minutes","5")
-timeout_minutes = int(dbutils.widgets.get("1. Timeout minutes"))
+dbutils.widgets.text("1. Delta table", "andre_catalog.ml_data.winequality_white")
+table_name = dbutils.widgets.get("1. Delta table")
 
-dbutils.widgets.dropdown("2. Primary metric", "r2", ["r2", "mae", "rmse", "mse"])
-primary_metric = dbutils.widgets.get("2. Primary metric") 
+dbutils.widgets.text("2. Timeout minutes", "5")
+timeout_minutes = int(dbutils.widgets.get("2. Timeout minutes"))
 
-dbutils.widgets.dropdown("3. Best primary metric sort order","DESC",["ASC","DESC"])
-best_primary_metric_sort_order = dbutils.widgets.get("3. Best primary metric sort order")
+dbutils.widgets.dropdown("3. Primary metric", "r2", ["r2", "mae", "rmse", "mse"])
+primary_metric = dbutils.widgets.get("3. Primary metric") 
 
-print("timeout_minutes:",timeout_minutes)
-print("primary_metric:",primary_metric)
-print("best_primary_metric_sort_order:",best_primary_metric_sort_order)
+dbutils.widgets.dropdown("4. Best primary metric sort order","DESC",["ASC","DESC"])
+best_primary_metric_sort_order = dbutils.widgets.get("4. Best primary metric sort order")
+
+print("table_name:", table_name)
+print("timeout_minutes:", timeout_minutes)
+print("primary_metric:", primary_metric)
+print("best_primary_metric_sort_order:", best_primary_metric_sort_order)
 
 # COMMAND ----------
 
 # MAGIC %md ### Get Data
-# MAGIC
-# MAGIC * TODO: Make as Delta table widget
 
 # COMMAND ----------
 
-import pandas as pd
-path = "https://raw.githubusercontent.com/amesar/mlflow-examples/master/data/train/wine-quality-white.csv"
-data = pd.read_csv(path)
+if table_name:
+    data = spark.table(table_name)
+else:
+    import pandas as pd
+    path = "https://raw.githubusercontent.com/amesar/mlflow-examples/master/data/train/wine-quality-white.csv"
+    data = pd.read_csv(path)
 display(data)
 
 # COMMAND ----------

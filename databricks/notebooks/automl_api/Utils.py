@@ -22,9 +22,11 @@ def display_experiment_uri(experiment):
 # COMMAND ----------
 
 import os
+import mlflow
 def print_versions():
     print("Versions:")
-    print("  Cluster:", get_notebook_tag("sparkVersion"))
-    print("  DATABRICKS_RUNTIME_VERSION:", os.environ.get("DATABRICKS_RUNTIME_VERSION",None))
+    print("  MLflow version:", mlflow.__version__)
     print("  spark.version:", spark.version)
+    print("  DATABRICKS_RUNTIME_VERSION:", os.environ.get("DATABRICKS_RUNTIME_VERSION",None))
+    print()
 print_versions()
