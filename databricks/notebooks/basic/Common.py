@@ -1,4 +1,9 @@
 # Databricks notebook source
+!pip install mlflow-skinny==2.9.2
+dbutils.library.restartPython()
+
+# COMMAND ----------
+
 # MAGIC %run ./Versions
 
 # COMMAND ----------
