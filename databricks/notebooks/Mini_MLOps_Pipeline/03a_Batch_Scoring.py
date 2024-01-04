@@ -1,9 +1,9 @@
 # Databricks notebook source
-# MAGIC %md #Batch Scoring
-# MAGIC * Scores the best model run from the [01_Train_Model]($01_Train_Model) notebook.
-# MAGIC * Uses the model URI: `models:/mini_mlops/production`.
-# MAGIC * Scores with native Sklearn, Pyfunc and UDF flavors.
-# MAGIC * Sklearn and Pyfunc scoring is executed only on the driver node, whereas UDF scoring uses all nodes of the cluster.
+k %md #Batch Scoring
+* Scores the best model run from the [01_Train_Model]($01_Train_Model) notebook.
+* Uses the model URI: `models:/mini_mlops/production`.
+* Scores with native Sklearn, Pyfunc and Spark UDF flavors.
+* Sklearn and Pyfunc scoring is executed only on the driver node, whereas UDF scoring uses all nodes of the cluster.
 
 # COMMAND ----------
 
@@ -71,6 +71,10 @@ display(pd.DataFrame(predictions, columns=[_col_prediction]))
 
 df = spark.createDataFrame(data)
 udf = mlflow.pyfunc.spark_udf(spark, model_uri)
+#udf = mlflow.pyfunc.spark_udf(spark, model_uri, env_manager="virtualenv") # This may take extra time during execution
+
+# COMMAND ----------
+
 predictions = df.withColumn(_col_prediction, udf(*df.columns))
 display(predictions.select(_col_prediction))
 

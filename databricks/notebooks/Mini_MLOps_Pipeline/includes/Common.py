@@ -15,7 +15,7 @@ mlflow_client = mlflow.MlflowClient()
 
 print("Versions:")
 print("  MLflow Version:", mlflow.__version__)
-print("  DATABRICKS_RUNTIME_VERSION:", os.environ.get('DATABRICKS_RUNTIME_VERSION', None))
+print("  DATABRICKS_RUNTIME_VERSION:", os.environ.get('DATABRICKS_RUNTIME_VERSION'))
 
 # COMMAND ----------
 
@@ -64,14 +64,13 @@ def _create_experiment_for_repos():
 
 def init():
     experiment_name = _notebook
-    print("Experiment name:", experiment_name)
     experiment = mlflow_client.get_experiment_by_name(experiment_name)
     # Is running in as Repos, cannot need to create its default "notebook" experiment
     if not experiment:
         experiment = _create_experiment_for_repos()
         print(f"Running as Repos - created Repos experiment:", experiment.name)
 
-    print("Experiment ID:", experiment.experiment_id)
+    print("Experiment ID:  ", experiment.experiment_id)
     print("Experiment name:", experiment.name)
     return experiment
 
@@ -144,14 +143,38 @@ def display_registered_model_uri(model_name):
 
 # COMMAND ----------
 
-"""
-Wait function due to cloud eventual consistency. 
-Waits until a version is in the READY status.
-"""
+from mlflow.exceptions import MlflowException, RestException
+
+def _delete_registered_model():
+    try:
+        registered_model = mlflow_client.get_registered_model(_model_name)
+        print(f"Found registered model '{_model_name}'")
+        if delete_registered_model:
+            versions = mlflow_client.get_latest_versions(_model_name)
+            print(f"Found {len(versions)} model versions to delete")
+            for v in versions:
+                print(f"  Deleting version={v.version} status={v.status} stage={v.current_stage} run_id={v.run_id}")        
+                mlflow_client.transition_model_version_stage(_model_name, v.version, "Archived")
+                mlflow_client.delete_model_version(_model_name, v.version)
+            print(f"Deleting registered model '{_model_name}'")
+            mlflow_client.delete_registered_model(_model_name)
+            registered_model = mlflow_client.create_registered_model(_model_name)
+    except RestException as e:
+        if e.error_code == "RESOURCE_DOES_NOT_EXIST":
+            print(f"Creating registered model '{_model_name}'")
+            registered_model = mlflow_client.create_registered_model(_model_name)
+        else: 
+            raise e
+
+# COMMAND ----------
+
+# Wait function due to cloud eventual consistency. 
+# Waits until a version is in the READY status.
+
 import time
 from mlflow.entities.model_registry.model_version_status import ModelVersionStatus
 
-def wait_until_version_ready(model_name, model_version, sleep_time=1, iterations=100):
+def _wait_until_version_ready(model_name, model_version, sleep_time=1, iterations=100):
     start = time.time()
     for _ in range(iterations):
         version = mlflow_client.get_model_version(model_name, model_version.version)

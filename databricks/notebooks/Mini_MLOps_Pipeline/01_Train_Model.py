@@ -1,16 +1,20 @@
 # Databricks notebook source
 # MAGIC %md # Train Sklearn Model
 # MAGIC
-# MAGIC **Overview**
+# MAGIC ##### Overview
 # MAGIC * Option to use [MLflow Autologging](https://docs.databricks.com/applications/mlflow/databricks-autologging.html).
 # MAGIC * Train a Sklearn model several times with different `maxDepth` hyperparameter values.
 # MAGIC   * Runs will be in the notebook experiment.
 # MAGIC * Algorithm: DecisionTreeRegressor.
 # MAGIC
-# MAGIC **Widgets**
-# MAGIC   * Autologging - yes or no.
-# MAGIC   * Delete existing runs - Deletes existing experiment runs before executing training runs.
-# MAGIC   * Delta table - If specified will read data from a Delta table. The table will be created if it doesn't already exist. Otherwise  read wine quality data via HTTP download.
+# MAGIC ##### Widgets
+# MAGIC   * `1. Autologging` - yes or no.
+# MAGIC   * `2. Delete existing runs` - Deletes existing experiment runs before executing training runs.
+# MAGIC   * `3. Delta table`
+# MAGIC     * If specified will read wine quality  data from a Delta table. 
+# MAGIC       * The table will be created if it doesn't already exist from the default download URI.
+# MAGIC     * Otherwise read data directly from the default download URI.
+# MAGIC     * Default data URI: https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv
 
 # COMMAND ----------
 

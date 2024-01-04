@@ -1,10 +1,17 @@
 # Databricks notebook source
 # MAGIC %md # Register Best Model in Model Registry
+# MAGIC
+# MAGIC ##### Overview
 # MAGIC * Creates a new registered model if it doesn't already exist.
 # MAGIC * Deletes all current model versions (optional).
 # MAGIC * Finds the best model (lowest 'training_rmse' metric) generated from [01_Train_Model]($01_Train_Model) notebook experiment.
 # MAGIC * Use 'training_mean_absolute_error' if you autolog your run.
 # MAGIC * Adds the best run as a registered model version and promotes it to the `production` stage.
+# MAGIC
+# MAGIC ##### Widgets
+# MAGIC   * `1. Metric` - Metric to use to find best model run
+# MAGIC   * `2. Lower is better` - which metric value is better?
+# MAGIC   * `3. Delete registered model` - start from scratch
 
 # COMMAND ----------
 
@@ -16,13 +23,18 @@
 
 # COMMAND ----------
 
+dbutils.widgets.removeAll()
 dbutils.widgets.text("1. Metric", "training_rmse")
 metric = dbutils.widgets.get("1. Metric")
 
-dbutils.widgets.dropdown("2. Delete registered model", "yes", ["yes", "no"])
-delete_registered_model = dbutils.widgets.get("2. Delete registered model") == "yes"
+dbutils.widgets.dropdown("2. Lower is better", "yes", ["yes", "no"])
+lower_is_better = dbutils.widgets.get("2. Lower is better")
+
+dbutils.widgets.dropdown("3. Delete registered model", "yes", ["yes", "no"])
+delete_registered_model = dbutils.widgets.get("3. Delete registered model") == "yes"
 
 print("metric:", metric)
+print("lower_is_better:", lower_is_better)
 print("delete_registered_model:", delete_registered_model)
 
 # COMMAND ----------
@@ -50,7 +62,13 @@ display(df)
 
 # COMMAND ----------
 
-runs = mlflow_client.search_runs(experiment_id, order_by=[f"metrics.{metric} ASC"], max_results=1)
+order = "ASC" if lower_is_better else "DESC"
+order_by = f"metrics.{metric} {order}"
+order_by
+
+# COMMAND ----------
+
+runs = mlflow_client.search_runs(experiment_id, order_by=[order_by], max_results=1)
 best_run = runs[0]
 best_run.info.run_id, round(best_run.data.metrics[metric],3), best_run.data.params
 
@@ -72,27 +90,7 @@ best_run.data.tags.get("sparkDatasourceInfo")
 
 # COMMAND ----------
 
-from mlflow.exceptions import MlflowException, RestException
-
-try:
-    registered_model = mlflow_client.get_registered_model(_model_name)
-    print(f"Found registered model '{_model_name}'")
-    if delete_registered_model:
-        versions = mlflow_client.get_latest_versions(_model_name)
-        print(f"Found {len(versions)} model versions to delete")
-        for v in versions:
-            print(f"  Deleting version={v.version} status={v.status} stage={v.current_stage} run_id={v.run_id}")
-            mlflow_client.transition_model_version_stage(_model_name, v.version, "Archived")
-            mlflow_client.delete_model_version(_model_name, v.version)
-        print(f"Deleting registered model '{_model_name}'")
-        mlflow_client.delete_registered_model(_model_name)
-        registered_model = mlflow_client.create_registered_model(_model_name)
-except RestException as e:
-    if e.error_code == "RESOURCE_DOES_NOT_EXIST":
-        print(f"Creating registered model '{_model_name}'")
-        registered_model = mlflow_client.create_registered_model(_model_name)
-    else:
-        raise e
+_delete_registered_model()
 
 # COMMAND ----------
 
@@ -131,7 +129,7 @@ type(version), version.__dict__
 
 # COMMAND ----------
 
-wait_until_version_ready(_model_name, version, sleep_time=2)
+_wait_until_version_ready(_model_name, version, sleep_time=2)
 
 # COMMAND ----------
 
