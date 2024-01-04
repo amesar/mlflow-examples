@@ -1,14 +1,14 @@
 # Databricks notebook source
-# MAGIC %md # Basic Keras MNIST train and predict notebook
-# MAGIC * Trains and saves model as Keras flavor which uses the TensorFlow SavedModel format.
-# MAGIC * Predicts using Keras model.
+# MAGIC %md # Basic TensorFlow MNIST train and predict notebook
+# MAGIC * Trains and saves model as TensorFlow flavor.
+# MAGIC * Predicts using TensorFlow, Pyfunc and Spark UDF flavors.
 # MAGIC
 # MAGIC Widgets:
-# MAGIC * 1. Registered Model - If set, register the model under this name.
-# MAGIC * 2. Epochs - Number of epochs.
-# MAGIC * 3. Batch Size - Batch size.
+# MAGIC * `1. Registered Model` - If set, register the model under this name.
+# MAGIC * `2. Epochs` - Number of epochs.
+# MAGIC * `3. Batch Size` - Batch size.
 # MAGIC
-# MAGIC Last update: 2023-11-17
+# MAGIC Last update: 2024-01-04
 
 # COMMAND ----------
 
@@ -37,7 +37,6 @@ print("batch_size:", batch_size)
 
 # COMMAND ----------
 
-import tensorflow.keras as keras
 import tensorflow as tf
 import mlflow
 import numpy as np
@@ -47,14 +46,7 @@ tf.random.set_seed(1)
 
 # COMMAND ----------
 
-print("sparkVersion:", get_notebook_tag("sparkVersion"))
-print("MLflow Version:", mlflow.__version__)
-print("Tensorflow version:", tf.__version__)
-
-# COMMAND ----------
-
-from tensorflow.keras import models
-from tensorflow.keras import layers
+from tensorflow.keras import models, layers
 from tensorflow.keras.utils import to_categorical
 
 # COMMAND ----------
@@ -91,10 +83,10 @@ print("input_shape:",input_shape)
 
 # COMMAND ----------
 
-print("train_images.shape:",train_images.shape)
-print("train_labels.shape:",train_labels.shape)
-print("test_images.shape:",test_images.shape)
-print("test_labels.shape:",test_labels.shape)
+print("train_images.shape:", train_images.shape)
+print("train_labels.shape:", train_labels.shape)
+print("test_images.shape: ", test_images.shape)
+print("test_labels.shape: ", test_labels.shape)
 
 # COMMAND ----------
 
@@ -108,17 +100,14 @@ model.add(layers.Dense(10, activation='softmax'))
 
 # COMMAND ----------
 
-import mlflow.keras
-
 with mlflow.start_run(run_name=f"{now} - {mlflow.__version__}") as run:
     print("Run ID:", run.info.run_id)
     mlflow.set_tag("version.mlflow", mlflow.__version__)
     mlflow.set_tag("version.tensorflow", tf.__version__)
 
-
-    model.compile(optimizer='rmsprop',
-                  loss='categorical_crossentropy',
-                  metrics=['accuracy'])
+    model.compile(optimizer = "rmsprop",
+                  loss = "categorical_crossentropy",
+                  metrics = ["accuracy"])
     model.summary()
     model.fit(train_images, train_labels, epochs=epochs, batch_size=batch_size, verbose=1)
 
@@ -130,7 +119,7 @@ with mlflow.start_run(run_name=f"{now} - {mlflow.__version__}") as run:
     mlflow.log_param("my_batch_size",batch_size)
     mlflow.log_metric("my_acc", test_acc)
     mlflow.log_metric("my_loss", test_loss)
-    mlflow.keras.log_model(model, "model", registered_model_name=registered_model) 
+    mlflow.tensorflow.log_model(model, "model", registered_model_name=registered_model) 
     with open("/tmp/model.json", "w") as f:
         f.write(model.to_json())
     mlflow.log_artifact("/tmp/model.json")
@@ -178,7 +167,7 @@ model_uri
 
 # COMMAND ----------
 
-# MAGIC %md #### Predict as Keras
+# MAGIC %md #### Predict as TensorFlow
 
 # COMMAND ----------
 
@@ -186,7 +175,7 @@ test_images.shape
 
 # COMMAND ----------
 
-model = mlflow.keras.load_model(model_uri)
+model = mlflow.tensorflow.load_model(model_uri)
 predictions = model.predict(test_images)
 pd.DataFrame(data=predictions)
 
@@ -219,13 +208,11 @@ type(predictions)
 
 # COMMAND ----------
 
-# MAGIC %md #### Predict as UDF - TODO
-# MAGIC
-# MAGIC * TypeError: Can not infer schema for type: ``<class 'numpy.ndarray'>``
+# MAGIC %md #### Predict as Spark UDF
 
 # COMMAND ----------
 
-#df = spark.createDataFrame(test_images)
-#udf = mlflow.pyfunc.spark_udf(spark, model_uri)
-#predictions = df.withColumn("prediction", udf(*df.columns))
-#predictions
+df = spark.createDataFrame(test_images)
+udf = mlflow.pyfunc.spark_udf(spark, model_uri)
+predictions = df.withColumn("prediction", udf(*df.columns))
+predictions

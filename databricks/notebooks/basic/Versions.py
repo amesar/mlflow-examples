@@ -97,18 +97,18 @@ print(tabulate(df, headers="keys", tablefmt="psql", showindex=False))
 
 # COMMAND ----------
 
-# MAGIC %scala
-# MAGIC import org.mlflow.tracking.MlflowClientVersion
-# MAGIC println("Scala version: "+scala.util.Properties.versionString)
-# MAGIC println("Scala MLflow version: "+MlflowClientVersion.getClientVersion())
-# MAGIC spark.conf.set("mlflow.version.scala", MlflowClientVersion.getClientVersion())
+#%scala
+#import org.mlflow.tracking.MlflowClientVersion
+#println("Scala version: "+scala.util.Properties.versionString)
+#println("Scala MLflow version: "+MlflowClientVersion.getClientVersion())
+#spark.conf.set("mlflow.version.scala", MlflowClientVersion.getClientVersion())
 
 # COMMAND ----------
 
 # Warning if Python and Scala mlflow versions do not match
-mlflow_version_scala = spark.conf.get("mlflow.version.scala")
-if mlflow.__version__ != mlflow_version_scala:
-    print(f"WARNING: MLflow versions do not match: Python {mlflow.__version__} and Scala {mlflow_version_scala}")
+#mlflow_version_scala = spark.conf.get("mlflow.version.scala")
+#if mlflow.__version__ != mlflow_version_scala:
+#    print(f"WARNING: MLflow versions do not match: Python {mlflow.__version__} and Scala {mlflow_version_scala}")
 
 # COMMAND ----------
 
