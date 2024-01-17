@@ -120,3 +120,9 @@ dump_obj(version)
 # COMMAND ----------
 
 display_model_version_uri(model_name, version.version)
+
+# COMMAND ----------
+
+# MAGIC %md ### Next notebook
+# MAGIC
+# MAGIC Next go to the **[03_Batch_Scoring]($03_Batch_Scoring)** notebook. 

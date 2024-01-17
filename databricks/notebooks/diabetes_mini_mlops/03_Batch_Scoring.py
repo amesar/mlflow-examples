@@ -2,14 +2,14 @@
 # MAGIC %md ## Batch Scoring
 # MAGIC * Scores the best model run from the [01_Train_Model]($01_Train_Model) notebook.
 # MAGIC * Scores with native Sklearn, Pyfunc and UDF flavors.
-# MAGIC * Shows how to load a model using either the standard version or new alias.
+# MAGIC * Shows how to load a model using either the standard model version or new model alias.
 # MAGIC * Sklearn and Pyfunc scoring is executed only on the driver node, whereas UDF scoring uses all nodes of the cluster.
 # MAGIC
 # MAGIC ##### Widgets
 # MAGIC
 # MAGIC * `1. Registered model` - name of registerd model such as `andre_m.ml_models.diabetes_mlops`.
 # MAGIC * `2. Table` - diabetes table such as `andre_m.ml_data.diabetes` (optional).
-# MAGIC * `3. Alias` - Model alias.
+# MAGIC * `3. Alias` - model alias.
 
 # COMMAND ----------
 
@@ -113,3 +113,9 @@ df = spark.createDataFrame(data)
 udf = mlflow.pyfunc.spark_udf(spark, model_uri)
 predictions = df.withColumn("prediction", udf(*df.columns))
 display(predictions.select("prediction"))
+
+# COMMAND ----------
+
+# MAGIC %md ### Next notebook
+# MAGIC
+# MAGIC Optionally, go to the **[04a_Model_Serving_Start]($04a_Model_Serving_Start)** notebook for real-time scoring.

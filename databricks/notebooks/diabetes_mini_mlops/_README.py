@@ -6,7 +6,7 @@
 # MAGIC * Trains several model runs with different hyperparameters.
 # MAGIC * Registers the best run's model in the Unity Catalog model registry with the 'champ' alias.
 # MAGIC * Scores with either:
-# MAGIC   * Batch scoring with Spark.
+# MAGIC   * Batch scoring including Spark.
 # MAGIC   * Real-time model scoring with Serverless Model Serving ([AWS](https://docs.databricks.com/machine-learning/model-inference/serverless/serverless-real-time-inference.html) - [Azure](https://learn.microsoft.com/en-us/azure/databricks/machine-learning/model-serving/)).
 # MAGIC
 # MAGIC ##### Notebooks
@@ -26,7 +26,7 @@
 # MAGIC ##### Github
 # MAGIC * https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/diabetes_mini_mlops
 # MAGIC
-# MAGIC ##### Last updated: _2023-12-13_
+# MAGIC ##### Last updated: _2024-01-17_
 
 # COMMAND ----------
 

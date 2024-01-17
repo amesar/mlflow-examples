@@ -89,14 +89,6 @@ display(data)
 
 # COMMAND ----------
 
-# MAGIC %md #### New
-
-# COMMAND ----------
-
-
-
-# COMMAND ----------
-
 # MAGIC %md ### Create function to plot ElasticNet descent path
 # MAGIC
 # MAGIC The `plot_enet_descent_path()` function:
@@ -298,3 +290,9 @@ display(image)
 # COMMAND ----------
 
 display_experiment_uri(experiment)
+
+# COMMAND ----------
+
+# MAGIC %md ### Next notebook
+# MAGIC
+# MAGIC Next go to the **[02_Register_Model]($02_Register_Model)** notebook.
