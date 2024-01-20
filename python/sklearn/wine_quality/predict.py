@@ -24,6 +24,7 @@ def _predict(model_uri, data_path, load_model_method, msg):
 
     model = load_model_method(model_uri)
     print("model.type:", type(model))
+    print("model:", model)
 
     df = predict_utils.read_prediction_data(data_path)
     predictions = model.predict(df)

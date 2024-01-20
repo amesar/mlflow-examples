@@ -1,7 +1,7 @@
 {
   "run_name": "MLflow_RunSubmit_NewCluster",
   "new_cluster": {
-    "spark_version": "9.0.x-cpu-ml-scala2.11",
+    "spark_version": "14.3.x-cpu-ml-scala2.12",
     "node_type_id": "i3.xlarge",
     "num_workers": 1
   },
@@ -14,7 +14,7 @@
     "parameters": [
        "--experiment-name", "/Users/me@mycompany.com/experiments/sklearn_wine_job",
        "--max-depth", 5,
-       "--data-path", "/dbfs/home/me@mycompany.com/work/jobs/sklearn_wine/wine-quality-white.csv",
+       "--data-path", "https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv",
        "--run-origin", "run_submit_new_cluster_whl" ]
    },
   "timeout_seconds": 3600

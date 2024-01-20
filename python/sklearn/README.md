@@ -559,8 +559,3 @@ Make predictions with curl as described above.
 cd tests
 py.test -s -v test*.py
 ```
-
-## Limitations
-
-As of MLflow 1.30.1 and 2.0.1, pip install fails for ONNX packages with the error: "Could not find cmake executable!".
-Therefore the ONNX packages have been commented out in setup.py and according code adustment made.

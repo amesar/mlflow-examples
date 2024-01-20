@@ -1,4 +1,4 @@
-name: mlflow-examples-sklearn
+name: mlflow-examples-sklearn-conda
 channels:
   - conda-forge
 dependencies:
@@ -7,12 +7,8 @@ dependencies:
     - mlflow>=2.4.2
     - scikit-learn
     - matplotlib
-    - onnx==1.14.0
-    - onnxruntime==1.15.1
-    - skl2onnx==1.14.1
+    - onnx==1.15.0,
+    - onnxruntime==1.16.3,
+    - skl2onnx==1.16.0,
     - pyspark==3.3.1
     - shortuuid
-
-    #- onnx==1.13.1
-    #- onnxruntime==1.14.1
-    #- onnxmltools==1.11.2
