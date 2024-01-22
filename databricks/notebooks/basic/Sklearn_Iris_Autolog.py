@@ -10,7 +10,7 @@
 
 # COMMAND ----------
 
-# MAGIC %md ### Setup
+# MAGIC %md #### Setup
 
 # COMMAND ----------
 
@@ -22,15 +22,19 @@ dbutils.widgets.text("1. Data path", "")
 data_path = dbutils.widgets.get("1. Data path")
 if data_path=="": data_path = None
 
-dbutils.widgets.text("2. Max depth", "1") 
-max_depth = to_int(dbutils.widgets.get("2. Max depth"))
+dbutils.widgets.text("2. Registered model", "")
+model_name = dbutils.widgets.get("2. Registered model")
+
+dbutils.widgets.text("3. Max depth", "1") 
+max_depth = to_int(dbutils.widgets.get("3. Max depth"))
 
 print("data_path:", data_path)
+print("model_name:", data_path)
 print("max_depth:", max_depth)
 
 # COMMAND ----------
 
-# MAGIC %md ### Get data
+# MAGIC %md #### Get data
 
 # COMMAND ----------
 
@@ -76,7 +80,7 @@ X_train, X_test, y_train, y_test = get_data(data_path)
 
 # COMMAND ----------
 
-# MAGIC %md ### Train model
+# MAGIC %md #### Train model
 
 # COMMAND ----------
 
@@ -87,13 +91,24 @@ model.fit(X_train, y_train)
 
 # COMMAND ----------
 
-# MAGIC %md ### Display UI links
+# MAGIC %md #### Get run
 
 # COMMAND ----------
 
 run = mlflow.last_active_run() 
+dump_obj(run.info)
+
+# COMMAND ----------
+
+# MAGIC %md #### Set a custom tag
+
+# COMMAND ----------
+
 client.set_tag(run.info.run_id,"data_path", data_path)
-print("run_id:", run.info.run_id)
+
+# COMMAND ----------
+
+# MAGIC %md #### Display UI links
 
 # COMMAND ----------
 
@@ -102,3 +117,14 @@ display_run_uri(run.info.experiment_id, run.info.run_id)
 # COMMAND ----------
 
 display_experiment_id_info(run.info.experiment_id)
+
+# COMMAND ----------
+
+# MAGIC %md #### Register model
+
+# COMMAND ----------
+
+if model_name:
+    model_uri = f"runs:/{run.info.run_id}/model"
+    vr = registered_model_version = mlflow.register_model(model_uri, "Sklearn_Iris_Autolog")
+    dump_obj(vr)
