@@ -14,6 +14,7 @@ entry_points:
       archive-existing-versions: {type: boolean, default: False }
       save-signature: {type: boolean, default: False }
       log-as-onnx: {type: boolean, default: False}
+      log-plot: {type: boolean, default: False}
       max-depth: int
       max-leaf-nodes: {type: int, default: 32}
       run-origin: {type: string, default: "default" }
@@ -24,6 +25,7 @@ entry_points:
                 --model-version-stage {model-version-stage}
                 --archive-existing-versions {archive-existing-versions}
                 --log-as-onnx {log-as-onnx}
+                --log-plot {log-plot}
                 --max-depth {max-depth}
                 --max-leaf-nodes {max-leaf-nodes}
                 --run-origin {run-origin}
