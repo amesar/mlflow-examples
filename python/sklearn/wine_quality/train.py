@@ -40,12 +40,13 @@ col_label = "quality"
 now = fmt_ts_seconds(round(time.time()))
 
 class Trainer():
-    def __init__(self, experiment_name, data_path, log_as_onnx, save_signature, run_origin=None):
+    def __init__(self, experiment_name, data_path, log_as_onnx, save_signature, log_plot=False, run_origin=None):
         self.experiment_name = experiment_name
         self.data_path = data_path
         self.run_origin = run_origin
         self.log_as_onnx = log_as_onnx
         self.save_signature = save_signature
+        self.log_plot = log_plot
         self.X_train, self.X_test, self.y_train, self.y_test, self.columns = self._build_data(data_path)
 
         if self.experiment_name:
@@ -59,7 +60,7 @@ class Trainer():
         data = pd.read_csv(data_path)
         data.columns = data.columns.str.replace(" ","_")
         train, test = train_test_split(data, test_size=0.30, random_state=42)
-    
+
         # The predicted column is "quality" which is a scalar from [3, 9]
         X_train = train.drop([col_label], axis=1)
         X_test = test.drop([col_label], axis=1)
@@ -68,7 +69,7 @@ class Trainer():
         return X_train, X_test, y_train, y_test, list(data.columns)
 
 
-    def train(self, 
+    def train(self,
             run_name,
             registered_model_name,
             registered_model_version_stage = "None",
@@ -115,7 +116,7 @@ class Trainer():
             print("Parameters:")
             print("  max_depth:", max_depth)
             print("  max_leaf_nodes:", max_leaf_nodes)
-            
+
             mlflow.log_param("max_depth", max_depth) # NOTE: when running with `mlflow run`, mlflow autologs all -P parameters!!
             mlflow.log_param("max_leaf_nodes", max_leaf_nodes) # ibid
 
@@ -131,7 +132,7 @@ class Trainer():
             mlflow.log_metric("r2", r2)
             mlflow.log_metric("mae", mae)
 
-        
+
             # Create signature
             signature = infer_signature(self.X_train, predictions) if self.save_signature else None
             print("Signature:",signature)
@@ -140,7 +141,7 @@ class Trainer():
             input_example = self.X_test
 
             # new in MLflow 2.4.0
-            if hasattr(run, "inputs"): 
+            if hasattr(run, "inputs"):
                 dataset = mlflow.data.from_pandas(self.X_train, source=self.data_path, name="wine_quality_white")
                 print("Log input:", dataset)
                 mlflow.log_input(dataset, context="training")
@@ -184,7 +185,7 @@ class Trainer():
                     if registered_model_alias:
                         registered_model_alias = f"{registered_model_alias}_onnx"
                     mlflow_utils.register_model(run,
-                        "onnx-model", 
+                        "onnx-model",
                         f"{registered_model_name}_onnx",
                         registered_model_version_stage,
                         archive_existing_versions,
@@ -192,9 +193,10 @@ class Trainer():
                     )
 
             # MLflow artifact - plot file
-            plot_file = "plot.png"
-            plot_utils.create_plot_file(self.y_test, predictions, plot_file)
-            mlflow.log_artifact(plot_file)
+            if self.log_plot:
+                plot_file = "plot.png"
+                plot_utils.create_plot_file(self.y_test, predictions, plot_file)
+                mlflow.log_artifact(plot_file)
 
             # Write run ID to file
             if (output_path):
@@ -215,37 +217,37 @@ class Trainer():
 
 
 @click.command()
-@click.option("--experiment-name", 
-    help="Experiment name.", 
+@click.option("--experiment-name",
+    help="Experiment name.",
     type=str,
     default=None,
     show_default=True
 )
-@click.option("--run-name", 
+@click.option("--run-name",
     help="Run name",
     type=str,
     required=False
 )
-@click.option("--data-path", 
-    help="Data path.", 
+@click.option("--data-path",
+    help="Data path.",
     type=str,
     default=common.data_path,
     show_default=True
 )
-@click.option("--model-name", 
-    help="Registered model name.", 
+@click.option("--model-name",
+    help="Registered model name.",
     type=str,
     default=None,
     show_default=True
 )
-@click.option("--model-version-stage", 
-    help="Registered model version stage: production|staging|archive|none.", 
+@click.option("--model-version-stage",
+    help="Registered model version stage: production|staging|archive|none.",
     type=str,
     default=None,
     show_default=True
 )
-@click.option("--archive-existing-versions", 
-    help="Archive existing versions.", 
+@click.option("--archive-existing-versions",
+    help="Archive existing versions.",
     type=bool,
     default=False,
     show_default=True
@@ -255,38 +257,38 @@ class Trainer():
     type=str,
     required=False
 )
-@click.option("--save-signature", 
-    help="Save model signature. Default is False.", 
+@click.option("--save-signature",
+    help="Save model signature. Default is False.",
     type=bool,
     default=False,
     show_default=True
 )
-@click.option("--log-as-onnx", 
-    help="Log model as ONNX flavor. Default is false.", 
+@click.option("--log-as-onnx",
+    help="Log model as ONNX flavor. Default is false.",
     type=bool,
     default=False,
     show_default=True
 )
-@click.option("--max-depth", 
-    help="Max depth parameter.", 
+@click.option("--max-depth",
+    help="Max depth parameter.",
     type=int,
     default=None,
     show_default=True
 )
-@click.option("--max-leaf-nodes", 
-    help="Max leaf nodes parameter.", 
+@click.option("--max-leaf-nodes",
+    help="Max leaf nodes parameter.",
     type=int,
     default=32,
     show_default=True
 )
-@click.option("--run-origin", 
-    help="Run origin.", 
+@click.option("--run-origin",
+    help="Run origin.",
     type=str,
     default="none",
     show_default=True
 )
-@click.option("--output-path", 
-    help="Output file containing run ID.", 
+@click.option("--output-path",
+    help="Output file containing run ID.",
     type=str,
     default=None,
     show_default=True
@@ -303,7 +305,13 @@ class Trainer():
     default=False,
     show_default=True
 )
-def main(experiment_name, 
+@click.option("--log-plot",
+    help="Log plot",
+    type=bool,
+    default=False,
+    show_default=True
+)
+def main(experiment_name,
         run_name,
         data_path,
         model_name,
@@ -317,15 +325,16 @@ def main(experiment_name,
         run_origin,
         output_path,
         log_evaluation_metrics,
-        log_shap
+        log_shap,
+        log_plot
     ):
     print("Options:")
-    for k,v in locals().items(): 
+    for k,v in locals().items():
         print(f"  {k}: {v}")
     print("Processed Options:")
     print(f"  model_name: {model_name} - type: {type(model_name)}")
-    trainer = Trainer(experiment_name, data_path, log_as_onnx, save_signature, run_origin)
-    trainer.train(run_name, model_name, model_version_stage, archive_existing_versions, model_alias, output_path, 
+    trainer = Trainer(experiment_name, data_path, log_as_onnx, save_signature, log_plot, run_origin)
+    trainer.train(run_name, model_name, model_version_stage, archive_existing_versions, model_alias, output_path,
         max_depth, max_leaf_nodes, log_evaluation_metrics, log_shap
     )
 
