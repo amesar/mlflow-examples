@@ -71,6 +71,7 @@ Options:
                                   False]
   --log-shap BOOLEAN              Log mlflow.shap.log_explanation  [default:
                                   False]
+  --log-plot BOOLEAN              Log plot  [default: False]
 ```
 
 #### Signature

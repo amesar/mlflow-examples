@@ -7,14 +7,13 @@
   },
   "libraries": [
     { "pypi": { "package": "mlflow" } },
-    { "whl": "dbfs:/tmp/jobs/sklearn_wine/mlflow_sklearn_wine-0.0.1-py3.6.whl" }
+    { "whl": "dbfs:/home/me@mycompany.com/work/jobs/sklearn_wine/mlflow_sklearn_wine-0.0.1-py3.6.whl" }
   ],
   "spark_python_task": {
-    "python_file": "dbfs:/home/me@mycompany.com/work/jobs/sklearn_wine/main.py",
+    "python_file": "dbfs:/home/me@mycompany.com/work/jobs/sklearn_wine/main_train.py",
     "parameters": [
        "--experiment-name", "/Users/me@mycompany.com/experiments/sklearn_wine_job",
        "--max-depth", 5,
-       "--data-path", "https://raw.githubusercontent.com/mlflow/mlflow/master/examples/sklearn_elasticnet_wine/wine-quality.csv",
        "--run-origin", "run_submit_new_cluster_whl" ]
    },
   "timeout_seconds": 3600
