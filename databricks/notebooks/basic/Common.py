@@ -268,6 +268,18 @@ def show_mlflow_uris(msg):
 
 # COMMAND ----------
 
+def split_model_uri(model_uri):
+    toks = model_uri.split("/")
+    return toks[1]
+    
+def get_model_name(model_name_or_uri):
+    if model_name_or_uri.startswith("models:/"):
+        return split_model_uri(model_name_or_uri)
+    else:
+        return model_name_or_uri
+
+# COMMAND ----------
+
 def activate_unity_catalog():
     mlflow.set_registry_uri("databricks-uc")
     show_mlflow_uris("After UC settings")
@@ -276,10 +288,12 @@ def activate_unity_catalog():
 
 # COMMAND ----------
 
-def is_unity_catalog(model_name):
+def is_unity_catalog(model_name_or_uri):
+    model_name = get_model_name(model_name_or_uri)
     return len(model_name.split(".")) == 3
 
-def toggle_unity_catalog(model_name):
+def toggle_unity_catalog(model_name_or_uri):
+    model_name = get_model_name(model_name_or_uri)
     registry_uri = "databricks-uc" if is_unity_catalog(model_name) else "databricks"
     print(f"Setting new registry_uri URI: {registry_uri}")
     mlflow.set_registry_uri(registry_uri)
@@ -287,7 +301,3 @@ def toggle_unity_catalog(model_name):
     client = mlflow.MlflowClient()
     print(f"New client.registry_uri URI: {client._registry_uri}")
     return client
-
-# COMMAND ----------
-
-

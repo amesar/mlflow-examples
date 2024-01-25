@@ -7,6 +7,7 @@
 # MAGIC
 # MAGIC ##### Widgets
 # MAGIC * `Model URI` - `models:/Sklearn_Wine/5` or `runs:/2620b314f33449078a6cb1a770a82de2/model`
+# MAGIC * `Table` - if not specified, will load data from 
 
 # COMMAND ----------
 
@@ -18,10 +19,16 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("Model URI", "")
-model_uri = dbutils.widgets.get("Model URI")
+dbutils.widgets.text("1. Model URI", "models:/andre_catalog.ml_models2.sklearn_wine_best@champ")
+model_uri = dbutils.widgets.get("1. Model URI")
+
+dbutils.widgets.text("2. Table", "andre_catalog.ml_data.winequality_white")
+table_name = dbutils.widgets.get("2. Table")
 
 print("model_uri:", model_uri)
+print("table_name:", table_name)
+
+toggle_unity_catalog(model_uri)
 
 assert_widget(model_uri, "Model URI")
 
@@ -31,8 +38,12 @@ assert_widget(model_uri, "Model URI")
 
 # COMMAND ----------
 
-data = WineQuality.load_pandas_data()
+if table_name:
+    data = spark.table(table_name).toPandas()
+else:
+    data = WineQuality.load_pandas_data()
 data_to_predict = WineQuality.prep_prediction_data(data)
+
 display(data_to_predict)
 
 # COMMAND ----------
