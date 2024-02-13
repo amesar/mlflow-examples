@@ -1,5 +1,5 @@
 # Databricks notebook source
-!pip install mlflow-skinny==2.9.2
+!pip install mlflow-skinny==2.10.2
 dbutils.library.restartPython()
 
 # COMMAND ----------
@@ -19,6 +19,28 @@ print("_host_name:", _host_name)
 
 # COMMAND ----------
 
+def is_unity_catalog(model_name_or_uri):
+    model_name = get_model_name(model_name_or_uri)
+    return len(model_name.split(".")) == 3
+
+def toggle_unity_catalog(model_name_or_uri):
+    global client
+    model_name = get_model_name(model_name_or_uri)
+    registry_uri = "databricks-uc" if is_unity_catalog(model_name) else "databricks"
+    print(f"Setting new registry_uri URI: {registry_uri}")
+    mlflow.set_registry_uri(registry_uri)
+    print(f"New registry_uri URI: {mlflow.get_registry_uri()}")
+    client = mlflow.MlflowClient()
+    print(f"New client.registry_uri URI: {client._registry_uri}")
+
+def activate_unity_catalog():
+    global client
+    mlflow.set_registry_uri("databricks-uc")
+    show_mlflow_uris()
+    client = mlflow.MlflowClient() 
+
+# COMMAND ----------
+
 def display_run_uri(experiment_id, run_id):
     if _host_name:
         uri = f"https://{_host_name}/#mlflow/experiments/{experiment_id}/runs/{run_id}"
@@ -34,12 +56,6 @@ def display_registered_model_uri(model_name):
         else:
             uri = f"https://{_host_name}/#mlflow/models/{model_name}"
         displayHTML("""<b>Registered Model URI:</b> <a href="{}">{}</a>""".format(uri,uri))
-
-# COMMAND ----------
-
-# Test
-#display_registered_model_uri("Sklearn_Wine")
-#display_registered_model_uri("andre_catalog.ml_models.Sklearn_Wine_ws")
 
 # COMMAND ----------
 
@@ -83,6 +99,11 @@ def dump_obj(obj, title=None):
 def dump_obj_as_json(obj):
     import json
     print(json.dumps(obj.__dict__, indent=2))
+
+def dump_json(dct, title=None, sort_keys=None, indent=2):
+    if title:
+        print(f"{title}:")
+    return print(json.dumps(dct, sort_keys=sort_keys, indent=indent))
 
 # COMMAND ----------
 
@@ -144,18 +165,24 @@ def register_model(run,
         model_artifact = "model"
     ):
     """ Register mode with specified stage and alias """
+    print(">> XX.1: model_name", model_name)
+    print(">> XX.1: client._registry_uri", client._registry_uri)
     try:
        model =  client.create_registered_model(model_name)
     except RestException as e:
        model =  client.get_registered_model(model_name)
     source = f"{run.info.artifact_uri}/{model_artifact}"
     vr = client.create_model_version(model_name, source, run.info.run_id)
-    if model_version_stage and model_version_stage != "None":
+    if is_unity_catalog(model_name):
+        print(">> XX.2a")
+        if model_alias:
+            print(f"Setting model '{model_name}/{vr.version}' alias to '{model_alias}'")
+            client.set_registered_model_alias(model_name, model_alias, vr.version)
+    elif model_version_stage and model_version_stage != "None":
+        print(">> XX.2b")
         print(f"Transitioning model '{model_name}/{vr.version}' to stage '{model_version_stage}'")
         client.transition_model_version_stage(model_name, vr.version, model_version_stage, archive_existing_versions=False)
-    if model_alias:
-        print(f"Setting model '{model_name}/{vr.version}' alias to '{model_alias}'")
-        client.set_registered_model_alias(model_name, model_alias, vr.version)
+
     return vr
 
 # COMMAND ----------
@@ -259,7 +286,7 @@ def log_data_input(run, log_input, data_source, df):
 
 # COMMAND ----------
 
-def show_mlflow_uris(msg):
+def show_mlflow_uris(msg="MLflow server URIs"):
     print(f"{msg}:")
     print("  mlflow.get_tracking_uri:", mlflow.get_tracking_uri())
     print("  mlflow.get_registry_uri:", mlflow.get_registry_uri())
@@ -277,27 +304,3 @@ def get_model_name(model_name_or_uri):
         return split_model_uri(model_name_or_uri)
     else:
         return model_name_or_uri
-
-# COMMAND ----------
-
-def activate_unity_catalog():
-    mlflow.set_registry_uri("databricks-uc")
-    show_mlflow_uris("After UC settings")
-    client = mlflow.MlflowClient() 
-    return client
-
-# COMMAND ----------
-
-def is_unity_catalog(model_name_or_uri):
-    model_name = get_model_name(model_name_or_uri)
-    return len(model_name.split(".")) == 3
-
-def toggle_unity_catalog(model_name_or_uri):
-    model_name = get_model_name(model_name_or_uri)
-    registry_uri = "databricks-uc" if is_unity_catalog(model_name) else "databricks"
-    print(f"Setting new registry_uri URI: {registry_uri}")
-    mlflow.set_registry_uri(registry_uri)
-    print(f"New registry_uri URI: {mlflow.get_registry_uri()}")
-    client = mlflow.MlflowClient()
-    print(f"New client.registry_uri URI: {client._registry_uri}")
-    return client
