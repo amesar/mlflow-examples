@@ -2,8 +2,6 @@
 # MAGIC %md ## Sklearn Iris MLflow model
 # MAGIC
 # MAGIC Simple Iris Sklearn model.
-# MAGIC
-# MAGIC TODO: Sync up data reading with Sklearn_Iris_Autolog.
 
 # COMMAND ----------
 
@@ -44,6 +42,8 @@ import mlflow
 
 if experiment_name:
     mlflow.set_experiment(experiment_name)
+if model_name:
+    toggle_unity_catalog(model_name)
 
 # COMMAND ----------
 
@@ -81,7 +81,38 @@ X_train, X_test, y_train, y_test = get_data(data_path)
 
 # COMMAND ----------
 
+def _register_model(run, 
+        model_name, 
+        model_version_stage = None, 
+        archive_existing_versions = False, 
+        model_alias = None,
+        model_artifact = "model"
+    ):
+    """ Register mode with specified stage and alias """
+    print(">> XX.1: model_name", model_name)
+    print(">> XX.1: client._registry_uri", client._registry_uri)
+    try:
+       model =  client.create_registered_model(model_name)
+    except RestException as e:
+       model =  client.get_registered_model(model_name)
+    source = f"{run.info.artifact_uri}/{model_artifact}"
+    vr = client.create_model_version(model_name, source, run.info.run_id)
+    if is_unity_catalog(model_name):
+        print(">> XX.2a")
+        if model_alias:
+            print(f"Setting model '{model_name}/{vr.version}' alias to '{model_alias}'")
+            client.set_registered_model_alias(model_name, model_alias, vr.version)
+    elif model_version_stage and model_version_stage != "None":
+        print(">> XX.2b")
+        print(f"Transitioning model '{model_name}/{vr.version}' to stage '{model_version_stage}'")
+        client.transition_model_version_stage(model_name, vr.version, model_version_stage, archive_existing_versions=False)
+
+    return vr
+
+# COMMAND ----------
+
 from sklearn.tree import DecisionTreeClassifier
+from mlflow.models.signature import infer_signature
 
 run_name=f"{now} - {mlflow.__version__}" 
 with mlflow.start_run(run_name=run_name) as run:
@@ -90,9 +121,13 @@ with mlflow.start_run(run_name=run_name) as run:
     mlflow.set_tag("mlflow_version", mlflow.__version__)
     mlflow.set_tag("data_path", data_path)
     mlflow.log_param("max_depth",max_depth)
+
     model = DecisionTreeClassifier(max_depth=max_depth)
     model.fit(X_train, y_train)
-    mlflow.sklearn.log_model(model, "model")
+    predictions = model.predict(X_test)
+    signature = infer_signature(X_train, predictions) 
+
+    mlflow.sklearn.log_model(model, "model", signature=signature)
     if model_name:
         version = register_model(run, model_name, model_version_stage)
 
