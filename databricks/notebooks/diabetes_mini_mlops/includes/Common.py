@@ -11,6 +11,10 @@
 
 # COMMAND ----------
 
+# MAGIC %run ./Config
+
+# COMMAND ----------
+
 import os
 import mlflow
 mlflow.set_registry_uri("databricks-uc")
@@ -32,11 +36,8 @@ _notebook_context = dbutils.notebook.entry_point.getDbutils().notebook().getCont
 _notebook = _notebook_context.notebookPath().get()
 _dir = os.path.dirname(_notebook)
 _experiment_name = os.path.join(_dir, "01_Train_Model")
-_alias = "champ"
-_endpoint_name = "diabetes_mini_mlops"
 
 print("_experiment_name:", _experiment_name)
-print("_alias:", _alias)
 
 # COMMAND ----------
 

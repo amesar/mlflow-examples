@@ -10,7 +10,7 @@
 # MAGIC   * Real-time model scoring with Serverless Model Serving ([AWS](https://docs.databricks.com/machine-learning/model-inference/serverless/serverless-real-time-inference.html) - [Azure](https://learn.microsoft.com/en-us/azure/databricks/machine-learning/model-serving/)).
 # MAGIC
 # MAGIC ##### Notebooks
-# MAGIC
+# MAGIC * [Config]($includes/Config) - optional - configure model name, table name and endpoint name.
 # MAGIC * [01_Train_Model]($01_Train_Model) - Run several Sklearn training runs with different hyperparameters.
 # MAGIC * [02_Register_Model]($02_Register_Model) - Find the best run and register it as model version.
 # MAGIC * [03_Batch_Scoring]($03_Batch_Scoring) - Batch score with Sklearn, Pyfunc and UDF flavors.
@@ -26,7 +26,7 @@
 # MAGIC ##### Github
 # MAGIC * https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/diabetes_mini_mlops
 # MAGIC
-# MAGIC ##### Last updated: _2024-01-17_
+# MAGIC ##### Last updated: _2024-02-18_
 
 # COMMAND ----------
 

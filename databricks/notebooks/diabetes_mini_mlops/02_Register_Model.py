@@ -18,10 +18,12 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("1. Registered model", "")
+#dbutils.widgets.removeAll()
+
+dbutils.widgets.text("1. Registered model", _model_name)
 model_name = dbutils.widgets.get("1. Registered model")
 
-dbutils.widgets.text("2. Metric", "rmse")
+dbutils.widgets.text("2. Metric", _metric)
 metric = dbutils.widgets.get("2. Metric")
 
 print("model_name:", model_name)

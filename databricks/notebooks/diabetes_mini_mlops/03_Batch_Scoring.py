@@ -21,11 +21,12 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("1. Registered model", "")
-model_name = dbutils.widgets.get("1. Registered model")
-assert_widget(model_name, "1. Registered model")
+#dbutils.widgets.removeAll()
 
-dbutils.widgets.text("2. Table", "")
+dbutils.widgets.text("1. Registered model", _model_name)
+model_name = dbutils.widgets.get("1. Registered model")
+
+dbutils.widgets.text("2. Table", _table_name)
 table_name = dbutils.widgets.get("2. Table")
 table_name = table_name or None
 
@@ -35,6 +36,10 @@ alias = dbutils.widgets.get("3. Alias")
 print("model_name:", model_name)
 print("table_name:", table_name)
 print("alias:", alias)
+
+# COMMAND ----------
+
+assert_widget(model_name, "1. Registered model")
 
 # COMMAND ----------
 
@@ -58,7 +63,8 @@ data = data.drop(["progression"], axis=1)
 if alias:
     model_uri = f"models:/{model_name}@{alias}"
 else:
-    model_uri = f"models:/{model_name}/1"
+    version = "1"
+    model_uri = f"models:/{model_name}/{version}"
 model_uri
 
 # COMMAND ----------

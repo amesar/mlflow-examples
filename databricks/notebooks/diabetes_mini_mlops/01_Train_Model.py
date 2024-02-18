@@ -13,7 +13,7 @@
 # MAGIC   * `1. Table` - diabetes table such as `andre_m.ml_data.diabetes` (optional).
 # MAGIC     * If the table is not specified, data is loaded from the default sklearn dataset.
 # MAGIC     * If the table is specified:
-# MAGIC       * If the table does not exist, we create a table from sklean's dataset.
+# MAGIC       * If the table does not exist, we create a table from sklearn's dataset.
 # MAGIC       * If the table exists, we simply read from the table.
 # MAGIC       * Using a table allows us to showcase Unity Catalog's lineage capabilities.
 
@@ -27,7 +27,9 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("Table", "")
+#dbutils.widgets.removeAll()
+
+dbutils.widgets.text("Table", _table_name)
 table_name = dbutils.widgets.get("Table")
 table_name = table_name or None
 
