@@ -1,14 +1,16 @@
 # Databricks notebook source
-# MAGIC %md # Basic TensorFlow MNIST train and predict notebook
+# MAGIC %md ## Basic TensorFlow MNIST train and predict notebook
 # MAGIC * Trains and saves model as TensorFlow flavor.
 # MAGIC * Predicts using TensorFlow, Pyfunc and Spark UDF flavors.
+# MAGIC * Uses Keras.
+# MAGIC * Unity Catalog enabled.
 # MAGIC
 # MAGIC Widgets:
-# MAGIC * `1. Registered Model` - If set, register the model under this name.
+# MAGIC * `1. Registered Model` - If set, registers the model under this name.
 # MAGIC * `2. Epochs` - Number of epochs.
 # MAGIC * `3. Batch Size` - Batch size.
 # MAGIC
-# MAGIC Last update: 2024-01-04
+# MAGIC Last update: 2024-02-19
 
 # COMMAND ----------
 
@@ -21,33 +23,32 @@
 # COMMAND ----------
 
 dbutils.widgets.text("1. Registered Model", "") 
-registered_model = dbutils.widgets.get("1. Registered Model")
+model_name = dbutils.widgets.get("1. Registered Model")
 
 dbutils.widgets.text("2. Epochs", "2") 
 dbutils.widgets.text("3. Batch Size", "128")
 
 epochs = int(dbutils.widgets.get("2. Epochs"))
 batch_size = int(dbutils.widgets.get("3. Batch Size"))
-if registered_model.strip() == "": registered_model = None
+if model_name.strip() == "": 
+    model_name = None
+else:
+    toggle_unity_catalog(model_name)
 
-epochs, batch_size, registered_model
-print("registered_model:", registered_model)
+print("model_name:", model_name)
 print("epochs:", epochs)
 print("batch_size:", batch_size)
 
 # COMMAND ----------
 
 import tensorflow as tf
-import mlflow
-import numpy as np
-
-np.random.seed(1)
-tf.random.set_seed(1)
-
-# COMMAND ----------
-
 from tensorflow.keras import models, layers
 from tensorflow.keras.utils import to_categorical
+import numpy as np
+import mlflow
+
+np.random.seed(42)
+tf.random.set_seed(42)
 
 # COMMAND ----------
 
@@ -119,7 +120,18 @@ with mlflow.start_run(run_name=f"{now} - {mlflow.__version__}") as run:
     mlflow.log_param("my_batch_size",batch_size)
     mlflow.log_metric("my_acc", test_acc)
     mlflow.log_metric("my_loss", test_loss)
-    mlflow.tensorflow.log_model(model, "model", registered_model_name=registered_model) 
+
+    from mlflow.models.signature import infer_signature
+    predictions = model.predict(test_images)
+    signature = infer_signature(train_images, predictions)
+
+    mlflow.tensorflow.log_model(
+        model, 
+        "model", 
+        registered_model_name=model_name, 
+        signature=signature
+    ) 
+
     with open("/tmp/model.json", "w") as f:
         f.write(model.to_json())
     mlflow.log_artifact("/tmp/model.json")
@@ -153,8 +165,8 @@ display_run_uri(run.info.experiment_id, run.info.run_id)
 
 # COMMAND ----------
 
-if registered_model:
-    display_registered_model_uri(registered_model)
+if model_name:
+    display_registered_model_uri(model_name)
 
 # COMMAND ----------
 

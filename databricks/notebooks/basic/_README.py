@@ -24,7 +24,7 @@
 # MAGIC
 # MAGIC ##### Other model notebooks
 # MAGIC * [Sklearn_CustomModel]($Sklearn_CustomModel) - three examples of MLflow [Python custom models](https://mlflow.org/docs/latest/models.html#custom-python-models)
-# MAGIC * [TensorFlow_Mnist]($TensorFlow_Mnist) - TensorFlow Keras MNIST
+# MAGIC * [TensorFlow_MNIST]($TensorFlow_MNIST) - TensorFlow Keras MNIST
 # MAGIC
 # MAGIC ##### Helper notebooks
 # MAGIC * [Common]($Common) - Shared logic.
@@ -37,4 +37,4 @@
 # MAGIC ##### Github
 # MAGIC * https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/basic
 # MAGIC
-# MAGIC Last updated: _2024-01-04_
+# MAGIC Last updated: _2024-02-19_
