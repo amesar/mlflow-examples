@@ -9,11 +9,6 @@
 # MAGIC * [XGBoost_Wine]($XGBoost_Wine) -  XGBoost/Sklearn wine quality model
 # MAGIC * [SparkML_Wine]($SparkML_Wine) - SparkML wine quality model
 # MAGIC
-# MAGIC ##### Feature Store 
-# MAGIC * Sklearn Wine Quality train/predict model notebooks
-# MAGIC * [feature_store_ws]($feature_store/_README) - Uses [FeatureStoreClient](https://api-docs.databricks.com/python/feature-store/latest/feature_store.client.html) - Workspace feature store
-# MAGIC * [feature_store_uc]($feature_store_uc/_README) - Uses [FeatureEngineeringClient](https://api-docs.databricks.com/python/feature-engineering/latest/feature_engineering.client.html) - Unity Catalog feature store
-# MAGIC
 # MAGIC ##### Wine Quality predict-only model notebooks
 # MAGIC * [Predict_Sklearn_Wine]($Predict_Sklearn_Wine)
 # MAGIC * [Predict_ONNX_Wine]($Predict_ONNX_Wine)
@@ -22,9 +17,14 @@
 # MAGIC * [Sklearn_Iris]($Sklearn_Iris) 
 # MAGIC * [Sklearn_Iris_Autolog]($Sklearn_Iris_Autolog) 
 # MAGIC
-# MAGIC ##### Other model notebooks
+# MAGIC ##### Other basic model notebooks
 # MAGIC * [Sklearn_CustomModel]($Sklearn_CustomModel) - three examples of MLflow [Python custom models](https://mlflow.org/docs/latest/models.html#custom-python-models)
 # MAGIC * [TensorFlow_MNIST]($TensorFlow_MNIST) - TensorFlow Keras MNIST
+# MAGIC
+# MAGIC ##### Feature Store notebooks
+# MAGIC * Sklearn Wine Quality train/predict model notebooks
+# MAGIC * [feature_store_ws]($feature_store/_README) - Uses [FeatureStoreClient](https://api-docs.databricks.com/python/feature-store/latest/feature_store.client.html) - Workspace feature store
+# MAGIC * [feature_store_uc]($feature_store_uc/_README) - Uses [FeatureEngineeringClient](https://api-docs.databricks.com/python/feature-engineering/latest/feature_engineering.client.html) - Unity Catalog feature store
 # MAGIC
 # MAGIC ##### Helper notebooks
 # MAGIC * [Common]($Common) - Shared logic.

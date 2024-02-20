@@ -7,7 +7,7 @@
 # MAGIC
 # MAGIC ##### Widgets
 # MAGIC * `Model URI` - `models:/Sklearn_Wine/5` or `runs:/2620b314f33449078a6cb1a770a82de2/model`
-# MAGIC * `Table` - if not specified, will load data from 
+# MAGIC * `Table` - if not specified, will load data from default sklearn location
 
 # COMMAND ----------
 

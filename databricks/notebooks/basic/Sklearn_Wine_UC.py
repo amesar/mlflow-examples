@@ -24,7 +24,7 @@
 # MAGIC   * andre_catalog.ml_data.winequality_white
 # MAGIC   * andre_catalog.ml_data.winequality_red
 # MAGIC
-# MAGIC Last udpated: 2023-12-18
+# MAGIC Last udpated: 2024-02-19
 
 # COMMAND ----------
 
@@ -49,7 +49,7 @@ dbutils.widgets.dropdown("05. Save signature", "yes", ["yes","no"])
 dbutils.widgets.dropdown("06. Input example", "yes", ["yes","no"])
 dbutils.widgets.dropdown("07. Log input", "yes", ["yes","no"])
 
-dbutils.widgets.dropdown("10. Log evaluation metrics", "no", ["yes","no"]) # XX
+dbutils.widgets.dropdown("10. Log evaluation metrics", "no", ["yes","no"])
 log_evaluation_metrics = dbutils.widgets.get("10. Log evaluation metrics") == "yes"
 
 dbutils.widgets.dropdown("08. SHAP","no", ["yes","no"])
@@ -145,13 +145,11 @@ def set_run_name_to_run_id(run):
 # COMMAND ----------
 
 import numpy as np
+import pandas as pd
+import sklearn
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from mlflow.models.signature import infer_signature
-
-# COMMAND ----------
-
-max_depth
 
 # COMMAND ----------
 
@@ -234,6 +232,7 @@ if not run_name:
 # COMMAND ----------
 
 if model_name:
+    activate_unity_catalog()
     version = register_model_uc(run, model_name, model_alias)
     print(f"Registered model '{model_name}' as version {version.version}")
 
@@ -373,6 +372,10 @@ if model_name:
 
 # COMMAND ----------
 
+# MAGIC %md #### Predict with `pyfunc`
+
+# COMMAND ----------
+
 if model_alias:
     model_uri = f"models:/{model_name}@{model_alias}"
     print("model_uri:", model_uri)
@@ -381,6 +384,10 @@ if model_alias:
     display(pd.DataFrame(predictions,columns=[WineQuality.colPrediction]))
 else:
     print("No model alias")
+
+# COMMAND ----------
+
+# MAGIC %md #### Predict with `pyfunc.spark_udf`
 
 # COMMAND ----------
 

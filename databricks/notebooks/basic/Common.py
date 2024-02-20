@@ -271,7 +271,7 @@ def log_data_input(run, log_input, data_source, df):
         print(f"Logging input data_source '{data_source}'")
         if data_source.startswith("dbfs"):
             dataset_name = data_source.split("/")[-1]
-            if isinstance(df, pandas.core.frame.DataFrame):
+            if isinstance(df, pd.core.frame.DataFrame):
                 dataset = mlflow.data.from_pandas(df, source=mk_local_path(data_source), name=dataset_name)
             else:
                 dataset = mlflow.data.from_spark(df, path=data_source, name=dataset_name)

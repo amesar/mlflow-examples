@@ -1,6 +1,7 @@
 # Databricks notebook source
 # MAGIC %md ## Sklearn Wine Quality MLflow model
 # MAGIC * Trains and saves model as Sklearn flavor
+# MAGIC * Optionally registers a new model
 # MAGIC * Predicts using Sklearn, Pyfunc and UDF flavors
 # MAGIC * See [Sklearn_Wine_UC]($Sklearn_Wine_UC) notebook for Unity Catalog version
 # MAGIC
@@ -33,16 +34,11 @@
 # MAGIC   * andre_catalog.ml_data.winequality_white
 # MAGIC   * andre_catalog.ml_data.winequality_red
 # MAGIC
-# MAGIC Last udpated: _2023-12-18_
+# MAGIC Last udpated: _2024-01-29_
 
 # COMMAND ----------
 
 # MAGIC %md ### Setup
-
-# COMMAND ----------
-
-!pip install mlflow[skinny]
-dbutils.library.restartPython()
 
 # COMMAND ----------
 
@@ -110,10 +106,6 @@ if experiment_name:
 
 # COMMAND ----------
 
-client = toggle_unity_catalog(model_name)
-
-# COMMAND ----------
-
 # MAGIC %md ### Prepare data
 
 # COMMAND ----------
@@ -159,6 +151,7 @@ def set_run_name_to_run_id(run):
 # COMMAND ----------
 
 import numpy as np
+import sklearn
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from mlflow.models.signature import infer_signature
