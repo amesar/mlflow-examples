@@ -43,7 +43,7 @@ mlflow.set_registry_uri("databricks-uc")
 
 dbutils.widgets.text("01. Run name", "")
 dbutils.widgets.text("02. Experiment name", "")
-dbutils.widgets.text("03. Registered model", "andre_catalog.ml_models2.sklearn_wine_best")
+dbutils.widgets.text("03. Registered model", "andre_catalog.ml_models2.sklearn_wine_fs_uc")
 dbutils.widgets.text("04. Model alias","")
 dbutils.widgets.dropdown("05. Save signature", "yes", ["yes","no"])
 dbutils.widgets.dropdown("06. Input example", "yes", ["yes","no"])
