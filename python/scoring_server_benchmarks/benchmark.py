@@ -2,7 +2,7 @@ import time
 import json
 import requests
 import statistics
-from argparse import ArgumentParser
+import click
 from common import read_data
 
 import platform
@@ -10,7 +10,7 @@ print("Versions:")
 print("  platform:", platform.platform())
 print("  python_version:", platform.python_version())
 
-def main(uri, data_path, num_records, log_mod, output_file_base, num_iters):
+def run(uri, data_path, num_records, log_mod, output_file_base, num_iters):
     records = read_data(data_path, num_records)
     headers = { 'Content-Type' : 'application/json' }
 
@@ -65,18 +65,23 @@ def main(uri, data_path, num_records, log_mod, output_file_base, num_iters):
         print("Output file:",path)
         with open(path, "w") as f:
             f.write(json.dumps(dct,indent=2)+"\n")
-   
+
+
+@click.command()
+@click.option("--uri", help="Model serving URI", required=True)
+@click.option("--data-path", help="path for data to score", required=True)
+@click.option("--num-records", help="Num of records", required=True)
+@click.option("--log_mod", help="URI", required=True)
+@click.option("--uri", help="URI", required=True)
+@click.option("--uri", help="URI", required=True)
+@click.option("--num-iters", help="Number of iterations over data", required=True)
+@click.option("--output-file", help="Output file base", required=True)
+def main(uri, data_path, num_records, log_mod, output_file_base, num_iters):
+    print("Options:")
+    for k,v in locals().items(): 
+        print(f"  {k}: {v}")
+    run(uri, data_path, num_records, log_mod, output_file_base, num_iters)
+
 
 if __name__ == "__main__":
-    parser = ArgumentParser()
-    parser.add_argument("--uri", dest="uri", help="URI", required=True, type=str)
-    parser.add_argument("--data_path", dest="data_path", help="data_path", default="../../data/train/wine-quality-white.csv")
-    parser.add_argument("--num_records", dest="num_records", help="num_records", type=int, default=None)
-    parser.add_argument("--log_mod", dest="log_mod", help="log_mod", default=100, type=int)
-    parser.add_argument("--output_file_base", dest="output_file_base", help="Output file base", default=None)
-    parser.add_argument("--num_iters", dest="num_iters", help="Number of iterations over data", default=1, type=int)
-    args = parser.parse_args()
-    print("Arguments:")
-    for arg in vars(args):
-        print(f"  {arg}: {getattr(args, arg)}")
-    main(args.uri, args.data_path, args.num_records, args.log_mod, args.output_file_base, args.num_iters)
+    main()
