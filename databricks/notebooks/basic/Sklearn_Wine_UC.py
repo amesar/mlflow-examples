@@ -11,7 +11,7 @@
 # MAGIC * 04. Model alias
 # MAGIC * 05. Save signature
 # MAGIC * 06. Input example
-# MAGIC * 07. Log input - see [xx](https://mlflow.org/docs/latest/python_api/mlflow.data.html) - new in MLflow 2.4.0
+# MAGIC * 07. Log input - see [mlflow.data](https://mlflow.org/docs/latest/python_api/mlflow.data.html)
 # MAGIC * 08. SHAP
 # MAGIC * 09. Delta table: if not set, read CSV file from DBFS
 # MAGIC * 10. Max depth
@@ -24,7 +24,7 @@
 # MAGIC   * andre_catalog.ml_data.winequality_white
 # MAGIC   * andre_catalog.ml_data.winequality_red
 # MAGIC
-# MAGIC Last udpated: 2024-02-19
+# MAGIC Last udpated: 2024-04-23
 
 # COMMAND ----------
 
@@ -43,7 +43,7 @@ mlflow.set_registry_uri("databricks-uc")
 
 dbutils.widgets.text("01. Run name", "")
 dbutils.widgets.text("02. Experiment name", "")
-dbutils.widgets.text("03. Registered model", "andre_catalog.ml_models2.sklearn_wine_fs_uc")
+dbutils.widgets.text("03. Registered model", "andre_catalog.ml_models2.sklearn_wine_best")
 dbutils.widgets.text("04. Model alias","")
 dbutils.widgets.dropdown("05. Save signature", "yes", ["yes","no"])
 dbutils.widgets.dropdown("06. Input example", "yes", ["yes","no"])

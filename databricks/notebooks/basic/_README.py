@@ -37,4 +37,4 @@
 # MAGIC ##### Github
 # MAGIC * https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/basic
 # MAGIC
-# MAGIC Last updated: _2024-02-19_
+# MAGIC Last updated: _2024-04-13_

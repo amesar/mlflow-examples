@@ -22,8 +22,7 @@ def add_version(versions, pkg_name):
 import os, sys, platform
 
 versions = [
-    [ "$DATABRICKS_RUNTIME_VERSION:", os.environ.get("DATABRICKS_RUNTIME_VERSION") ],
-    [ "spark.version", spark.version ]
+    [ "DATABRICKS_RUNTIME_VERSION:", os.environ.get("DATABRICKS_RUNTIME_VERSION") ],
 ]
 version_names = [
     "mlflow",
@@ -42,7 +41,8 @@ version_names = [
 for vr in version_names:
     add_version(versions, vr)
 
-versions.append(["$SCALA_VERSION:", os.environ.get("SCALA_VERSION")])
+versions.append(["spark.version", spark.version])
+versions.append(["SCALA_VERSION:", os.environ.get("SCALA_VERSION")])
 versions.append(["python version:", sys.version.replace("\n"," ")])
 versions.append(["platform:", platform.platform()])
 

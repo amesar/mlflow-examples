@@ -1,5 +1,6 @@
 # Databricks notebook source
-!pip install mlflow-skinny==2.10.2
+!pip install -U mlflow-skinny
+!pip install tabulate
 dbutils.library.restartPython()
 
 # COMMAND ----------
