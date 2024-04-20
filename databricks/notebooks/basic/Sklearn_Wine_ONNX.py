@@ -21,10 +21,6 @@
 
 # COMMAND ----------
 
-# %run ./Load_Test_Datasources
-
-# COMMAND ----------
-
 dbutils.widgets.text("1. Experiment name", "")
 dbutils.widgets.text("2. Registered model", "")
 dbutils.widgets.text("3. Max Depth", "1") 
@@ -36,7 +32,9 @@ max_depth = to_int(dbutils.widgets.get("3. Max Depth"))
 model_name = model_name or None
 experiment_name = experiment_name or None
 
-print("experiment_name:", experiment_name)
+toggle_unity_catalog(model_name)
+
+print("\nexperiment_name:", experiment_name)
 print("model_name:", model_name)
 print("max_depth:", max_depth)
 

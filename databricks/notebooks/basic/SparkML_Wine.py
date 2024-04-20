@@ -28,7 +28,9 @@ maxBins = float(dbutils.widgets.get("6. Max Bins"))
 
 if registered_model=="": registered_model = None
 
-print("registered_model:", registered_model)
+toggle_unity_catalog(registered_model)
+
+print("\nregistered_model:", registered_model)
 print("delta_table:", delta_table)
 print("udf_predict:", udf_predict)
 print("log_input:", log_input)
@@ -116,11 +118,14 @@ with mlflow.start_run() as run:
     predictions = model.transform(X_test)
     
     for metric in metrics:
-        evaluator = RegressionEvaluator(labelCol=WineQuality.colLabel, 
-            predictionCol=WineQuality.colPrediction, metricName=metric)
+        evaluator = RegressionEvaluator(
+            labelCol = WineQuality.colLabel, 
+            predictionCol = WineQuality.colPrediction, 
+            metricName = metric
+        )
         v = evaluator.evaluate(predictions)
         print(f"  {metric}: {v}")
-        mlflow.log_metric(metric,v)
+        mlflow.log_metric(metric, v)
         
     mlflow.spark.log_model(model, spark_model_name, registered_model_name=registered_model)
     print("Model:", spark_model_name)
@@ -196,6 +201,11 @@ display(pd.DataFrame(predictions))
 # MAGIC py4j.protocol.Py4JJavaError: An error occurred while calling o55.transform.
 # MAGIC : java.lang.IllegalArgumentException: Field "fixed acidity" does not exist.
 # MAGIC Available fields: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+# MAGIC ```
+# MAGIC
+# MAGIC Error:
+# MAGIC ```
+# MAGIC 404 Client Error: Not Found for url: https://e2-demo-west-root.s3.us-west-2.amazonaws.com/oregon-prod/2556758628403379.jobs/mlflow-tracking/959d3635684d48bab13a0dbe5c1ea298/d4c9187f7fd94c13ab2c5a0ff74e3129/artifacts/spark-model?
 # MAGIC ```
 
 # COMMAND ----------

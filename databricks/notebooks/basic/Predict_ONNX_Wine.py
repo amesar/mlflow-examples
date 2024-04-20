@@ -25,8 +25,9 @@
 
 dbutils.widgets.text("Model URI", "")
 model_uri = dbutils.widgets.get("Model URI")
-print("model_uri:", model_uri)
 
+toggle_unity_catalog(model_uri)
+print("\nmodel_uri:", model_uri)
 assert_widget(model_uri, "Model URI")
 
 # COMMAND ----------

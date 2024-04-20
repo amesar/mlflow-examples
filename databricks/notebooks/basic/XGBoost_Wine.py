@@ -23,7 +23,10 @@ max_depth = int(dbutils.widgets.get("Max Depth"))
 estimators = int(dbutils.widgets.get("Estimators"))
 max_depth = int(dbutils.widgets.get("Max Depth"))
 min_child_weight = float(dbutils.widgets.get("Min Child Weight"))
-estimators, max_depth, min_child_weight
+
+print("\nestimators:", estimators)
+print("max_depth:", max_depth)
+print("min_child_weight:", min_child_weight)
 
 # COMMAND ----------
 

@@ -81,7 +81,9 @@ model_version_stage = model_version_stage or None
 model_alias = model_alias or None
 input_example = input_example or None
 
-print("run_name:", run_name)
+toggle_unity_catalog(model_name)
+
+print("\nrun_name:", run_name)
 print("experiment_name:", experiment_name)
 print("model_name:", model_name)
 print("model_version_stage:", model_version_stage)
