@@ -25,14 +25,23 @@ def is_unity_catalog(model_name_or_uri):
     return len(model_name.split(".")) == 3
 
 def toggle_unity_catalog(model_name_or_uri):
+    if not model_name_or_uri:
+        return
     global client
     model_name = get_model_name(model_name_or_uri)
-    registry_uri = "databricks-uc" if is_unity_catalog(model_name) else "databricks"
-    print(f"Setting new registry_uri URI: {registry_uri}")
+
+    registry_uri = mlflow.get_registry_uri()
+    print("Current mlflow.model_registry:", registry_uri)
+    is_uc = is_unity_catalog(model_name)
+    if is_uc and registry_uri == "databricks-uc" or not is_uc and registry_uri == "databricks":
+        return
+    
+    registry_uri = "databricks-uc" if is_uc else "databricks"
+    #print(f"Setting mlflow.registry_uri: {registry_uri}")
     mlflow.set_registry_uri(registry_uri)
-    print(f"New registry_uri URI: {mlflow.get_registry_uri()}")
+    print(f"New mlflow.registry_uri: {mlflow.get_registry_uri()}")
     client = mlflow.MlflowClient()
-    print(f"New client.registry_uri URI: {client._registry_uri}")
+    print(f"New client.registry_uri: {client._registry_uri}")
 
 def activate_unity_catalog():
     global client
