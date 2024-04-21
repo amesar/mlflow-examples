@@ -2,8 +2,8 @@
 # MAGIC %md ## Basic MLflow training notebooks
 # MAGIC
 # MAGIC ##### Wine Quality train/predict model notebooks
-# MAGIC * [Sklearn_Wine]($Sklearn_Wine) - canonical Sklearn wine quality model showing extensive MLflow functionality
-# MAGIC   * [Sklearn_Wine]($Sklearn_Wine) - uses workspace model registry
+# MAGIC * Canonical Sklearn wine quality model showing extensive MLflow functionality
+# MAGIC   * [Sklearn_Wine]($Sklearn_Wine) - uses Workspace model registry
 # MAGIC   * [Sklearn_Wine_UC]($Sklearn_Wine_UC) - uses Unity Catalog model registry
 # MAGIC * [Sklearn_Wine_ONNX]($Sklearn_Wine_ONNX) - ONNX with Sklearn version (Sklearn and ONNX models logged)
 # MAGIC * [XGBoost_Wine]($XGBoost_Wine) -  XGBoost/Sklearn wine quality model
