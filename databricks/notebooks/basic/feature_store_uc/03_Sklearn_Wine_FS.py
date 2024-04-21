@@ -56,7 +56,9 @@ fs_datapath = "/databricks-datasets/wine-quality/winequality-white.csv"
 model_name = model_name or None
 experiment_name = experiment_name or None
 
-print("experiment_name:", experiment_name)
+set_model_registry(model_name)
+
+print("\nexperiment_name:", experiment_name)
 print("model_name:", model_name)
 print("fs_table_name:", fs_table_name)
 print("fs_datapath:", fs_datapath)
@@ -72,12 +74,6 @@ if experiment_name:
     mlflow.set_experiment(experiment_name)
     exp = mlflow.get_experiment_by_name(experiment_name)
     print("Experiment:", exp.experiment_id, exp.name)
-
-# COMMAND ----------
-
-if model_name and is_unity_catalog(model_name):
-    client = activate_unity_catalog()
-    print("New client._registry_uri:", client._registry_uri)
 
 # COMMAND ----------
 
@@ -129,7 +125,7 @@ def load_data(table_name, lookup_key):
 # COMMAND ----------
 
 # Create the train and test datasets
-X_train, X_test, y_train, y_test, training_set = load_data (fs_table_name, "wine_id")
+X_train, X_test, y_train, y_test, training_set = load_data(fs_table_name, "wine_id")
 X_train.head()
 
 # COMMAND ----------
