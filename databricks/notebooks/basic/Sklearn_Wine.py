@@ -1,9 +1,10 @@
 # Databricks notebook source
 # MAGIC %md ## Sklearn Wine Quality MLflow model
 # MAGIC * Trains and saves model as Sklearn flavor
-# MAGIC * Optionally registers a new model
+# MAGIC * Optionally registers the run as new registered model
 # MAGIC * Predicts using Sklearn, Pyfunc and UDF flavors
-# MAGIC * See [Sklearn_Wine_UC]($Sklearn_Wine_UC) notebook for Unity Catalog version
+# MAGIC * Works with either Workspace or Unity Catalog model registry
+# MAGIC * See [Sklearn_Wine_UC]($Sklearn_Wine_UC) a Unity Catalog specific
 # MAGIC
 # MAGIC ### Widgets
 # MAGIC * 01. Run name
@@ -34,7 +35,7 @@
 # MAGIC   * andre_catalog.ml_data.winequality_white
 # MAGIC   * andre_catalog.ml_data.winequality_red
 # MAGIC
-# MAGIC Last udpated: _2024-01-29_
+# MAGIC Last udpated: _2024-04-20_
 
 # COMMAND ----------
 
@@ -57,7 +58,7 @@ dbutils.widgets.dropdown("08. Input example", "yes", ["yes","no"])
 dbutils.widgets.dropdown("09. Log input", "yes", ["yes","no"])
 dbutils.widgets.dropdown("10. Log evaluation metrics", "no", ["yes","no"])
 dbutils.widgets.dropdown("11. Log SHAP", "no", ["yes","no"])
-dbutils.widgets.text("12. Delta table", "andre.wine_quality")
+dbutils.widgets.text("12. Delta table", "andre_catalog.ml_data.winequality_white")
 dbutils.widgets.text("13. Max depth", "1") 
 
 run_name = dbutils.widgets.get("01. Run name")
