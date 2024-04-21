@@ -33,7 +33,7 @@ batch_size = int(dbutils.widgets.get("3. Batch Size"))
 if model_name.strip() == "": 
     model_name = None
 else:
-    toggle_unity_catalog(model_name)
+    set_model_registry(model_name)
 
 print("model_name:", model_name)
 print("epochs:", epochs)

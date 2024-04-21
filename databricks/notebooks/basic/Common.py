@@ -24,7 +24,7 @@ def is_unity_catalog(model_name_or_uri):
     model_name = get_model_name(model_name_or_uri)
     return len(model_name.split(".")) == 3
 
-def toggle_unity_catalog(model_name_or_uri):
+def set_model_registry(model_name_or_uri):
     if not model_name_or_uri:
         return
     global client

@@ -32,7 +32,7 @@ max_depth = to_int(dbutils.widgets.get("3. Max Depth"))
 model_name = model_name or None
 experiment_name = experiment_name or None
 
-toggle_unity_catalog(model_name)
+set_model_registry(model_name)
 
 print("\nexperiment_name:", experiment_name)
 print("model_name:", model_name)

@@ -43,7 +43,7 @@ import mlflow
 if experiment_name:
     mlflow.set_experiment(experiment_name)
 if model_name:
-    toggle_unity_catalog(model_name)
+    set_model_registry(model_name)
 
 # COMMAND ----------
 

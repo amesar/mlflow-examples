@@ -28,7 +28,7 @@ table_name = dbutils.widgets.get("2. Table")
 print("model_uri:", model_uri)
 print("table_name:", table_name)
 
-toggle_unity_catalog(model_uri)
+set_model_registry(model_uri)
 
 assert_widget(model_uri, "Model URI")
 

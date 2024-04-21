@@ -28,7 +28,7 @@ maxBins = float(dbutils.widgets.get("6. Max Bins"))
 
 if registered_model=="": registered_model = None
 
-toggle_unity_catalog(registered_model)
+set_model_registry(registered_model)
 
 print("\nregistered_model:", registered_model)
 print("delta_table:", delta_table)
