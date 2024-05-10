@@ -44,14 +44,14 @@ mlflow.__version__
 dbutils.widgets.text("1. Experiment name", "")
 dbutils.widgets.text("2. Registered model", "")
 dbutils.widgets.text("3. Feature table", "")
-dbutils.widgets.text("4. Max depth", "3")
+dbutils.widgets.text("4. Datapath", fs_default_datapath)
+dbutils.widgets.text("5. Max depth", "3")
 
 experiment_name = dbutils.widgets.get("1. Experiment name")
 model_name = dbutils.widgets.get("2. Registered model")
 fs_table_name = dbutils.widgets.get("3. Feature table")
-max_depth = int(dbutils.widgets.get("4. Max depth"))
-
-fs_datapath = "/databricks-datasets/wine-quality/winequality-white.csv"
+fs_datapath = dbutils.widgets.get("4. Datapath")
+max_depth = int(dbutils.widgets.get("5. Max depth"))
 
 model_name = model_name or None
 experiment_name = experiment_name or None

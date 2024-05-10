@@ -7,7 +7,7 @@
 # MAGIC * Creates table `andre_fs_wine` in specified database.
 # MAGIC
 # MAGIC ##### Widgets
-# MAGIC * `1. Database` 
+# MAGIC * `1. Table` - full path name of table
 # MAGIC * `2. Datapath` - /databricks-datasets/wine-quality/winequality-white.csv
 # MAGIC * `3. Overwrite feature table`
 # MAGIC * `4. Drop feature table`
@@ -18,21 +18,22 @@
 
 # COMMAND ----------
 
+dbutils.widgets.remove("1. Database")
+
+# COMMAND ----------
+
 fs_default_datapath = "/databricks-datasets/wine-quality/winequality-white.csv"
 
-dbutils.widgets.text("1. Database", "")
+dbutils.widgets.text("1. Table", "")
 dbutils.widgets.text("2. Datapath", fs_default_datapath)
 dbutils.widgets.dropdown("3. Overwrite table", "yes", ["yes","no"])
 dbutils.widgets.dropdown("4. Drop table", "no", ["yes","no"])
 
-fs_database = dbutils.widgets.get("1. Database")
+fs_table = dbutils.widgets.get("1. Table")
 fs_datapath = dbutils.widgets.get("2. Datapath")
 overwrite_table = dbutils.widgets.get("3. Overwrite table") == "yes"
 drop_table = dbutils.widgets.get("4. Drop table") == "yes"
 
-fs_table = f"{fs_database}.wine_features"
-
-print("fs_database:", fs_database)
 print("fs_datapath:", fs_datapath)
 print("fs_table:", fs_table)
 print("overwrite_table:", overwrite_table)
@@ -40,7 +41,10 @@ print("drop_table:", drop_table)
 
 # COMMAND ----------
 
-assert_widget(fs_database, "1. Database")
+assert_widget(fs_table, "1. Table")
+
+fs_database = ".".join(fs_table.split(".")[:2])
+fs_database
 
 # COMMAND ----------
 

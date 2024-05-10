@@ -60,3 +60,7 @@ def drop_fs_table(table_name):
         print(f"Dropped feature table '{table_name}'")
     except Exception:
         print(f"Feature table '{table_name}' does not exist")
+
+# COMMAND ----------
+
+fs_default_datapath = "/databricks-datasets/wine-quality/winequality-white.csv"
