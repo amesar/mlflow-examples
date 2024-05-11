@@ -2,8 +2,9 @@
 # MAGIC %md # Sklearn MLflow train and predict with ONNX
 # MAGIC
 # MAGIC ##### Overview
-# MAGIC * Trains and saves model as Sklearn and ONNX flavors
-# MAGIC * Predicts using ONNX native, Pyfunc and Spark UDF flavors
+# MAGIC * Trains and saves model as Sklearn and ONNX flavors.
+# MAGIC * Predicts using ONNX native, Pyfunc and Spark UDF flavors.
+# MAGIC * Latest ONNX libraries as of 2024-05-10.
 
 # COMMAND ----------
 
@@ -11,9 +12,9 @@
 
 # COMMAND ----------
 
-# MAGIC %pip install onnx==1.15.0
-# MAGIC %pip install onnxruntime==1.16.1
-# MAGIC %pip install skl2onnx==1.15.0
+# MAGIC %pip install onnx==1.16.0
+# MAGIC %pip install onnxruntime==1.17.3
+# MAGIC %pip install skl2onnx==1.16.0
 
 # COMMAND ----------
 
