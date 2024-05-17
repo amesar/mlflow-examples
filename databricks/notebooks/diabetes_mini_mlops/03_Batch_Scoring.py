@@ -21,7 +21,10 @@
 
 # COMMAND ----------
 
-#dbutils.widgets.removeAll()
+dbutils.widgets.removeAll()
+
+
+# COMMAND ----------
 
 dbutils.widgets.text("1. Registered model", _model_name)
 model_name = dbutils.widgets.get("1. Registered model")

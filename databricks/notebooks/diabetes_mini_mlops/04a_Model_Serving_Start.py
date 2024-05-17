@@ -23,7 +23,11 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text("1. Registered model", "")
+dbutils.widgets.removeAll()
+
+# COMMAND ----------
+
+dbutils.widgets.text("1. Registered model", _model_name)
 model_name = dbutils.widgets.get("1. Registered model")
 
 dbutils.widgets.text("2. Model serving endpoint", _endpoint_name)
@@ -120,7 +124,7 @@ model_serving_client.start_endpoint(spec)
 
 # COMMAND ----------
 
-model_serving_client.wait_until(endpoint_name, max=60, sleep_time=10)
+model_serving_client.wait_until(endpoint_name, max=120, sleep_time=10)
 
 # COMMAND ----------
 

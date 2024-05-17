@@ -2,10 +2,10 @@
 # Optional default values
 
 _table_name = ""
-_model_name = "" # my_catalog.my_schema_.diabetes_mini_mlops
+_model_name = "andre_catalog.ml_models2.diabetes_mlops" # CHANGE ME
 _metric = "rmse"
 _alias = "champ"
-_endpoint_name = "diabetes_mini_mlops"
+_endpoint_name = "diabetes_mlops"
 
 # COMMAND ----------
 
