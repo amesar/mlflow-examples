@@ -11,4 +11,4 @@
 # MAGIC * [AutoML_API_Example]($automl_api/AutoML_API_Example)
 # MAGIC * [./includes]($includes) - Common include notebooks.
 # MAGIC
-# MAGIC Last updated: 2024-05-10
+# MAGIC Last updated: 2024-05-18

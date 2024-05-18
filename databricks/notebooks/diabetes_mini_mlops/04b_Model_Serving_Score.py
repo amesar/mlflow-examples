@@ -1,7 +1,8 @@
 # Databricks notebook source
 # MAGIC %md ## Score a model with serving endpoint
 # MAGIC
-# MAGIC * [Send scoring requests to serving endpoints](https://docs.databricks.com/en/machine-learning/model-serving/score-model-serving-endpoints.html) (docs)
+# MAGIC * [Query serving endpoints for custom models](https://docs.databricks.com/en/machine-learning/model-serving/score-custom-model-endpoints.html#querying-methods-and-examples) (docs)
+# MAGIC * Example of using JSON `dataframe_split` (common) and `dataframe_records` format.
 # MAGIC
 # MAGIC #### Widgets
 # MAGIC * `1. Model Serving endpoint`
@@ -50,6 +51,15 @@ endpoint_uri
 # COMMAND ----------
 
 import requests
+import json
+headers = { "Authorization": f"Bearer {_token}", "Content-Type": "application/json" }
+
+# COMMAND ----------
+
+# MAGIC %md ##### Pandas `dataframe_split` format
+
+# COMMAND ----------
+
 data = { "dataframe_split": { 
     "columns": 
         [ "age", "sex", "bmi", "bp", "s1", "s2", "s3", "s4", "s5", "s6" ], 
@@ -59,11 +69,44 @@ data = { "dataframe_split": {
       ] 
     } 
 }
-import json
-data = json.dumps(data)
+rsp = requests.post(endpoint_uri, headers=headers, json=data, timeout=15)
+rsp.text
 
-headers = { "Authorization": f"Bearer {_token}", "Content-Type": "application/json" }
-rsp = requests.post(endpoint_uri, headers=headers, data=data, timeout=15)
+# COMMAND ----------
+
+# MAGIC %md ##### Pandas `dataframe_records` format
+
+# COMMAND ----------
+
+data = {
+  "dataframe_records": [
+    {
+      "age": 0.038,
+      "sex": 0.051,
+      "bmi": 0.062,
+      "bp": 0.022,
+      "s1": -0.044,
+      "s2": -0.035,
+      "s3": -0.043,
+      "s4": -0.003,
+      "s5": 0.02,
+      "s6": -0.018
+    },
+    {
+      "age": -0.002,
+      "sex": -0.045,
+      "bmi": -0.051,
+      "bp": -0.026,
+      "s1": -0.008,
+      "s2": -0.019,
+      "s3": 0.074,
+      "s4": -0.039,
+      "s5": -0.068,
+      "s6": -0.092
+    }
+  ]
+}
+rsp = requests.post(endpoint_uri, headers=headers, json=data, timeout=15)
 rsp.text
 
 # COMMAND ----------

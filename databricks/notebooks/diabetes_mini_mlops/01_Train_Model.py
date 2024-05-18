@@ -27,8 +27,6 @@
 
 # COMMAND ----------
 
-#dbutils.widgets.removeAll()
-
 dbutils.widgets.text("Table", _table_name)
 table_name = dbutils.widgets.get("Table")
 table_name = table_name or None
@@ -213,7 +211,7 @@ def train_diabetes(data, alpha, l1_ratio):
 
 # COMMAND ----------
 
-# MAGIC %md ### Experiment with different hyperparameters
+# MAGIC %md ### Train with different hyperparameters
 # MAGIC
 # MAGIC * Call `train_diabetes` with different parameters. 
 # MAGIC * You can visualize all these runs in the MLflow experiment.

@@ -93,11 +93,11 @@ served_model = "my-model"
 spec = {
     "name": endpoint_name,
     "config": { 
-      "served_models": [ 
+      "served_entities": [ 
         { 
           "name": served_model,
-          "model_name": model_name,
-          f"model_version": version,
+          "entity_name": model_name,
+          "entity_version": version,
           "workload_size": "Small",
           "scale_to_zero_enabled": False
         } 
@@ -120,7 +120,7 @@ model_serving_client.start_endpoint(spec)
 
 # COMMAND ----------
 
-model_serving_client.wait_until(endpoint_name, max=120, sleep_time=10)
+model_serving_client.wait_until(endpoint_name, max=180, sleep_time=10)
 
 # COMMAND ----------
 

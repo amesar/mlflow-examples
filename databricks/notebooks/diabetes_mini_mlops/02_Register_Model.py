@@ -96,6 +96,7 @@ version = mlflow_client.create_model_version(
     source = source, 
     run_id = best_run.info.run_id
 )
+version
 
 # COMMAND ----------
 
