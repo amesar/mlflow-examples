@@ -4,7 +4,7 @@ channels:
 dependencies:
   - python=3.8
   - pip:
-    - mlflow>=2.4.2
+    - mlflow>=2.13.0
     - scikit-learn
     - matplotlib
     - onnx==1.15.0
