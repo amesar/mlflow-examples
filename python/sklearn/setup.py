@@ -6,7 +6,7 @@ setup(name='mlflow-sklearn-wine',
       author='Andre',
       packages=['wine_quality'],
       zip_safe=False,
-      python_requires=">=3.8",
+      python_requires="==3.8.13",
       install_requires=[
           "mlflow>=2.13.0",
           "scikit-learn",

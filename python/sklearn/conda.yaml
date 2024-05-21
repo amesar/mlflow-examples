@@ -2,7 +2,7 @@ name: mlflow-examples-sklearn-conda
 channels:
   - conda-forge
 dependencies:
-  - python=3.8
+  - python==3.8.13
   - pip:
     - mlflow>=2.13.0
     - scikit-learn
