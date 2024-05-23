@@ -15,16 +15,20 @@
 
 # Default values per: https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html
 
-dbutils.widgets.text("Estimators", "100") 
-dbutils.widgets.text("Max Depth", "3") 
-dbutils.widgets.text("Min Child Weight", "1.5")
-max_depth = int(dbutils.widgets.get("Max Depth"))
+dbutils.widgets.text("1. Registered Model","")
+dbutils.widgets.text("2. Estimators", "100") 
+dbutils.widgets.text("3. Max Depth", "3") 
+dbutils.widgets.text("4. Min Child Weight", "1.5")
 
-estimators = int(dbutils.widgets.get("Estimators"))
-max_depth = int(dbutils.widgets.get("Max Depth"))
-min_child_weight = float(dbutils.widgets.get("Min Child Weight"))
+model_name = dbutils.widgets.get("1. Registered Model")
+estimators = int(dbutils.widgets.get("2. Estimators"))
+max_depth = int(dbutils.widgets.get("3. Max Depth"))
+min_child_weight = float(dbutils.widgets.get("4. Min Child Weight"))
 
-print("\nestimators:", estimators)
+set_model_registry(model_name)
+
+print("\nmodel_name:", model_name)
+print("estimators:", estimators)
 print("max_depth:", max_depth)
 print("min_child_weight:", min_child_weight)
 
@@ -59,6 +63,7 @@ data.describe()
 
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from mlflow.models.signature import infer_signature
 
 # COMMAND ----------
 
@@ -66,11 +71,11 @@ with mlflow.start_run() as run:
     run_id = run.info.run_uuid
     print("MLflow:")
     print("  run_id:",run_id)
-    print("  experiment_id:",run.info.experiment_id)
+    print("  experiment_id:", run.info.experiment_id)
     print("Parameters:")
     print("  estimators:",estimators)
     print("  max_depth:",max_depth)
-    print("  min_child_weight:",min_child_weight)
+    print("  min_child_weight:", min_child_weight)
     mlflow.log_param("estimators", estimators)
     mlflow.log_param("max_depth", max_depth)
     mlflow.log_param("min_child_weight", min_child_weight)
@@ -87,8 +92,6 @@ with mlflow.start_run() as run:
         min_child_weight = min_child_weight,
         random_state = 42)
     model.fit(train_x, train_y)
-    mlflow.xgboost.log_model(model, "model")
-    print(model)
     mlflow.set_tag("algorithm", type(model))
 
     predictions = model.predict(test_x)
@@ -99,6 +102,10 @@ with mlflow.start_run() as run:
     print("  r2:",r2)
     mlflow.log_metric("rmse", rmse)
     mlflow.log_metric("r2", r2) 
+
+    signature = infer_signature(train_x, predictions)
+    mlflow.xgboost.log_model(model, "model", registered_model_name=model_name, signature=signature)
+    print(model)
 
 # COMMAND ----------
 

@@ -23,17 +23,13 @@
 # COMMAND ----------
 
 dbutils.widgets.text("1. Registered Model", "") 
-model_name = dbutils.widgets.get("1. Registered Model")
-
 dbutils.widgets.text("2. Epochs", "2") 
 dbutils.widgets.text("3. Batch Size", "128")
 
 epochs = int(dbutils.widgets.get("2. Epochs"))
 batch_size = int(dbutils.widgets.get("3. Batch Size"))
-if model_name.strip() == "": 
-    model_name = None
-else:
-    set_model_registry(model_name)
+model_name = dbutils.widgets.get("1. Registered Model")
+set_model_registry(model_name)
 
 print("model_name:", model_name)
 print("epochs:", epochs)

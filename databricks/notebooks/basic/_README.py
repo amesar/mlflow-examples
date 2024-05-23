@@ -3,8 +3,8 @@
 # MAGIC
 # MAGIC ##### Wine Quality train/predict model notebooks
 # MAGIC * Canonical Sklearn wine quality model showing extensive MLflow functionality
-# MAGIC   * [Sklearn_Wine]($Sklearn_Wine) - uses Workspace model registry
 # MAGIC   * [Sklearn_Wine_UC]($Sklearn_Wine_UC) - uses Unity Catalog model registry
+# MAGIC    * [Sklearn_Wine]($Sklearn_Wine) - uses Workspace model registry
 # MAGIC * [Sklearn_Wine_ONNX]($Sklearn_Wine_ONNX) - ONNX with Sklearn version (Sklearn and ONNX models logged)
 # MAGIC * [XGBoost_Wine]($XGBoost_Wine) -  XGBoost/Sklearn wine quality model
 # MAGIC * [SparkML_Wine]($SparkML_Wine) - SparkML wine quality model
@@ -37,4 +37,4 @@
 # MAGIC ##### Github
 # MAGIC * https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks/basic
 # MAGIC
-# MAGIC Last updated: _2024-04-20_
+# MAGIC Last updated: _2024-05-23_
