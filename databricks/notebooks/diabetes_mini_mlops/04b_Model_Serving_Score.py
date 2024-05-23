@@ -1,10 +1,20 @@
 # Databricks notebook source
 # MAGIC %md ## Score a model with serving endpoint
 # MAGIC
-# MAGIC * [Query serving endpoints for custom models](https://docs.databricks.com/en/machine-learning/model-serving/score-custom-model-endpoints.html#querying-methods-and-examples) (docs)
-# MAGIC * Example of using JSON `dataframe_split` (common) and `dataframe_records` format.
+# MAGIC ##### Overview
+# MAGIC * Example of using the following request formats:
+# MAGIC     * JSON `dataframe_split` 
+# MAGIC     * JSON dataframe_records` format (not recommended)
+# MAGIC     * CSV
 # MAGIC
-# MAGIC #### Widgets
+# MAGIC ##### Databricks Documentations:
+# MAGIC * [Querying methods and examples](https://docs.databricks.com/en/machine-learning/model-serving/score-custom-model-endpoints.html#querying-methods-and-examples) - Query serving endpoints for custom models
+# MAGIC
+# MAGIC
+# MAGIC ##### MLflow Documentations:
+# MAGIC * [Accepted Input Formats](https://mlflow.org/docs/latest/deployment/deploy-model-locally.html?highlight=json%20scoring%20formats#accepted-input-formats) - Deploy MLflow Model as a Local Inference Server
+# MAGIC
+# MAGIC ##### Widgets
 # MAGIC * `1. Model Serving endpoint`
 
 # COMMAND ----------
@@ -107,6 +117,19 @@ data = {
   ]
 }
 rsp = requests.post(endpoint_uri, headers=headers, json=data, timeout=15)
+rsp.text
+
+# COMMAND ----------
+
+# MAGIC %md ##### CSV format
+
+# COMMAND ----------
+
+data = ''' "age", "sex", "bmi", "bp", "s1", "s2", "s3", "s4", "s5", "s6" 
+0.038, 0.051, 0.062, 0.022, -0.044, -0.035, -0.043, -0.003, 0.02, -0.018]
+'''
+headers = { "Authorization": f"Bearer {_token}", "Content-Type": "text/csv" }
+rsp = requests.post(endpoint_uri, headers=headers, data=data, timeout=15)
 rsp.text
 
 # COMMAND ----------

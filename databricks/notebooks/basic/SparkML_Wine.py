@@ -41,6 +41,7 @@ print("maxBins:", maxBins)
 
 import mlflow
 import mlflow.spark
+from mlflow.models.signature import infer_signature
 import pyspark
 print("MLflow Version:", mlflow.__version__)
 print("Spark Version:", spark.version)
@@ -126,15 +127,28 @@ with mlflow.start_run() as run:
         v = evaluator.evaluate(predictions)
         print(f"  {metric}: {v}")
         mlflow.log_metric(metric, v)
-        
-    mlflow.spark.log_model(model, spark_model_name, registered_model_name=registered_model)
+    
+    import pandas as pd
+    signature = infer_signature(X_train.toPandas(), predictions.toPandas())
+    mlflow.spark.log_model(model, spark_model_name, registered_model_name=registered_model, signature=signature)
+    #mlflow.spark.log_model(model, spark_model_name, registered_model_name=registered_model) # Croaks
+    
     print("Model:", spark_model_name)
 
     log_data_input(run, log_input, data_source, X_train)
 
 # COMMAND ----------
 
+# MAGIC %md ### Display links
+
+# COMMAND ----------
+
 display_run_uri(experiment_id, run_id)
+
+# COMMAND ----------
+
+if registered_model:
+    display_registered_model_uri(registered_model)
 
 # COMMAND ----------
 
