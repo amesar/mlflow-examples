@@ -9,7 +9,6 @@
 # MAGIC * 02. Experiment name: if not set, use notebook experiment
 # MAGIC * 03. Registered model: if set, register as model
 # MAGIC * 04. Model alias
-# MAGIC * 05. Save signature
 # MAGIC * 06. Input example
 # MAGIC * 07. Log input - see [mlflow.data](https://mlflow.org/docs/latest/python_api/mlflow.data.html)
 # MAGIC * 08. SHAP
@@ -24,7 +23,7 @@
 # MAGIC   * andre_catalog.ml_data.winequality_white
 # MAGIC   * andre_catalog.ml_data.winequality_red
 # MAGIC
-# MAGIC Last udpated: 2024-04-23
+# MAGIC Last udpated: 2024-05-23
 
 # COMMAND ----------
 
@@ -41,30 +40,30 @@ mlflow.set_registry_uri("databricks-uc")
 
 # COMMAND ----------
 
+#dbutils.widgets.removeAll()
+
+# COMMAND ----------
+
 dbutils.widgets.text("01. Run name", "")
 dbutils.widgets.text("02. Experiment name", "")
 dbutils.widgets.text("03. Registered model", "andre_catalog.ml_models2.sklearn_wine_best")
 dbutils.widgets.text("04. Model alias","")
-dbutils.widgets.dropdown("05. Save signature", "yes", ["yes","no"])
+dbutils.widgets.text("05. Delta table", "")
 dbutils.widgets.dropdown("06. Input example", "yes", ["yes","no"])
 dbutils.widgets.dropdown("07. Log input", "yes", ["yes","no"])
-
-dbutils.widgets.dropdown("10. Log evaluation metrics", "no", ["yes","no"])
-log_evaluation_metrics = dbutils.widgets.get("10. Log evaluation metrics") == "yes"
-
-dbutils.widgets.dropdown("08. SHAP","no", ["yes","no"])
-dbutils.widgets.text("09. Delta table", "")
+dbutils.widgets.dropdown("08. Log evaluation metrics", "no", ["yes","no"])
+dbutils.widgets.dropdown("09. SHAP","no", ["yes","no"])
 dbutils.widgets.text("10. Max depth", "1") 
 
 run_name = dbutils.widgets.get("01. Run name")
 experiment_name = dbutils.widgets.get("02. Experiment name")
 model_name = dbutils.widgets.get("03. Registered model")
 model_alias = dbutils.widgets.get("04. Model alias")
-save_signature = dbutils.widgets.get("05. Save signature") == "yes"
+delta_table = dbutils.widgets.get("05. Delta table")
 input_example = dbutils.widgets.get("06. Input example") == "yes"
 log_input = dbutils.widgets.get("07. Log input") == "yes"
-log_shap = dbutils.widgets.get("08. SHAP") == "yes"
-delta_table = dbutils.widgets.get("09. Delta table")
+log_evaluation_metrics = dbutils.widgets.get("08. Log evaluation metrics") == "yes"
+log_shap = dbutils.widgets.get("09. SHAP") == "yes"
 max_depth = to_int(dbutils.widgets.get("10. Max depth"))
 
 run_name = run_name or None
@@ -77,7 +76,6 @@ print("run_name:", run_name)
 print("experiment_name:", experiment_name)
 print("model_name:", model_name)
 print("model_alias:", model_alias)
-print("save_signature:", save_signature)
 print("input_example:", input_example)
 print("log_input:", log_input)
 print("log_evaluation_metrics:", log_evaluation_metrics)
@@ -153,6 +151,10 @@ from mlflow.models.signature import infer_signature
 
 # COMMAND ----------
 
+dbutils.widgets.removeAll()
+
+# COMMAND ----------
+
 import os, platform
 
 with mlflow.start_run(run_name=_run_name) as run:
@@ -169,7 +171,6 @@ with mlflow.start_run(run_name=_run_name) as run:
     mlflow.set_tag("version.sklearn", sklearn.__version__)
     mlflow.set_tag("version.DATABRICKS_RUNTIME_VERSION", os.environ.get("DATABRICKS_RUNTIME_VERSION",None))
     mlflow.set_tag("version.python", platform.python_version())
-    mlflow.set_tag("save_signature", save_signature)
     mlflow.set_tag("input_example", input_example)
     mlflow.set_tag("log_input", log_input)
     mlflow.set_tag("data_source", data_source)
@@ -182,7 +183,7 @@ with mlflow.start_run(run_name=_run_name) as run:
       
     predictions = model.predict(X_test)
 
-    signature = infer_signature(X_train, predictions) if save_signature else None
+    signature = infer_signature(X_train, predictions)
     print("signature:", signature)
     print("input_example:", input_example)
 
