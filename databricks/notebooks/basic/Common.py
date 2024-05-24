@@ -174,9 +174,7 @@ def register_model(run,
         model_alias = None,
         model_artifact = "model"
     ):
-    """ Register mode with specified stage and alias """
-    print(">> XX.1: model_name", model_name)
-    print(">> XX.1: client._registry_uri", client._registry_uri)
+    """ Register mode with specified stage or alias """
     try:
        model =  client.create_registered_model(model_name)
     except RestException as e:
@@ -184,12 +182,10 @@ def register_model(run,
     source = f"{run.info.artifact_uri}/{model_artifact}"
     vr = client.create_model_version(model_name, source, run.info.run_id)
     if is_unity_catalog(model_name):
-        print(">> XX.2a")
         if model_alias:
             print(f"Setting model '{model_name}/{vr.version}' alias to '{model_alias}'")
             client.set_registered_model_alias(model_name, model_alias, vr.version)
     elif model_version_stage and model_version_stage != "None":
-        print(">> XX.2b")
         print(f"Transitioning model '{model_name}/{vr.version}' to stage '{model_version_stage}'")
         client.transition_model_version_stage(model_name, vr.version, model_version_stage, archive_existing_versions=False)
 
