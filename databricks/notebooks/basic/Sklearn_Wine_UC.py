@@ -151,10 +151,6 @@ from mlflow.models.signature import infer_signature
 
 # COMMAND ----------
 
-dbutils.widgets.removeAll()
-
-# COMMAND ----------
-
 import os, platform
 
 with mlflow.start_run(run_name=_run_name) as run:
