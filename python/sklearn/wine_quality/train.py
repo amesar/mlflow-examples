@@ -78,6 +78,8 @@ class Trainer():
             output_path = None,
             max_depth = None,
             max_leaf_nodes = 32,
+            log_input = False,
+            log_input_example = False,
             log_evaluation_metrics = False,
             log_shap = False
         ):
@@ -93,8 +95,8 @@ class Trainer():
             mlflow.set_tag("run_id", run_id)
             mlflow.set_tag("save_signature", self.save_signature)
             mlflow.set_tag("data_path", self.data_path)
-            mlflow.set_tag("registered_model_name", registered_model_name)
-            mlflow.set_tag("registered_model_version_stage", registered_model_version_stage)
+            mlflow.set_tag("reg_model_name", registered_model_name)
+            mlflow.set_tag("reg_model_version_stage", registered_model_version_stage)
             mlflow.set_tag("uuid",shortuuid.uuid())
             mlflow.set_tag("dataset", "wine-quality")
             mlflow.set_tag("run_origin", self.run_origin)
@@ -132,25 +134,23 @@ class Trainer():
             mlflow.log_metric("r2", r2)
             mlflow.log_metric("mae", mae)
 
+            # new in MLflow 2.4.0
+            if log_input:
+                print("Logging input")
+                dataset = mlflow.data.from_pandas(self.X_train, source=self.data_path, name="wine_quality_white")
+                print("Log input:", dataset)
+                mlflow.log_input(dataset, context="training")
+                mlflow.set_tag("log_input", True)
 
             # Create signature
             signature = infer_signature(self.X_train, predictions) if self.save_signature else None
             print("Signature:",signature)
 
-            # input_example
-            input_example = self.X_test
+            # Input example
+            input_example = self.X_test if log_input_example else None
 
-            # new in MLflow 2.4.0
-            if hasattr(run, "inputs"):
-                dataset = mlflow.data.from_pandas(self.X_train, source=self.data_path, name="wine_quality_white")
-                print("Log input:", dataset)
-                mlflow.log_input(dataset, context="training")
-                mlflow.set_tag("use_mlflow.data", True)
-            else:
-                mlflow.set_tag("use_mlflow.data", False)
-
-            # MLflow log model
-            mlflow.sklearn.log_model(model, "model", signature=signature, input_example = input_example)
+            # Log MLflow model
+            mlflow.sklearn.log_model(model, "model", signature=signature, input_example=input_example)
 
             # mlflow.evaluate - automatically adds metrics to run
             if log_evaluation_metrics:
@@ -287,10 +287,16 @@ class Trainer():
     default="none",
     show_default=True
 )
-@click.option("--output-path",
-    help="Output file containing run ID.",
-    type=str,
-    default=None,
+@click.option("--log-input",
+    help="Log data input (automatically creates signature)",
+    type=bool,
+    default=False,
+    show_default=True
+)
+@click.option("--log-input-example",
+    help="Log input example (automatically creates signature)",
+    type=bool,
+    default=False,
     show_default=True
 )
 @click.option("--log-evaluation-metrics",
@@ -311,6 +317,12 @@ class Trainer():
     default=False,
     show_default=True
 )
+@click.option("--output-path",
+    help="Output file containing run ID.",
+    type=str,
+    default=None,
+    show_default=True
+)
 def main(experiment_name,
         run_name,
         data_path,
@@ -323,10 +335,12 @@ def main(experiment_name,
         max_depth,
         max_leaf_nodes,
         run_origin,
-        output_path,
+        log_input,
+        log_input_example,
         log_evaluation_metrics,
         log_shap,
-        log_plot
+        log_plot,
+        output_path
     ):
     print("Options:")
     for k,v in locals().items():
@@ -335,7 +349,7 @@ def main(experiment_name,
     print(f"  model_name: {model_name} - type: {type(model_name)}")
     trainer = Trainer(experiment_name, data_path, log_as_onnx, save_signature, log_plot, run_origin)
     trainer.train(run_name, model_name, model_version_stage, archive_existing_versions, model_alias, output_path,
-        max_depth, max_leaf_nodes, log_evaluation_metrics, log_shap
+        max_depth, max_leaf_nodes, log_input, log_input_example, log_evaluation_metrics, log_shap
     )
 
 
