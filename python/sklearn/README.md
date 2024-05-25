@@ -558,5 +558,16 @@ Make predictions with curl as described above.
 
 ```
 cd tests
-py.test -s -v test*.py
+```
+
+### Basic tests
+```
+py.test -s -v tests_basic.py
+```
+
+### Spark tests
+
+If you have Spark installed, you can run the MLflow Spark UDF tests.
+```
+py.test -s -v tests_spark.py
 ```
