@@ -40,12 +40,12 @@ col_label = "quality"
 now = fmt_ts_seconds(round(time.time()))
 
 class Trainer():
-    def __init__(self, experiment_name, data_path, log_as_onnx, save_signature, log_plot=False, run_origin=None):
+    def __init__(self, experiment_name, data_path, log_as_onnx, log_signature, log_plot=False, run_origin=None):
         self.experiment_name = experiment_name
         self.data_path = data_path
         self.run_origin = run_origin
         self.log_as_onnx = log_as_onnx
-        self.save_signature = save_signature
+        self.log_signature = log_signature
         self.log_plot = log_plot
         self.X_train, self.X_test, self.y_train, self.y_test, self.columns = self._build_data(data_path)
 
@@ -93,7 +93,7 @@ class Trainer():
 
             # MLflow tags
             mlflow.set_tag("run_id", run_id)
-            mlflow.set_tag("save_signature", self.save_signature)
+            mlflow.set_tag("log_signature", self.log_signature)
             mlflow.set_tag("data_path", self.data_path)
             mlflow.set_tag("reg_model_name", registered_model_name)
             mlflow.set_tag("reg_model_version_stage", registered_model_version_stage)
@@ -143,7 +143,7 @@ class Trainer():
                 mlflow.set_tag("log_input", True)
 
             # Create signature
-            signature = infer_signature(self.X_train, predictions) if self.save_signature else None
+            signature = infer_signature(self.X_train, predictions) if self.log_signature else None
             print("Signature:",signature)
 
             # Input example
@@ -257,14 +257,14 @@ class Trainer():
     type=str,
     required=False
 )
-@click.option("--save-signature",
-    help="Save model signature. Default is False.",
+@click.option("--log-signature",
+    help="Log model signature.",
     type=bool,
     default=False,
     show_default=True
 )
 @click.option("--log-as-onnx",
-    help="Log model as ONNX flavor. Default is false.",
+    help="Log model as ONNX flavor.",
     type=bool,
     default=False,
     show_default=True
@@ -330,7 +330,7 @@ def main(experiment_name,
         model_version_stage,
         archive_existing_versions,
         model_alias,
-        save_signature,
+        log_signature,
         log_as_onnx,
         max_depth,
         max_leaf_nodes,
@@ -347,7 +347,7 @@ def main(experiment_name,
         print(f"  {k}: {v}")
     print("Processed Options:")
     print(f"  model_name: {model_name} - type: {type(model_name)}")
-    trainer = Trainer(experiment_name, data_path, log_as_onnx, save_signature, log_plot, run_origin)
+    trainer = Trainer(experiment_name, data_path, log_as_onnx, log_signature, log_plot, run_origin)
     trainer.train(run_name, model_name, model_version_stage, archive_existing_versions, model_alias, output_path,
         max_depth, max_leaf_nodes, log_input, log_input_example, log_evaluation_metrics, log_shap
     )

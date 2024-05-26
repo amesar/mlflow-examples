@@ -12,7 +12,7 @@ entry_points:
       model-name: {type: string, default: None }
       model-version-stage: {type: string, default: None }
       archive-existing-versions: {type: boolean, default: False }
-      save-signature: {type: boolean, default: False }
+      log-signature: {type: boolean, default: False }
       log-as-onnx: {type: boolean, default: False}
       log-plot: {type: boolean, default: False}
       max-depth: int
