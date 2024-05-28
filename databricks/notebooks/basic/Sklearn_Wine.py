@@ -35,7 +35,7 @@
 # MAGIC   * andre_catalog.ml_data.winequality_white
 # MAGIC   * andre_catalog.ml_data.winequality_red
 # MAGIC
-# MAGIC Last udpated: _2024-04-20_
+# MAGIC Last udpated: _2024-05-27_
 
 # COMMAND ----------
 
@@ -47,14 +47,18 @@
 
 # COMMAND ----------
 
+#dbutils.widgets.remove("07. Save signature")
+
+# COMMAND ----------
+
 dbutils.widgets.text("01. Run name", "")
 dbutils.widgets.text("02. Experiment name", "")
 dbutils.widgets.text("03. Registered model", "Sklearn_wine_best")
 dbutils.widgets.dropdown("04. Model version stage", "None", _model_version_stages)
 dbutils.widgets.dropdown("05. Archive existing versions", "no", ["yes","no"])
 dbutils.widgets.text("06. Model alias","")
-dbutils.widgets.dropdown("07. Save signature", "yes", ["yes","no"])
-dbutils.widgets.dropdown("08. Input example", "yes", ["yes","no"])
+dbutils.widgets.dropdown("07. Log signature", "yes", ["yes","no"])
+dbutils.widgets.dropdown("08. Log input example", "yes", ["yes","no"])
 dbutils.widgets.dropdown("09. Log input", "yes", ["yes","no"])
 dbutils.widgets.dropdown("10. Log evaluation metrics", "no", ["yes","no"])
 dbutils.widgets.dropdown("11. Log SHAP", "no", ["yes","no"])
@@ -67,8 +71,8 @@ model_name = dbutils.widgets.get("03. Registered model")
 model_version_stage = dbutils.widgets.get("04. Model version stage")
 archive_existing_versions = dbutils.widgets.get("05. Archive existing versions") == "yes"
 model_alias = dbutils.widgets.get("06. Model alias")
-save_signature = dbutils.widgets.get("07. Save signature") == "yes"
-input_example = dbutils.widgets.get("08. Input example") == "yes"
+log_signature = dbutils.widgets.get("07. Log signature") == "yes"
+log_input_example = dbutils.widgets.get("08. Log input example") == "yes"
 log_input = dbutils.widgets.get("09. Log input") == "yes"
 log_evaluation_metrics = dbutils.widgets.get("10. Log evaluation metrics") == "yes"
 log_shap = dbutils.widgets.get("11. Log SHAP") == "yes"
@@ -80,7 +84,7 @@ experiment_name = experiment_name or None
 model_name = model_name or None
 model_version_stage = model_version_stage or None
 model_alias = model_alias or None
-input_example = input_example or None
+log_input_example = log_input_example or None
 
 set_model_registry(model_name)
 
@@ -90,8 +94,8 @@ print("model_name:", model_name)
 print("model_version_stage:", model_version_stage)
 print("archive_existing_versions:", archive_existing_versions)
 print("model_alias:", model_alias)
-print("save_signature:", save_signature)
-print("input_example:", input_example)
+print("log_signature:", log_signature)
+print("log_input_example:", log_input_example)
 print("log_input:", log_input)
 print("log_evaluation_metrics:", log_evaluation_metrics)
 print("log_shap:", log_shap)
@@ -177,8 +181,8 @@ with mlflow.start_run(run_name=_run_name) as run:
     mlflow.set_tag("version.sklearn", sklearn.__version__)
     mlflow.set_tag("version.DATABRICKS_RUNTIME_VERSION", os.environ.get("DATABRICKS_RUNTIME_VERSION",None))
     mlflow.set_tag("version.python", platform.python_version())
-    mlflow.set_tag("save_signature", save_signature)
-    mlflow.set_tag("input_example", input_example)
+    mlflow.set_tag("log_signature", log_signature)
+    mlflow.set_tag("log_input_example", log_input_example)
     mlflow.set_tag("log_input", log_input)
     mlflow.set_tag("data_source", data_source)
     mlflow.set_tag("workspace", databricks_utils.get_workspace_url())
@@ -191,13 +195,15 @@ with mlflow.start_run(run_name=_run_name) as run:
       
     predictions = model.predict(X_test)
 
-    signature = infer_signature(X_train, predictions) if save_signature else None
-    print("signature:", signature)
-    print("input_example:", input_example)
+    signature = infer_signature(X_train, predictions) if log_signature else None
+    print("Signature:", signature)
 
-    log_data_input(run, log_input, data_source, X_train)
+    input_example = X_train[:5] if log_input_example else None
+    
+    if log_input:
+        log_data_input(run, log_input, data_source, X_train)
 
-    mlflow.sklearn.log_model(model, "model", signature=signature, input_example=X_test)
+    mlflow.sklearn.log_model(model, "model", signature=signature, input_example=input_example)
 
     rmse = np.sqrt(mean_squared_error(y_test, predictions))
     r2 = r2_score(y_test, predictions)
