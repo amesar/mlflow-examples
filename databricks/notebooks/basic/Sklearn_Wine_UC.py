@@ -2,7 +2,7 @@
 # MAGIC %md ## Sklearn Wine Quality MLflow model - Unity Catalog
 # MAGIC * Trains and saves model as Sklearn flavor
 # MAGIC * Predicts using Sklearn, Pyfunc and UDF flavors
-# MAGIC * Supports Unity Catalog 
+# MAGIC * Registers model in Unity Catalog model registry
 # MAGIC
 # MAGIC #### Widgets
 # MAGIC * 01. Run name
@@ -23,7 +23,7 @@
 # MAGIC   * andre_catalog.ml_data.winequality_white
 # MAGIC   * andre_catalog.ml_data.winequality_red
 # MAGIC
-# MAGIC Last udpated: 2024-05-23
+# MAGIC Last uddated: 2024-05-31
 
 # COMMAND ----------
 
@@ -37,10 +37,6 @@ mlflow.set_registry_uri("databricks-uc")
 # COMMAND ----------
 
 # MAGIC %run ./Common
-
-# COMMAND ----------
-
-#dbutils.widgets.removeAll()
 
 # COMMAND ----------
 
