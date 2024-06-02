@@ -226,7 +226,7 @@ if not run_name:
 
 if model_name:
     activate_unity_catalog()
-    version = register_model_uc(run, model_name, model_alias)
+    version = register_model_uc(run, model_name, model_alias, description=run_name)
     print(f"Registered model '{model_name}' as version {version.version}")
 
 # COMMAND ----------

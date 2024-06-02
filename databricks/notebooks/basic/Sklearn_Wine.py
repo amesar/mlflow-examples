@@ -47,10 +47,6 @@
 
 # COMMAND ----------
 
-#dbutils.widgets.remove("07. Save signature")
-
-# COMMAND ----------
-
 dbutils.widgets.text("01. Run name", "")
 dbutils.widgets.text("02. Experiment name", "")
 dbutils.widgets.text("03. Registered model", "Sklearn_wine_best")
@@ -246,7 +242,8 @@ if model_name:
         model_name, 
         model_version_stage, 
         archive_existing_versions, 
-        model_alias
+        model_alias,
+        description=run_name
     )
     print(f"Registered model '{model_name}' as version {version.version}")
 
