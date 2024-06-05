@@ -23,7 +23,7 @@
 # MAGIC   * andre_catalog.ml_data.winequality_white
 # MAGIC   * andre_catalog.ml_data.winequality_red
 # MAGIC
-# MAGIC Last uddated: 2024-05-31
+# MAGIC Last uddated: _2024-06-04_
 
 # COMMAND ----------
 
@@ -45,10 +45,10 @@ dbutils.widgets.text("02. Experiment name", "")
 dbutils.widgets.text("03. Registered model", "andre_catalog.ml_models2.sklearn_wine_best")
 dbutils.widgets.text("04. Model alias","")
 dbutils.widgets.text("05. Delta table", "")
-dbutils.widgets.dropdown("06. Input example", "yes", ["yes","no"])
-dbutils.widgets.dropdown("07. Log input", "yes", ["yes","no"])
-dbutils.widgets.dropdown("08. Log evaluation metrics", "no", ["yes","no"])
-dbutils.widgets.dropdown("09. SHAP","no", ["yes","no"])
+dbutils.widgets.dropdown("06. Input example", "yes", ["yes", "no"])
+dbutils.widgets.dropdown("07. Log input", "yes", ["yes", "no"])
+dbutils.widgets.dropdown("08. Log evaluation metrics", "no", ["yes", "no"])
+dbutils.widgets.dropdown("09. SHAP","no", ["yes", "no"])
 dbutils.widgets.text("10. Max depth", "1") 
 
 run_name = dbutils.widgets.get("01. Run name")
@@ -68,20 +68,16 @@ model_name = model_name or None
 model_alias = model_alias or None
 input_example = input_example or None
 
-print("run_name:", run_name)
+print("run_name:       ", run_name)
 print("experiment_name:", experiment_name)
-print("model_name:", model_name)
-print("model_alias:", model_alias)
-print("input_example:", input_example)
-print("log_input:", log_input)
+print("model_name:     ", model_name)
+print("model_alias:    ", model_alias)
+print("input_example:          ", input_example)
+print("log_input:             ", log_input)
 print("log_evaluation_metrics:", log_evaluation_metrics)
-print("SHAP:", log_shap)
+print("log_shap:              ", log_shap)
 print("delta_table:", delta_table)
 print("max_depth:", max_depth)
-
-# COMMAND ----------
-
-print("MlflowClient._registry_uri:", client._registry_uri)
 
 # COMMAND ----------
 
@@ -220,7 +216,7 @@ if not run_name:
 
 # COMMAND ----------
 
-# MAGIC %md ### Register model
+# MAGIC %md ### Register model aka create model version
 
 # COMMAND ----------
 

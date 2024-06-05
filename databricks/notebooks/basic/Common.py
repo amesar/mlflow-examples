@@ -197,15 +197,17 @@ def register_model(run,
 def register_model_uc(run, 
         reg_model_name, 
         reg_model_alias = None,
-        run_model_artifact = "model"
+        run_model_artifact = "model",
+        description = None
     ):
     """ Register mode with specified alias """
     try:
-       model =  client.create_registered_model(reg_model_name)
+       client.create_registered_model(reg_model_name)
     except RestException as e:
-       model =  client.get_registered_model(reg_model_name)
+       client.get_registered_model(reg_model_name)
     source = f"{run.info.artifact_uri}/{run_model_artifact}"
-    vr = client.create_model_version(reg_model_name, source, run.info.run_id)
+    tags = { "alias": reg_model_alias }if reg_model_alias else None
+    vr = client.create_model_version(reg_model_name, source, run.info.run_id, tags=tags, description=description)
     if reg_model_alias:
         print(f"Setting model '{reg_model_name}/{vr.version}' alias to '{reg_model_alias}'")
         client.set_registered_model_alias(reg_model_name, reg_model_alias, vr.version)

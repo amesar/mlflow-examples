@@ -10,5 +10,6 @@
 # MAGIC   * [Mini_MLOps_Pipeline]($Mini_MLOps_Pipeline/_README) - Simple end-to-end "mini" MLOps pipeline using wine quality dataset. Uses workspace registry model version stages.
 # MAGIC * [AutoML_API_Example]($automl_api/AutoML_API_Example)
 # MAGIC * [./includes]($includes) - Common include notebooks.
+# MAGIC * github: https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks
 # MAGIC
-# MAGIC Last updated: 2024-06-02
+# MAGIC Last updated: _2024-06-04_
