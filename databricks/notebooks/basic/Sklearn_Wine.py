@@ -3,8 +3,8 @@
 # MAGIC * Trains and saves model as Sklearn flavor
 # MAGIC * Optionally registers the run as new registered model
 # MAGIC * Predicts using Sklearn, Pyfunc and UDF flavors
-# MAGIC * Works with either Workspace or Unity Catalog model registry
-# MAGIC * See [Sklearn_Wine_UC]($Sklearn_Wine_UC) a Unity Catalog specific
+# MAGIC * Uses Workspace Model Registry
+# MAGIC * See [Sklearn_Wine_UC]($Sklearn_Wine_UC) for example with Unity Catalog Model Registry
 # MAGIC
 # MAGIC ### Widgets
 # MAGIC * 01. Run name
@@ -12,14 +12,13 @@
 # MAGIC * 03. Registered model: if set, register as model
 # MAGIC * 04. Model version stage
 # MAGIC * 05. Archive existing versions
-# MAGIC * 06. Model alias
-# MAGIC * 07. Save signature
-# MAGIC * 08. Input example
-# MAGIC * 09. Log input - new in MLflow 2.4.0
-# MAGIC * 10. Log evaluation metric
-# MAGIC * 11. Log SHAP
-# MAGIC * 12. Delta table: if not set, read default Databricks CSV file from DBFS
-# MAGIC * 13. Max depth
+# MAGIC * 06. Save signature
+# MAGIC * 07. Input example
+# MAGIC * 08. Log input - new in MLflow 2.4.0
+# MAGIC * 09. Log evaluation metric
+# MAGIC * 10. Log SHAP
+# MAGIC * 11. Delta table: if not set, read default Databricks CSV file from DBFS
+# MAGIC * 12. Max depth
 # MAGIC
 # MAGIC #### Notes
 # MAGIC
@@ -35,7 +34,7 @@
 # MAGIC   * andre_catalog.ml_data.winequality_white
 # MAGIC   * andre_catalog.ml_data.winequality_red
 # MAGIC
-# MAGIC Last udpated: _2024-05-27_
+# MAGIC Last udpated: _2024-06-06_
 
 # COMMAND ----------
 
@@ -49,37 +48,34 @@
 
 dbutils.widgets.text("01. Run name", "")
 dbutils.widgets.text("02. Experiment name", "")
-dbutils.widgets.text("03. Registered model", "Sklearn_wine_best")
+dbutils.widgets.text("03. Registered model", "Sklearn_wine_test")
 dbutils.widgets.dropdown("04. Model version stage", "None", _model_version_stages)
-dbutils.widgets.dropdown("05. Archive existing versions", "no", ["yes","no"])
-dbutils.widgets.text("06. Model alias","")
-dbutils.widgets.dropdown("07. Log signature", "yes", ["yes","no"])
-dbutils.widgets.dropdown("08. Log input example", "yes", ["yes","no"])
-dbutils.widgets.dropdown("09. Log input", "yes", ["yes","no"])
-dbutils.widgets.dropdown("10. Log evaluation metrics", "no", ["yes","no"])
-dbutils.widgets.dropdown("11. Log SHAP", "no", ["yes","no"])
-dbutils.widgets.text("12. Delta table", "andre_catalog.ml_data.winequality_white")
-dbutils.widgets.text("13. Max depth", "1") 
+dbutils.widgets.dropdown("05. Archive existing versions", "no", ["yes", "no"])
+dbutils.widgets.dropdown("06. Log signature", "yes", ["yes", "no"])
+dbutils.widgets.dropdown("07. Log input example", "yes", ["yes", "no"])
+dbutils.widgets.dropdown("08. Log input", "yes", ["yes", "no"])
+dbutils.widgets.dropdown("09. Log evaluation metrics", "no", ["yes", "no"])
+dbutils.widgets.dropdown("10. Log SHAP", "no", ["yes", "no"])
+dbutils.widgets.text("11. Delta table", "andre_catalog.ml_data.winequality_white")
+dbutils.widgets.text("12. Max depth", "1") 
 
 run_name = dbutils.widgets.get("01. Run name")
 experiment_name = dbutils.widgets.get("02. Experiment name")
 model_name = dbutils.widgets.get("03. Registered model")
 model_version_stage = dbutils.widgets.get("04. Model version stage")
 archive_existing_versions = dbutils.widgets.get("05. Archive existing versions") == "yes"
-model_alias = dbutils.widgets.get("06. Model alias")
-log_signature = dbutils.widgets.get("07. Log signature") == "yes"
-log_input_example = dbutils.widgets.get("08. Log input example") == "yes"
-log_input = dbutils.widgets.get("09. Log input") == "yes"
-log_evaluation_metrics = dbutils.widgets.get("10. Log evaluation metrics") == "yes"
-log_shap = dbutils.widgets.get("11. Log SHAP") == "yes"
-delta_table = dbutils.widgets.get("12. Delta table")
-max_depth = to_int(dbutils.widgets.get("13. Max depth"))
+log_signature = dbutils.widgets.get("06. Log signature") == "yes"
+log_input_example = dbutils.widgets.get("07. Log input example") == "yes"
+log_input = dbutils.widgets.get("08. Log input") == "yes"
+log_evaluation_metrics = dbutils.widgets.get("09. Log evaluation metrics") == "yes"
+log_shap = dbutils.widgets.get("10. Log SHAP") == "yes"
+delta_table = dbutils.widgets.get("11. Delta table")
+max_depth = to_int(dbutils.widgets.get("12. Max depth"))
 
 run_name = run_name or None
 experiment_name = experiment_name or None
 model_name = model_name or None
 model_version_stage = model_version_stage or None
-model_alias = model_alias or None
 log_input_example = log_input_example or None
 
 set_model_registry(model_name)
@@ -89,7 +85,6 @@ print("experiment_name:", experiment_name)
 print("model_name:", model_name)
 print("model_version_stage:", model_version_stage)
 print("archive_existing_versions:", archive_existing_versions)
-print("model_alias:", model_alias)
 print("log_signature:", log_signature)
 print("log_input_example:", log_input_example)
 print("log_input:", log_input)
@@ -242,7 +237,6 @@ if model_name:
         model_name, 
         model_version_stage, 
         archive_existing_versions, 
-        model_alias,
         description=run_name
     )
     print(f"Registered model '{model_name}' as version {version.version}")
@@ -366,18 +360,3 @@ if model_name:
     udf = mlflow.pyfunc.spark_udf(spark, model_uri)
     predictions = df.withColumn("prediction", udf(*df.columns)).select("prediction")
     display(predictions)
-
-# COMMAND ----------
-
-# MAGIC %md ### Predict with `models:/` URI and alias
-
-# COMMAND ----------
-
-if model_alias:
-    model_uri = f"models:/{model_name}@{model_alias}"
-    print("model_uri:", model_uri)
-    model = mlflow.pyfunc.load_model(model_uri)
-    predictions = model.predict(data_to_predict)
-    display(pd.DataFrame(predictions,columns=[WineQuality.colPrediction]))
-else:
-    print("No model alias")

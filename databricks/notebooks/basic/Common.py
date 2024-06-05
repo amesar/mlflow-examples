@@ -171,7 +171,6 @@ def register_model(run,
         model_name, 
         model_version_stage = None, 
         archive_existing_versions = False, 
-        model_alias = None,
         model_artifact = "model",
         description = None
     ):
@@ -182,13 +181,9 @@ def register_model(run,
        model =  client.get_registered_model(model_name)
     source = f"{run.info.artifact_uri}/{model_artifact}"
     vr = client.create_model_version(model_name, source, run.info.run_id, description=description)
-    if is_unity_catalog(model_name):
-        if model_alias:
-            print(f"Setting model '{model_name}/{vr.version}' alias to '{model_alias}'")
-            client.set_registered_model_alias(model_name, model_alias, vr.version)
-    elif model_version_stage and model_version_stage != "None":
-        print(f"Transitioning model '{model_name}/{vr.version}' to stage '{model_version_stage}'")
-        client.transition_model_version_stage(model_name, vr.version, model_version_stage, archive_existing_versions=False)
+    model_version_stage and model_version_stage != "None"
+    print(f"Transitioning model '{model_name}/{vr.version}' to stage '{model_version_stage}'")
+    client.transition_model_version_stage(model_name, vr.version, model_version_stage, archive_existing_versions=False)
 
     return vr
 
