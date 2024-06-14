@@ -56,29 +56,31 @@ Options:
   --archive-existing-versions BOOLEAN
                                   Archive existing versions.  [default: False]
   --model-alias TEXT              Registered model alias
-  --save-signature BOOLEAN        Save model signature. Default is False.
+  --log-signature BOOLEAN         Log model signature.
                                   [default: False]
-  --log-as-onnx BOOLEAN           Log model as ONNX flavor. Default is false.
+  --log-as-onnx BOOLEAN           Log model as ONNX flavor.
                                   [default: False]
   --max-depth INTEGER             Max depth parameter.
   --max-leaf-nodes INTEGER        Max leaf nodes parameter.  [default: 32]
   --run-origin TEXT               Run origin.  [default: none]
-  --output-path TEXT              Output file containing run ID.
-  --use-run-id-as-run-name BOOLEAN
-                                  use_run_id_as_run_name  [default: False]
+  --log-input BOOLEAN             Log data input (automatically creates
+                                  signature)  [default: False]
+  --log-input-example BOOLEAN     Log input example (automatically creates
+                                  signature)  [default: False]
   --log-evaluation-metrics BOOLEAN
                                   Log metrics from mlflow.evaluate  [default:
                                   False]
   --log-shap BOOLEAN              Log mlflow.shap.log_explanation  [default:
                                   False]
   --log-plot BOOLEAN              Log plot  [default: False]
+  --output-path TEXT              Output file containing run ID.
 ```
 
 #### Signature
 
 See [Model Signature](https://www.mlflow.org/docs/latest/models.html#model-signature) documentation.
 
-If you save the schema of the expected input and output data with a model, you will (usualy) get a better error message in case of a schema mismatch when scoring with pyfunc or real-time scoring server.
+If you log the schema of the expected input and output data with a model, you will (usualy) get a better error message in case of a schema mismatch when scoring with pyfunc or real-time scoring server.
 
 Examples:
 
@@ -502,8 +504,9 @@ curl -X POST -H "Content-Type:application/json" \
 
 Launch the scoring server.
 ```
-mlflow pyfunc serve -port 5001 \
-  -model-uri models:/my-registered-model/production
+mlflow models serve -port 5001 \
+  --model-uri models:/skleanr_wine/123 \
+  --noconda
 ```
 
 Make predictions with curl as described above.
