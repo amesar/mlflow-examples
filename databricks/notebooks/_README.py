@@ -12,4 +12,4 @@
 # MAGIC * [./includes]($includes) - Common include notebooks.
 # MAGIC * github: https://github.com/amesar/mlflow-examples/tree/master/databricks/notebooks
 # MAGIC
-# MAGIC Last updated: _2024-06-05_
+# MAGIC Last updated: _2024-06-20_

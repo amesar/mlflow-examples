@@ -174,5 +174,9 @@ from pyspark.sql.functions import *
 df = spark.createDataFrame(data_to_predict)
 udf = mlflow.pyfunc.spark_udf(spark, model_uri)
 predictions = df.withColumn("prediction", udf(*df.columns)).select("prediction")
-predictions = predictions.withColumn("prediction", round(col("prediction"), 3))
+#predictions = predictions.withColumn("prediction", round(col("prediction"), 3))
 display(predictions)
+
+# COMMAND ----------
+
+
