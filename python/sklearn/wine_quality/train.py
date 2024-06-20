@@ -49,7 +49,7 @@ class Trainer():
         self.log_as_onnx = log_as_onnx
         self.log_signature = log_signature
         self.log_plot = log_plot
-        self.X_train, self.X_test, self.y_train, self.y_test, self.columns = self._build_data(data_path)
+        self.X_train, self.X_test, self.y_train, self.y_test = self._build_data(data_path)
 
         if self.experiment_name:
             mlflow.set_experiment(experiment_name)
@@ -68,7 +68,7 @@ class Trainer():
         X_test = test.drop([col_label], axis=1)
         y_train = train[[col_label]]
         y_test = test[[col_label]]
-        return X_train, X_test, y_train, y_test, list(data.columns)
+        return X_train, X_test, y_train, y_test
 
 
     def train(self,
@@ -154,21 +154,22 @@ class Trainer():
             # Log MLflow model
             mlflow.sklearn.log_model(model, "model", signature=signature, input_example=input_example)
 
-            # mlflow.evaluate - automatically adds metrics to run
+            # Add evaluation metrics to run with mlflow.evaluate
             if log_evaluation_metrics:
                 model_uri = mlflow.get_artifact_uri("model")
-                print("model_uri:",model_uri)
-                test_data = pd.concat([self.X_test, self.y_test], axis=1)
-                result = mlflow.evaluate(
-                    model_uri,
-                    test_data,
-                    targets="quality",
-                    model_type="regressor",
-                    evaluators="default",
-                    feature_names=self.columns,
-                    evaluator_config={"explainability_nsamples": 1000},
+                print("Evaluation model_uri:", model_uri)
+                data = pd.concat([self.X_test, self.y_test], axis=1)
+                feature_columns = list(self.X_test.columns)
+                results = mlflow.evaluate(
+                    model = model_uri,
+                    data = data,
+                    targets = "quality",
+                    model_type = "regressor",
+                    evaluators = "default",
+                    feature_names = feature_columns,
+                    evaluator_config = {"explainability_nsamples": 1000},
                 )
-                mlflow_utils.log_dict(result.metrics, "evaluation_metrics.json")
+                mlflow_utils.log_dict(results.metrics, "evaluation_metrics.json")
 
             if registered_model_name:
                 mlflow_utils.register_model(run,
@@ -356,11 +357,12 @@ def main(experiment_name,
         archive_existing_versions, model_alias, output_path,
         max_depth, max_leaf_nodes, log_input, log_input_example, log_evaluation_metrics, log_shap
     )
-    
+
     # Predict
     model_uri = f"runs:/{run_id}/model"
     pyfunc_predict(model_uri, data_path)
-    print()
+
+    print(f"\nTraining run succeded with run ID '{run_id}.'\n")
 
 
 if __name__ == "__main__":
