@@ -20,9 +20,11 @@ from sklearn.tree import DecisionTreeRegressor
 import mlflow
 import mlflow.sklearn
 from mlflow.models.signature import infer_signature
-from wine_quality import plot_utils, mlflow_utils
-from wine_quality.timestamp_utils import fmt_ts_seconds, fmt_ts_millis
-from wine_quality import common
+
+from . import plot_utils, mlflow_utils
+from . timestamp_utils import fmt_ts_seconds, fmt_ts_millis
+from . import common
+from . predict import pyfunc_predict
 
 
 print("Versions:")
@@ -147,7 +149,7 @@ class Trainer():
             print("Signature:",signature)
 
             # Input example
-            input_example = self.X_test if log_input_example else None
+            input_example = self.X_test.head(5) if log_input_example else None
 
             # Log MLflow model
             mlflow.sklearn.log_model(model, "model", signature=signature, input_example=input_example)
@@ -213,7 +215,7 @@ class Trainer():
         client.set_tag(run_id, "run.info._start_time", fmt_ts_millis(run.info.start_time))
         client.set_tag(run_id, "run.info._end_time", fmt_ts_millis(run.info.end_time))
 
-        return (experiment_id, run_id)
+        return run_id
 
 
 @click.command()
@@ -347,10 +349,18 @@ def main(experiment_name,
         print(f"  {k}: {v}")
     print("Processed Options:")
     print(f"  model_name: {model_name} - type: {type(model_name)}")
+
+    # Train
     trainer = Trainer(experiment_name, data_path, log_as_onnx, log_signature, log_plot, run_origin)
-    trainer.train(run_name, model_name, model_version_stage, archive_existing_versions, model_alias, output_path,
+    run_id = trainer.train(run_name, model_name, model_version_stage,
+        archive_existing_versions, model_alias, output_path,
         max_depth, max_leaf_nodes, log_input, log_input_example, log_evaluation_metrics, log_shap
     )
+    
+    # Predict
+    model_uri = f"runs:/{run_id}/model"
+    pyfunc_predict(model_uri, data_path)
+    print()
 
 
 if __name__ == "__main__":
