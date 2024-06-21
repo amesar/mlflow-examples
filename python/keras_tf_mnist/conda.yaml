@@ -4,7 +4,7 @@ channels:
 dependencies:
   - python=3.8
   - pip:
-    - mlflow>=1.30.0
+    - mlflow
     #- tensorflow==2.5.0 # Fails: ONNX training on Mac and Debian
     #- tensorflow==2.4.1 # Fails: ONNX training on Mac and Debian
     - tensorflow==2.3.0  # OK:    ONNX training on Mac and Debian
