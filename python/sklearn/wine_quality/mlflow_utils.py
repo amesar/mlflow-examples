@@ -12,7 +12,8 @@ def register_model(
         registered_model_name,
         registered_model_version_stage,
         archive_existing_versions,
-        registered_model_alias
+        registered_model_alias,
+        description
     ):
     try:
         desc = "Skearn Wine Quality model"
@@ -33,9 +34,8 @@ def register_model(
         print(f"Setting model '{registered_model_name}/{vr.version}' alias to '{registered_model_alias}'")
         client.set_registered_model_alias(registered_model_name, registered_model_alias, vr.version)
         client.set_model_version_tag(registered_model_name, vr.version, "alias", registered_model_alias)
-    desc = f"v{vr.version} {registered_model_version_stage} - wine"
-    client.update_model_version(registered_model_name, vr.version, desc)
-    client.set_model_version_tag(registered_model_name, vr.version, "registered_version_info", desc)
+    client.update_model_version(registered_model_name, vr.version, description)
+    client.set_model_version_tag(registered_model_name, vr.version, "registered_version_info", description)
 
 
 def log_dict(dct, artifact_name):
