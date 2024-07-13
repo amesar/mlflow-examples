@@ -6,7 +6,7 @@ This repo consists of two sets of code artifacts:
 * Regular Python scripts using open source MLflow
 * [Databricks notebooks](databricks/notebooks/README.md) using Databricks MLflow
 
-Last updated: _2023-07-12_
+Last updated: _2024-07-12_
 
 ## Examples
 
@@ -31,6 +31,7 @@ Last updated: _2023-07-12_
 * [model_registry](python/model_registry) - Jupyter notebook sampling the Model Registry API.
 * [e2e-ml-pipeline](python/e2e-ml-pipeline) - End-to-end ML pipeline - training to real-time scoring.
 * [reproduce](python/reproduce) - Reproduce an existing run.
+* [nested_runs](python/nested_runs/train.py) - Create a nested run with specified number of levels.
 * [scoring_server_benchmarks](python/scoring_server_benchmarks) - Scoring server performance benchmarks.
 
 The sklearn and Spark ML examples also demonstrate:
