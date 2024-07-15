@@ -14,7 +14,7 @@ def _train(base_name, max_level, max_children, level=0, child_idx=0):
         return
     tab = _mk_tab(level)
     tab2 = tab + _TAB
-    name = f"level={level} max_level={max_level}_max_child={max_children}"
+    name = f"L_{level}"
     print(f"{tab}Level={level} Child={child_idx}")
     print(f"{tab2}name: {name} max_level: {max_level}")
     with mlflow.start_run(run_name=name, nested=(level > 0)) as run:
@@ -27,7 +27,7 @@ def _train(base_name, max_level, max_children, level=0, child_idx=0):
         mlflow.set_tag("algo", name)
         with open("info.txt", "w", encoding="utf-8") as f:
             f.write(name)
-            mlflow.log_artifact("info.txt")
+        mlflow.log_artifact("info.txt")
         for j in range(max_children):
             _train(base_name, max_level, max_children, level+1, j)
 
