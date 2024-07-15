@@ -9,18 +9,18 @@ _TAB = "  "
 def _mk_tab(level):
     return  "".join([ _TAB for j in range(level) ])
 
-def _train(base_name, max_level, max_children, level=0, child_idx=0):
-    if level >= max_level:
+def _train(base_name, max_levels, max_children, level=0, child_idx=0):
+    if level >= max_levels:
         return
     tab = _mk_tab(level)
     tab2 = tab + _TAB
     name = f"L_{level}"
     print(f"{tab}Level={level} Child={child_idx}")
-    print(f"{tab2}name: {name} max_level: {max_level}")
+    print(f"{tab2}name: {name} max_levels: {max_levels}")
     with mlflow.start_run(run_name=name, nested=(level > 0)) as run:
         print(f"{tab2}run_id: {run.info.run_id}")
         print(f"{tab2}experiment_id: {run.info.experiment_id}")
-        mlflow.log_param("max_level", max_level)
+        mlflow.log_param("max_levels", max_levels)
         mlflow.log_param("max_children", max_children)
         mlflow.log_param("alpha", str(child_idx+0.1))
         mlflow.log_metric("auroch", 0.123)
@@ -29,14 +29,14 @@ def _train(base_name, max_level, max_children, level=0, child_idx=0):
             f.write(name)
         mlflow.log_artifact("info.txt")
         for j in range(max_children):
-            _train(base_name, max_level, max_children, level+1, j)
+            _train(base_name, max_levels, max_children, level+1, j)
 
 
 @click.command()
 @click.option("--experiment", help="Experiment name.", type=str, required=False)
-@click.option("--max-level", help="Number of nested levels.", type=int, default=1)
+@click.option("--max-levels", help="Number of nested levels.", type=int, default=1)
 @click.option("--max-children", help="Number of runs per level.", type=int, default=1)
-def main(experiment, max_level, max_children):
+def main(experiment, max_levels, max_children):
     """
     Create a nested run with specified number of levels.
     """
@@ -44,7 +44,7 @@ def main(experiment, max_level, max_children):
     for k,v in locals().items(): print(f"  {k}: {v}")
     if experiment:
         mlflow.set_experiment(experiment)
-    _train("nst",max_level,max_children)
+    _train("nst",max_levels, max_children)
 
 if __name__ == "__main__":
     main()
