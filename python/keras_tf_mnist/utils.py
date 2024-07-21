@@ -83,7 +83,7 @@ def display_versions():
     print("Versions:")
     print("  MLflow Version:", mlflow.__version__)
     print("  TensorFlow version:", tf.__version__)
-    print("  Keras version:", keras.__version__)
+    #print("  Keras version:", keras.__version__)
     print("  Python Version:", platform.python_version())
     print("  Operating System:", platform.system()+" - "+platform.release())
     print("  Tracking URI:", mlflow.tracking.get_tracking_uri())
