@@ -4,8 +4,10 @@
 # MAGIC ##### Widgets
 # MAGIC * `1. Max levels` - number of nested levels - includes root level.
 # MAGIC   * Max level of 2 will create a root run and a child run.
+# MAGIC   * To create a non-nested run, specify a level of 1.
 # MAGIC * `2. Max children` - number of runs per level.
-# MAGIC * `3. Delete runs` - delete experiment runs before creating nested run.
+# MAGIC * `3. Delete runs` - delete experiment runs before creating the nested run.
+# MAGIC * `4, Run name` - run name of the root run
 # MAGIC
 # MAGIC ##### Github
 # MAGIC * https://github.com/amesar/mlflow-examples/tree/master/python/nested_runs
@@ -27,9 +29,13 @@ max_children = int(max_children)
 dbutils.widgets.dropdown("3. Delete runs", "yes", ["yes","no"]) 
 delete_runs = dbutils.widgets.get("3. Delete runs") == "yes"
 
+dbutils.widgets.text("4. Run name", "") 
+run_name = dbutils.widgets.get("4. Run name")
+
 print("max_levels:", max_levels)
 print("max_children:", max_children)
 print("delete_runs:", delete_runs)
+print("run_name:", run_name)
 
 # COMMAND ----------
 
@@ -46,11 +52,13 @@ experiment
 
 # COMMAND ----------
 
+runs = client.search_runs(experiment.experiment_id)
 if experiment and delete_runs:
-    runs = client.search_runs(experiment.experiment_id)
     print(f"Deleting {len(runs)} runs")
     for run in runs:
         client.delete_run(run.info.run_id)
+else:
+    print(f"Not deleting {len(runs)} runs")
 
 # COMMAND ----------
 
@@ -58,7 +66,7 @@ if experiment and delete_runs:
 
 # COMMAND ----------
 
-def train(max_levels, max_children, level=0, child_idx=0):
+def create_run(max_levels, max_children, level=0, child_idx=0, run_name=None):
     _TAB = "  "
     def _mk_tab(level):
         return  "".join([ _TAB for _ in range(level)])
@@ -67,8 +75,7 @@ def train(max_levels, max_children, level=0, child_idx=0):
         return
     tab = _mk_tab(level)
     tab2 = tab + _TAB
-    run_name = f"L_{level:02d}"
-    run_name = f"L_{level:02d}_{child_idx:02d}"
+    run_name = run_name or f"L_{level:02d}_{child_idx:02d}"
     print(f"{tab}Level={level} Child={child_idx}")
     print(f"{tab2}run_name: {run_name}")
     with mlflow.start_run(run_name=run_name, nested=(level > 0)) as run:
@@ -77,16 +84,16 @@ def train(max_levels, max_children, level=0, child_idx=0):
         mlflow.log_param("max_children", max_children)
         mlflow.log_metric("auroch", 0.123)
         mlflow.set_tag("_run_name", run_name)
-        with open("info.txt", "w", encoding="utf-8") as f:
+        with open("info.txt", "w") as f:
             f.write(run_name)
         mlflow.log_artifact("info.txt")
         for j in range(max_children):
-            train(max_levels, max_children, level+1, j)
+            create_run(max_levels, max_children, level+1, j)
     return run
 
 # COMMAND ----------
 
-run = train(max_levels, max_children)
+run = create_run(max_levels, max_children, run_name=run_name)
 run = client.get_run(run.info.run_id)
 
 # COMMAND ----------
